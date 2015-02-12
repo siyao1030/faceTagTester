@@ -8,6 +8,9 @@
 
 #import "AppDelegate.h"
 
+#define FACEPP_API_KEY @"279b8c5e109befce7316babba101d688"
+#define FACEPP_API_SECRET @"689AlR1nBILA-GWrZCOkI6EG9egy2_Yd"
+
 @interface AppDelegate ()
 
 @end
@@ -17,6 +20,20 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    [FaceppAPI initWithApiKey:FACEPP_API_KEY andApiSecret:FACEPP_API_SECRET andRegion:APIServerRegionUS];
+    [FaceppAPI setDebugMode:YES];
+    
+    ViewController *mainView = [[ViewController alloc] init];
+    [[mainView navigationItem] setTitle:@"Photos"];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:mainView];
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    [self.window setRootViewController:navController];
+    [self.window makeKeyAndVisible];
+
+    
+    
     return YES;
 }
 

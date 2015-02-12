@@ -8,6 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
+#import "FaceppAPI.h"
+#import "FTPerson.h"
+#import "FTGroup.h"
+#import "ViewController.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 

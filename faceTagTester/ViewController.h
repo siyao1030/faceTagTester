@@ -7,9 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <Photos/Photos.h>
+#import "FTDetector.h"
+#import "FTPerson.h"
+#import "FTPhoto.h"
+#import "FTGroup.h"
 
 @interface ViewController : UIViewController
-
 
 @end
 
