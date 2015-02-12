@@ -10,6 +10,10 @@
 
 @implementation FTModel
 
++ (NSArray *)fetchWithPredicate:(NSPredicate *)predicate {
+    NSManagedObjectContext *localContext = [NSManagedObjectContext MR_contextForCurrentThread];
+    return [[self class] MR_findAllWithPredicate:predicate inContext:localContext];
+}
 
 + (id)fetchWithID:(NSString *)modelID {
     NSManagedObjectContext *localContext = [NSManagedObjectContext MR_contextForCurrentThread];

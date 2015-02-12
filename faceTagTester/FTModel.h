@@ -12,6 +12,7 @@
 
 @interface FTModel : NSManagedObject
 
++ (NSArray *)fetchWithPredicate:(NSPredicate *)predicate;
 + (id)fetchWithID:(NSString *)modelID;
 + (id)fetchOrCreateWithID:(NSString *)modelID;
 + (void)update:(NSArray *)batchedData withWriteBlock:(void(^)(id model))writeBlock completionBlock:(void(^)(NSArray *models))completionBlock;

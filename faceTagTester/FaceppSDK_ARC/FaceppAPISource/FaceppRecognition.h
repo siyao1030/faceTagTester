@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "FaceppResult.h"
 #import "FaceppDetection.h"
-#import "FaceppLocalDetector.h"
 
 @interface FaceppRecognition : NSObject
 
@@ -21,7 +20,5 @@
 -(FaceppResult*) searchWithKeyFaceId:(NSString*) keyFaceId andFacesetId:(NSString*)facesetId orFacesetName:(NSString*)facesetName andCount:(NSNumber*)count async:(BOOL)async;
 
 -(FaceppResult*) verifyWithFaceId:(NSString*) faceId andPersonId:(NSString*)personId orPersonName:(NSString*)personName async:(BOOL)async;
-
--(FaceppResult*) identifyWithLocalResult: (FaceppLocalResult*)result attribute:(FaceppDetectionAttribute)attribute tag:(NSString*)tag withinGroup:(NSString *)groupID;
 
 @end

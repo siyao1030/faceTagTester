@@ -22,7 +22,7 @@
     self = [super init];
     self.name = name;
     self.id = name;
-    self.people = [NSSet setWithArray:people];
+    self.people = [NSMutableArray arrayWithArray:people];
     
     NSMutableArray *personIDs = [[NSMutableArray alloc] init];
     for (FTPerson *person in self.people) {

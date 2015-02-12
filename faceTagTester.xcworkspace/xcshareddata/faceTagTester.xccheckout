@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>5E2DF5E5-8999-4D53-BB0D-E7E3D7934567</string>
+	<key>IDESourceControlProjectName</key>
+	<string>faceTagTester</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>4E65820BAD267B58E788048DB62870AD3610CB27</key>
+		<string>github.com:siyao1030/faceTagTester.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>faceTagTester.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>4E65820BAD267B58E788048DB62870AD3610CB27</key>
+		<string>..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>github.com:siyao1030/faceTagTester.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>4E65820BAD267B58E788048DB62870AD3610CB27</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>4E65820BAD267B58E788048DB62870AD3610CB27</string>
+			<key>IDESourceControlWCCName</key>
+			<string>faceTagTester</string>
+		</dict>
+	</array>
+</dict>
+</plist>

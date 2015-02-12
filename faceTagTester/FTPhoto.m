@@ -13,6 +13,7 @@
 @dynamic assetURLString;
 @dynamic people;
 @dynamic photoAsset;
+@dynamic groups;
 
 
 -(id)initWithPhotoAsset:(PHAsset *)asset {

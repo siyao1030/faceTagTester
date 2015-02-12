@@ -11,12 +11,12 @@
 		9F5147911A8A87050089EAD1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147901A8A87050089EAD1 /* main.m */; };
 		9F5147941A8A87050089EAD1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147931A8A87050089EAD1 /* AppDelegate.m */; };
 		9F5147971A8A87050089EAD1 /* faceTagTester.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147951A8A87050089EAD1 /* faceTagTester.xcdatamodeld */; };
-		9F51479A1A8A87050089EAD1 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147991A8A87050089EAD1 /* ViewController.m */; };
+		9F51479A1A8A87050089EAD1 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147991A8A87050089EAD1 /* ViewController.mm */; };
 		9F51479D1A8A87050089EAD1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F51479B1A8A87050089EAD1 /* Main.storyboard */; };
 		9F51479F1A8A87050089EAD1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F51479E1A8A87050089EAD1 /* Images.xcassets */; };
 		9F5147A21A8A87050089EAD1 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9F5147A01A8A87050089EAD1 /* LaunchScreen.xib */; };
 		9F5147AE1A8A87050089EAD1 /* faceTagTesterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147AD1A8A87050089EAD1 /* faceTagTesterTests.m */; };
-		9F5147B91A8A8CAA0089EAD1 /* FTPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147B81A8A8CAA0089EAD1 /* FTPerson.m */; };
+		9F5147B91A8A8CAA0089EAD1 /* FTPerson.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147B81A8A8CAA0089EAD1 /* FTPerson.mm */; };
 		9F5147BF1A8AC13C0089EAD1 /* FaceppDetection+LocalResultUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147BC1A8AC13C0089EAD1 /* FaceppDetection+LocalResultUploader.m */; };
 		9F5147C01A8AC13C0089EAD1 /* libFaceppLocalDetector.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F5147BE1A8AC13C0089EAD1 /* libFaceppLocalDetector.a */; };
 		9F51480D1A8ADED90089EAD1 /* chengyue.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 9F51480B1A8ADED90089EAD1 /* chengyue.jpeg */; };
@@ -33,7 +33,7 @@
 		9F5148341A8BE6200089EAD1 /* FaceppTrainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5148251A8BE6200089EAD1 /* FaceppTrainer.m */; };
 		9F5148351A8BE6200089EAD1 /* FaceppError.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5148281A8BE6200089EAD1 /* FaceppError.m */; };
 		9F5148361A8BE6200089EAD1 /* FaceppResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F51482A1A8BE6200089EAD1 /* FaceppResult.m */; };
-		9F5148391A8BEDB80089EAD1 /* FTDetector.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5148381A8BEDB80089EAD1 /* FTDetector.m */; };
+		9F5148391A8BEDB80089EAD1 /* FTDetector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F5148381A8BEDB80089EAD1 /* FTDetector.mm */; };
 		9F51483C1A8C1D620089EAD1 /* FTGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F51483B1A8C1D620089EAD1 /* FTGroup.m */; };
 		D1B9F9011A8B3D31002538E0 /* FTModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D1B9F9001A8B3D31002538E0 /* FTModel.m */; };
 		D1B9F9041A8B4425002538E0 /* FTPhoto.m in Sources */ = {isa = PBXBuildFile; fileRef = D1B9F9031A8B4425002538E0 /* FTPhoto.m */; };
@@ -58,7 +58,7 @@
 		9F5147931A8A87050089EAD1 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		9F5147961A8A87050089EAD1 /* faceTagTester.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = faceTagTester.xcdatamodel; sourceTree = "<group>"; };
 		9F5147981A8A87050089EAD1 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		9F5147991A8A87050089EAD1 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		9F5147991A8A87050089EAD1 /* ViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
 		9F51479C1A8A87050089EAD1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9F51479E1A8A87050089EAD1 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		9F5147A11A8A87050089EAD1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -66,7 +66,7 @@
 		9F5147AC1A8A87050089EAD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F5147AD1A8A87050089EAD1 /* faceTagTesterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = faceTagTesterTests.m; sourceTree = "<group>"; };
 		9F5147B71A8A8CAA0089EAD1 /* FTPerson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FTPerson.h; path = ../FTPerson.h; sourceTree = "<group>"; };
-		9F5147B81A8A8CAA0089EAD1 /* FTPerson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FTPerson.m; path = ../FTPerson.m; sourceTree = "<group>"; };
+		9F5147B81A8A8CAA0089EAD1 /* FTPerson.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = FTPerson.mm; path = ../FTPerson.mm; sourceTree = "<group>"; };
 		9F5147BB1A8AC13C0089EAD1 /* FaceppDetection+LocalResultUploader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "FaceppDetection+LocalResultUploader.h"; sourceTree = "<group>"; };
 		9F5147BC1A8AC13C0089EAD1 /* FaceppDetection+LocalResultUploader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "FaceppDetection+LocalResultUploader.m"; sourceTree = "<group>"; };
 		9F5147BD1A8AC13C0089EAD1 /* FaceppLocalDetector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceppLocalDetector.h; sourceTree = "<group>"; };
@@ -98,7 +98,7 @@
 		9F5148291A8BE6200089EAD1 /* FaceppResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceppResult.h; sourceTree = "<group>"; };
 		9F51482A1A8BE6200089EAD1 /* FaceppResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FaceppResult.m; sourceTree = "<group>"; };
 		9F5148371A8BEDB80089EAD1 /* FTDetector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTDetector.h; sourceTree = "<group>"; };
-		9F5148381A8BEDB80089EAD1 /* FTDetector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTDetector.m; sourceTree = "<group>"; };
+		9F5148381A8BEDB80089EAD1 /* FTDetector.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FTDetector.mm; sourceTree = "<group>"; };
 		9F51483A1A8C1D620089EAD1 /* FTGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTGroup.h; sourceTree = "<group>"; };
 		9F51483B1A8C1D620089EAD1 /* FTGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTGroup.m; sourceTree = "<group>"; };
 		AACBDE7C2E82B28619A0AF3B /* Pods-faceTagTester.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-faceTagTester.debug.xcconfig"; path = "Pods/Target Support Files/Pods-faceTagTester/Pods-faceTagTester.debug.xcconfig"; sourceTree = "<group>"; };
@@ -174,7 +174,7 @@
 				9F5147921A8A87050089EAD1 /* AppDelegate.h */,
 				9F5147931A8A87050089EAD1 /* AppDelegate.m */,
 				9F5147981A8A87050089EAD1 /* ViewController.h */,
-				9F5147991A8A87050089EAD1 /* ViewController.m */,
+				9F5147991A8A87050089EAD1 /* ViewController.mm */,
 				9F5147BA1A8AC11C0089EAD1 /* face++ */,
 				9F51479B1A8A87050089EAD1 /* Main.storyboard */,
 				9F51479E1A8A87050089EAD1 /* Images.xcassets */,
@@ -284,9 +284,9 @@
 			isa = PBXGroup;
 			children = (
 				9F5148371A8BEDB80089EAD1 /* FTDetector.h */,
-				9F5148381A8BEDB80089EAD1 /* FTDetector.m */,
+				9F5148381A8BEDB80089EAD1 /* FTDetector.mm */,
 				9F5147B71A8A8CAA0089EAD1 /* FTPerson.h */,
-				9F5147B81A8A8CAA0089EAD1 /* FTPerson.m */,
+				9F5147B81A8A8CAA0089EAD1 /* FTPerson.mm */,
 				9F51483A1A8C1D620089EAD1 /* FTGroup.h */,
 				9F51483B1A8C1D620089EAD1 /* FTGroup.m */,
 				D1B9F9021A8B4425002538E0 /* FTPhoto.h */,
@@ -438,14 +438,14 @@
 				9F51482B1A8BE6200089EAD1 /* FaceppAPI.m in Sources */,
 				9F5147941A8A87050089EAD1 /* AppDelegate.m in Sources */,
 				9F5148311A8BE6200089EAD1 /* FaceppInfo.m in Sources */,
-				9F5147B91A8A8CAA0089EAD1 /* FTPerson.m in Sources */,
+				9F5147B91A8A8CAA0089EAD1 /* FTPerson.mm in Sources */,
 				9F5148301A8BE6200089EAD1 /* FaceppGrouping.m in Sources */,
 				9F5147911A8A87050089EAD1 /* main.m in Sources */,
 				9F5148331A8BE6200089EAD1 /* FaceppRecognition.m in Sources */,
 				9F5148361A8BE6200089EAD1 /* FaceppResult.m in Sources */,
 				9F51482E1A8BE6200089EAD1 /* FaceppFaceset.m in Sources */,
 				9F5147BF1A8AC13C0089EAD1 /* FaceppDetection+LocalResultUploader.m in Sources */,
-				9F51479A1A8A87050089EAD1 /* ViewController.m in Sources */,
+				9F51479A1A8A87050089EAD1 /* ViewController.mm in Sources */,
 				9F5147971A8A87050089EAD1 /* faceTagTester.xcdatamodeld in Sources */,
 				9F51482C1A8BE6200089EAD1 /* FaceppClient.m in Sources */,
 				9F5148351A8BE6200089EAD1 /* FaceppError.m in Sources */,
@@ -455,7 +455,7 @@
 				9F51482D1A8BE6200089EAD1 /* FaceppDetection.m in Sources */,
 				D1B9F9011A8B3D31002538E0 /* FTModel.m in Sources */,
 				9F5148321A8BE6200089EAD1 /* FaceppPerson.m in Sources */,
-				9F5148391A8BEDB80089EAD1 /* FTDetector.m in Sources */,
+				9F5148391A8BEDB80089EAD1 /* FTDetector.mm in Sources */,
 				9F51483C1A8C1D620089EAD1 /* FTGroup.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -591,7 +591,9 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/faceTagTester",
 				);
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Debug;
 		};
@@ -611,6 +613,7 @@
 					"$(PROJECT_DIR)/faceTagTester",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Release;
 		};
