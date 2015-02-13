@@ -9,7 +9,6 @@
 #import "ViewController.h"
 
 @interface ViewController () <UICollectionViewDataSource, UICollectionViewDelegate>
-@property (nonatomic, strong) FaceppLocalDetector *faceDetector;
 @property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) NSMutableArray *photoColletions;
 @property (nonatomic, strong) FTGroup *testGroup;
@@ -21,27 +20,19 @@
 - (id)init {
     self = [super init];
     
-    self.collectionView = [[UICollectionView alloc] initWithFrame:[[self view] bounds]];
-    [self.collectionView setDelegate:self];
-    [self.collectionView setDataSource:self];
-    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
-    [self.collectionView setBackgroundColor:[UIColor clearColor]];
-    
-    [[self view] addSubview:self.collectionView];
-    
     self.imageManager = [[PHImageManager alloc] init];
     
     FTPerson *siyao = [FTPerson fetchWithID:@"siyao"];
     if (!siyao) {
         siyao = [[FTPerson alloc] initWithName:@"siyao"];
     }
-    [siyao trainWithImages:@[[UIImage imageNamed:@"siyao"]]];
+    [siyao trainWithImages:@[[UIImage imageNamed:@"siyao.jpeg"]]];
     
     FTPerson *chengyue = [FTPerson fetchWithID:@"chengyue"];
     if (!chengyue) {
         chengyue = [[FTPerson alloc] initWithName:@"chengyue"];
     }
-    [chengyue trainWithImages:@[[UIImage imageNamed:@"chengyue"]]];
+    [chengyue trainWithImages:@[[UIImage imageNamed:@"chengyue.jpeg"]]];
     
     self.testGroup = [FTGroup fetchWithID:@"testGroup"];
     if (!self.testGroup) {
@@ -53,6 +44,17 @@
     if ([[self.testGroup photos] count] == 0) {
         [self processImagesForGroup:self.testGroup];
     }
+    
+    [self fetchPhotos];
+    
+    self.collectionView = [[UICollectionView alloc] initWithFrame:[[self view] bounds] collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
+    [self.collectionView setDelegate:self];
+    [self.collectionView setDataSource:self];
+    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
+    [self.collectionView setBackgroundColor:[UIColor clearColor]];
+    
+    [[self view] addSubview:self.collectionView];
+    
     return self;
     
 }
@@ -78,6 +80,7 @@
                             resultHandler:^(UIImage *image, NSDictionary *info) {
                                 //only detect images that are not downloaded or screenshot
                                 NSDictionary *metaData = [image CIImage].properties;
+                                /*
                                 //use local detector to find faces
                                 FaceppResult *detectResult = [FTDetector detectAndUploadWithImage:image];
                                 NSArray *faces = [[detectResult content] objectForKey:@"face"];
@@ -86,23 +89,28 @@
                                     [faceIDs addObject:[face objectForKey:@"face_id"]];
                                 }
                                 FaceppResult *identifyResult = [[FaceppAPI recognition] identifyWithGroupId:group.id orGroupName:nil andURL:nil orImageData:nil orKeyFaceId:faceIDs async:NO];
-                                
-                                NSArray *identifiedFaces = [[identifyResult content] objectForKey:@"face"];
-                                for (NSDictionary *face in identifiedFaces) {
-                                    NSArray *candidates = [face objectForKey:@"candidate"];
-                                    if ([candidates count]) {
-                                        NSDictionary *candidate = candidates[0];
-                                        if ([[candidate objectForKey:@"confidence"] floatValue] > 80) {
-                                            FTPerson *person = [FTPerson fetchWithID:[candidate objectForKey:@"person_id"]];
-                                            if (person) {
-                                                FTPhoto *photo = [[FTPhoto alloc] initWithPhotoAsset:asset];
-                                                [person addPhoto:photo];
+                                */
+                                NSArray *detectedFaces = [FTDetector detectFacesWithImage:image];
+                                for (NSData *faceData in detectedFaces) {
+                                    FaceppResult *identifyResult = [[FaceppAPI recognition] identifyWithGroupId:group.id orGroupName:nil andURL:nil orImageData:faceData orKeyFaceId:nil async:NO];
+                                    NSArray *identifiedFaces = [[identifyResult content] objectForKey:@"face"];
+                                    for (NSDictionary *face in identifiedFaces) {
+                                        NSArray *candidates = [face objectForKey:@"candidate"];
+                                        if ([candidates count]) {
+                                            NSDictionary *candidate = candidates[0];
+                                            if ([[candidate objectForKey:@"confidence"] floatValue] > 80) {
+                                                FTPerson *person = [FTPerson fetchWithID:[candidate objectForKey:@"person_name"]];
+                                                [[FaceppAPI person] addFaceWithPersonName:person.name orPersonId:person.fppID andFaceId:@[[face objectForKey:@"face_id"]]];
+                                                if (person) {
+                                                    FTPhoto *photo = [[FTPhoto alloc] initWithPhotoAsset:asset];
+                                                    [person addPhoto:photo];
 #warning TODO-should think about range checking for groups (date, location)
-                                                [group addPhoto:photo];
+                                                    [group addPhoto:photo];
+                                                }
                                             }
                                         }
                                     }
-                                    [faceIDs addObject:[face objectForKey:@"face_id"]];
+
                                 }
                                 
                             }];

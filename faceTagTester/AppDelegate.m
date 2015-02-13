@@ -17,9 +17,36 @@
 
 @implementation AppDelegate
 
+static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+
+    BOOL shouldDelete = NO;
+    // Check database version
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSNumber *databaseVersionVal = [userDefaults objectForKey:kDatabaseVersionKey];
+    
+    NSInteger databaseVersion = [databaseVersionVal integerValue];
+    int expectedDatabaseVersion = [[[[NSBundle mainBundle] infoDictionary] objectForKey:kDatabaseVersionKey] intValue];
+    if (databaseVersion != expectedDatabaseVersion) {
+        shouldDelete = YES;
+    }
+    
+    NSString *storeName = @"FaceTagTester.sqlite";
+    NSURL *storeURL = [NSPersistentStore MR_urlForStoreName:storeName];
+    NSString *storeURLString = [storeURL path];
+    
+    NSLog(@"Current version: %li Expected version: %i\n\t Database path: %@\n\tDatabase exists? %i", (long)databaseVersion, expectedDatabaseVersion, storeURLString, [[NSFileManager defaultManager] fileExistsAtPath:storeURLString]);
+    
+    if (shouldDelete && [[NSFileManager defaultManager] fileExistsAtPath:storeURLString]) {
+        NSLog(@"Deleting database file!");
+        [[NSFileManager defaultManager] removeItemAtPath:storeURLString error:NULL];
+    }
+    
+    [userDefaults setObject:@(expectedDatabaseVersion) forKey:kDatabaseVersionKey];
+    
+    [MagicalRecord setupCoreDataStackWithStoreNamed:storeName];
     
     [FaceppAPI initWithApiKey:FACEPP_API_KEY andApiSecret:FACEPP_API_SECRET andRegion:APIServerRegionUS];
     [FaceppAPI setDebugMode:YES];

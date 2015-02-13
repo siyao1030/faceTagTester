@@ -7,13 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "FaceppLocalDetector.h"
+#import <CoreImage/CoreImage.h>
+#import <ImageIO/ImageIO.h>
+//#import "FaceppLocalDetector.h"
 
 #import "FaceppAPI.h"
 
 @interface FTDetector : NSObject
 
-+ (id)sharedDetector;
-+ (FaceppResult *)detectAndUploadWithImage:(UIImage *)image;
+//+ (id)sharedDetector;
+//+ (FaceppResult *)detectAndUploadWithImage:(UIImage *)image;
++ (NSArray *)detectFacesWithImage:(UIImage *)image;
 
 @end

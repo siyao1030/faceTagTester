@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6252" systemVersion="13F34" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
-    <entity name="Group" syncable="YES">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="14A389" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="FTGroup" representedClassName="FTGroup" syncable="YES">
         <attribute name="endDate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="fppID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="startDate" optional="YES" attributeType="Date" syncable="YES"/>
-        <relationship name="people" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Person" inverseName="groups" inverseEntity="Person" syncable="YES"/>
-        <relationship name="photos" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Photo" inverseName="groups" inverseEntity="Photo" syncable="YES"/>
+        <relationship name="people" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTPerson" inverseName="groups" inverseEntity="FTPerson" syncable="YES"/>
+        <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTPhoto" inverseName="groups" inverseEntity="FTPhoto" syncable="YES"/>
     </entity>
-    <entity name="Person" syncable="YES">
+    <entity name="FTPerson" representedClassName="FTPerson" syncable="YES">
         <attribute name="fppID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="groups" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Group" inverseName="people" inverseEntity="Group" syncable="YES"/>
-        <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="people" inverseEntity="Photo" syncable="YES"/>
+        <relationship name="groups" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTGroup" inverseName="people" inverseEntity="FTGroup" syncable="YES"/>
+        <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTPhoto" inverseName="people" inverseEntity="FTPhoto" syncable="YES"/>
     </entity>
-    <entity name="Photo" syncable="YES">
+    <entity name="FTPhoto" representedClassName="FTPhoto" syncable="YES">
         <attribute name="assetURLString" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="photoAsset" optional="YES" attributeType="Transformable" syncable="YES"/>
-        <relationship name="groups" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Group" inverseName="photos" inverseEntity="Group" syncable="YES"/>
-        <relationship name="people" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Person" inverseName="photos" inverseEntity="Person" syncable="YES"/>
+        <relationship name="groups" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTGroup" inverseName="photos" inverseEntity="FTGroup" syncable="YES"/>
+        <relationship name="people" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTPerson" inverseName="photos" inverseEntity="FTPerson" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Person" positionX="-63" positionY="-18" width="128" height="118"/>
-        <element name="Photo" positionX="-54" positionY="9" width="128" height="103"/>
-        <element name="Group" positionX="-36" positionY="36" width="128" height="30"/>
+        <element name="FTGroup" positionX="-36" positionY="36" width="128" height="148"/>
+        <element name="FTPerson" positionX="-63" positionY="-18" width="128" height="120"/>
+        <element name="FTPhoto" positionX="-54" positionY="9" width="128" height="105"/>
     </elements>
 </model>

@@ -19,10 +19,12 @@
 @dynamic endDate;
 
 - (id)initWithName:(NSString *)name andPeople:(NSArray *)people {
-    self = [super init];
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+    self = [FTGroup MR_createInContext:context];
+    
     self.name = name;
     self.id = name;
-    self.people = [NSMutableArray arrayWithArray:people];
+    self.people = [[NSMutableArray alloc] initWithArray:people];
     
     NSMutableArray *personIDs = [[NSMutableArray alloc] init];
     for (FTPerson *person in self.people) {

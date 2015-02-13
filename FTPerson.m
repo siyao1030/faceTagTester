@@ -18,7 +18,8 @@
 @dynamic groups;
 
 - (id)initWithName:(NSString *)name {
-    self = [super init];
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+    self = [FTPerson MR_createInContext:context];
     self.name = name;
     self.id = name;
     
@@ -34,12 +35,14 @@
 - (void)trainWithImages:(NSArray *)images {
     NSMutableArray *faceIDs = [[NSMutableArray alloc] init];
     for (UIImage *image in images) {
-        FaceppResult *result = [FTDetector detectAndUploadWithImage:image];
+        //FaceppResult *result = [FTDetector detectAndUploadWithImage:image];
+        FaceppResult *result = [[FaceppAPI detection] detectWithURL:nil orImageData:UIImageJPEGRepresentation(image, 0.5) mode:FaceppDetectionModeOneFace];
         if ([result success]) {
             NSString *faceID = [[result content] objectForKey:@"face_id"];
-            [faceIDs addObject:faceID];
+            if (faceID) {
+                [faceIDs addObject:faceID];
+            }
         }
-
     }
     [[FaceppAPI person] addFaceWithPersonName:self.name orPersonId:self.fppID andFaceId:faceIDs];
     [[FaceppAPI train] trainAsynchronouslyWithId:self.fppID orName:self.name andType:FaceppTrainIdentify];

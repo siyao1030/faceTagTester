@@ -17,7 +17,9 @@
 
 
 -(id)initWithPhotoAsset:(PHAsset *)asset {
-    self = [super init];
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+    self = [FTPhoto MR_createInContext:context];
+    
     self.photoAsset = asset;
     return self;
 }
