@@ -15,6 +15,12 @@
     return [[self class] MR_findAllWithPredicate:predicate inContext:localContext];
 }
 
+
++ (NSArray *)fetchAll {
+    NSManagedObjectContext *localContext = [NSManagedObjectContext MR_contextForCurrentThread];
+    return [[self class] MR_findAllInContext:localContext];
+}
+
 + (id)fetchWithID:(NSString *)modelID {
     NSManagedObjectContext *localContext = [NSManagedObjectContext MR_contextForCurrentThread];
     FTModel *model = nil;

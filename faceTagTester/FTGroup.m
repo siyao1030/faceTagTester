@@ -24,14 +24,14 @@
     
     self.name = name;
     self.id = name;
-    self.people = [[NSMutableArray alloc] initWithArray:people];
+    self.people = [NSMutableSet setWithArray:people];
     
-    NSMutableArray *personIDs = [[NSMutableArray alloc] init];
+    NSMutableArray *personNames = [[NSMutableArray alloc] init];
     for (FTPerson *person in self.people) {
-        [personIDs addObject:person.fppID];
+        [personNames addObject:person.name];
     }
     
-    FaceppResult *result = [[FaceppAPI group] createWithGroupName:name andTag:nil andPersonId:nil orPersonName:personIDs];
+    FaceppResult *result = [[FaceppAPI group] createWithGroupName:name andTag:nil andPersonId:nil orPersonName:personNames];
     
     if ([result success]) {
         self.fppID = [[result content] objectForKey:@"group_id"];
@@ -42,6 +42,14 @@
 
 - (void)addPhoto:(FTPhoto *)photo {
     [self.photos addObject:photo];
+}
+
+- (NSArray *)photoArray {
+    return [self.photos allObjects];
+}
+
+- (NSArray *)peopleArray {
+    return [self.people allObjects];
 }
 
 @end

@@ -26,13 +26,11 @@
     if (!siyao) {
         siyao = [[FTPerson alloc] initWithName:@"siyao"];
     }
-    [siyao trainWithImages:@[[UIImage imageNamed:@"siyao.jpeg"]]];
     
     FTPerson *chengyue = [FTPerson fetchWithID:@"chengyue"];
     if (!chengyue) {
         chengyue = [[FTPerson alloc] initWithName:@"chengyue"];
     }
-    [chengyue trainWithImages:@[[UIImage imageNamed:@"chengyue.jpeg"]]];
     
     self.testGroup = [FTGroup fetchWithID:@"testGroup"];
     if (!self.testGroup) {
@@ -41,6 +39,11 @@
         [self.testGroup setEndDate:[NSDate date]];
     }
     
+    [siyao trainWithImages:@[[UIImage imageNamed:@"siyao-s.jpg"]]];
+    [chengyue trainWithImages:@[[UIImage imageNamed:@"chengyue-s.jpg"]]];
+    [[FaceppAPI train] trainAsynchronouslyWithId:self.testGroup.fppID orName:self.testGroup.name andType:FaceppTrainIdentify];
+
+
     if ([[self.testGroup photos] count] == 0) {
         [self processImagesForGroup:self.testGroup];
     }
@@ -92,7 +95,7 @@
                                 */
                                 NSArray *detectedFaces = [FTDetector detectFacesWithImage:image];
                                 for (NSData *faceData in detectedFaces) {
-                                    FaceppResult *identifyResult = [[FaceppAPI recognition] identifyWithGroupId:group.id orGroupName:nil andURL:nil orImageData:faceData orKeyFaceId:nil async:NO];
+                                    FaceppResult *identifyResult = [[FaceppAPI recognition] identifyWithGroupId:group.fppID orGroupName:nil andURL:nil orImageData:faceData orKeyFaceId:nil async:NO];
                                     NSArray *identifiedFaces = [[identifyResult content] objectForKey:@"face"];
                                     for (NSDictionary *face in identifiedFaces) {
                                         NSArray *candidates = [face objectForKey:@"candidate"];
@@ -140,8 +143,12 @@
 
 - (void)fetchPhotos {
     self.photoColletions = [[NSMutableArray alloc] init];
-    for (FTPerson *person in [self.testGroup people]) {
-        NSArray *collection = [FTPhoto fetchWithPredicate:[NSPredicate predicateWithBlock:^BOOL(FTPhoto *evaluatedObject, NSDictionary *bindings) {
+    NSArray *photos = [FTPhoto fetchAll];
+    for (FTPerson *person in [self.testGroup peopleArray]) {
+        /*NSArray *collection = [FTPhoto fetchWithPredicate:[NSPredicate predicateWithBlock:^BOOL(FTPhoto *evaluatedObject, NSDictionary *bindings) {
+            return [[evaluatedObject people] containsObject:person];
+        }]];*/
+        NSArray *collection = [photos filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(FTPhoto *evaluatedObject, NSDictionary *bindings) {
             return [[evaluatedObject people] containsObject:person];
         }]];
         [self.photoColletions addObject:collection];
@@ -184,6 +191,7 @@
     return cell;
 }
 
+/*
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
     if (kind == UICollectionElementKindSectionHeader) {
@@ -195,8 +203,8 @@
         }
         
         UILabel *label=[[UILabel alloc] initWithFrame:CGRectMake(0, 0, [self.view bounds].size.width, 44)];
-        FTPerson * person = [[self.testGroup people] objectAtIndex:indexPath.section];
-        label.text=[NSString stringWithFormat:@"%@", person.name];
+        FTPerson *person = [[self.testGroup peopleArray] objectAtIndex:indexPath.section];
+        label.text = [NSString stringWithFormat:@"%@", person.name];
         [reusableview addSubview:label];
         return reusableview;
     }
@@ -207,5 +215,6 @@
     CGSize headerSize = CGSizeMake([self.view bounds].size.width, 44);
     return headerSize;
 }
+ */
 
 @end
