@@ -17,12 +17,11 @@
 @property (nonatomic, strong) NSString *id;
 @property (nonatomic, strong) NSString *fppID;
 @property (nonatomic, strong) NSString *name;
-@property (nonatomic, strong) NSMutableArray *photos;
-@property (nonatomic, strong) NSArray *initialImages;
-@property (nonatomic, strong) NSSet *groups;
+@property (nonatomic, strong) NSMutableSet *photos;
+@property (nonatomic, strong) NSMutableSet *groups;
 
 - (id)initWithName:(NSString *)name;
-- (void)trainWithImages:(NSArray *)images;
+- (void)addTrainingImages:(NSArray *)images;
 - (void)addPhoto:(FTPhoto *)photo;
 
 @end

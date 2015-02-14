@@ -14,6 +14,7 @@
 @dynamic people;
 @dynamic photoAsset;
 @dynamic groups;
+@dynamic faceIDs;
 
 
 -(id)initWithPhotoAsset:(PHAsset *)asset {

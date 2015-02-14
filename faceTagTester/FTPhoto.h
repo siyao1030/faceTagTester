@@ -14,7 +14,8 @@
 @property (nonatomic, strong) NSString *assetURLString;
 @property (nonatomic, retain) NSSet *people;
 @property (nonatomic, strong) PHAsset *photoAsset;
-@property (nonatomic, strong) NSSet *groups;
+@property (nonatomic, strong) NSMutableSet *groups;
+@property (nonatomic, strong) NSMutableSet *faceIDs;
 
 -(id)initWithPhotoAsset:(PHAsset *)asset;
 

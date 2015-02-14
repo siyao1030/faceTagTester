@@ -14,7 +14,6 @@
 @dynamic fppID;
 @dynamic name;
 @dynamic photos;
-@dynamic initialImages;
 @dynamic groups;
 
 - (id)initWithName:(NSString *)name {
@@ -28,28 +27,30 @@
     if ([result success]) {
         self.fppID = [[result content] objectForKey:@"person_id"];
     }
+    
+    [context MR_saveOnlySelfAndWait];
 
     return self;
 }
 
-- (void)trainWithImages:(NSArray *)images {
+- (void)addTrainingImages:(NSArray *)images {
     NSMutableArray *faceIDs = [[NSMutableArray alloc] init];
     for (UIImage *image in images) {
         //FaceppResult *result = [FTDetector detectAndUploadWithImage:image];
         FaceppResult *result = [[FaceppAPI detection] detectWithURL:nil orImageData:UIImageJPEGRepresentation(image, 0.5) mode:FaceppDetectionModeOneFace];
         if ([result success]) {
-            NSString *faceID = [[result content] objectForKey:@"face_id"];
-            if (faceID) {
+            NSArray *faces = [[result content] objectForKey:@"face"];
+            if ([faces count]) {
+                NSString *faceID = [[faces objectAtIndex:0] objectForKey:@"face_id"];
                 [faceIDs addObject:faceID];
             }
         }
     }
     [[FaceppAPI person] addFaceWithPersonName:self.name orPersonId:self.fppID andFaceId:faceIDs];
-    [[FaceppAPI train] trainAsynchronouslyWithId:self.fppID orName:self.name andType:FaceppTrainIdentify];
 }
 
 - (void)addPhoto:(FTPhoto *)photo {
-    
+    [self.photos addObject:photo];
 }
 
 @end

@@ -37,6 +37,7 @@
         self.fppID = [[result content] objectForKey:@"group_id"];
     }
     
+    [context MR_saveOnlySelfAndWait];
     return self;
 }
 

@@ -38,6 +38,8 @@
 		9F5148401A8D32880089EAD1 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F51483F1A8D32880089EAD1 /* ImageIO.framework */; };
 		D1B9F9011A8B3D31002538E0 /* FTModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D1B9F9001A8B3D31002538E0 /* FTModel.m */; };
 		D1B9F9041A8B4425002538E0 /* FTPhoto.m in Sources */ = {isa = PBXBuildFile; fileRef = D1B9F9031A8B4425002538E0 /* FTPhoto.m */; };
+		D1B9F9071A8DD8A6002538E0 /* chengyue-s.jpg in Resources */ = {isa = PBXBuildFile; fileRef = D1B9F9051A8DD8A6002538E0 /* chengyue-s.jpg */; };
+		D1B9F9081A8DD8A8002538E0 /* siyao-s.jpg in Resources */ = {isa = PBXBuildFile; fileRef = D1B9F9061A8DD8A6002538E0 /* siyao-s.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,6 +110,8 @@
 		D1B9F9001A8B3D31002538E0 /* FTModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTModel.m; sourceTree = "<group>"; };
 		D1B9F9021A8B4425002538E0 /* FTPhoto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTPhoto.h; sourceTree = "<group>"; };
 		D1B9F9031A8B4425002538E0 /* FTPhoto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTPhoto.m; sourceTree = "<group>"; };
+		D1B9F9051A8DD8A6002538E0 /* chengyue-s.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "chengyue-s.jpg"; sourceTree = "<group>"; };
+		D1B9F9061A8DD8A6002538E0 /* siyao-s.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "siyao-s.jpg"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -179,6 +183,8 @@
 				9F5147931A8A87050089EAD1 /* AppDelegate.m */,
 				9F5147981A8A87050089EAD1 /* ViewController.h */,
 				9F5147991A8A87050089EAD1 /* ViewController.m */,
+				D1B9F9051A8DD8A6002538E0 /* chengyue-s.jpg */,
+				D1B9F9061A8DD8A6002538E0 /* siyao-s.jpg */,
 				9F5147BA1A8AC11C0089EAD1 /* face++ */,
 				9F51479B1A8A87050089EAD1 /* Main.storyboard */,
 				9F51479E1A8A87050089EAD1 /* Images.xcassets */,
@@ -383,8 +389,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				9F51479D1A8A87050089EAD1 /* Main.storyboard in Resources */,
+				D1B9F9071A8DD8A6002538E0 /* chengyue-s.jpg in Resources */,
 				9F51480D1A8ADED90089EAD1 /* chengyue.jpeg in Resources */,
 				9F5147A21A8A87050089EAD1 /* LaunchScreen.xib in Resources */,
+				D1B9F9081A8DD8A8002538E0 /* siyao-s.jpg in Resources */,
 				9F51480E1A8ADEDA0089EAD1 /* siyao.jpeg in Resources */,
 				9F51479F1A8A87050089EAD1 /* Images.xcassets in Resources */,
 			);
