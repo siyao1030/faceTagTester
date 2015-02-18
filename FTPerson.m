@@ -7,6 +7,7 @@
 //
 
 #import "FTPerson.h"
+#import "FTPhoto.h"
 
 @implementation FTPerson
 

@@ -8,8 +8,8 @@
 
 #import "FTModel.h"
 #import <Photos/Photos.h>
+#import "FTPerson.h"
 
-@class FTPerson;
 @class FTGroup;
 
 @interface FTPhoto : FTModel
@@ -19,6 +19,7 @@
 @property (nonatomic, strong) PHAsset *photoAsset;
 @property (nonatomic, strong) NSMutableSet *groups;
 @property (nonatomic, strong) NSMutableSet *faceIDs;
+@property (nonatomic, readonly) NSString *peopleNamesString;
 
 -(id)initWithPhotoAsset:(PHAsset *)asset;
 -(void)addPerson:(FTPerson *)person;

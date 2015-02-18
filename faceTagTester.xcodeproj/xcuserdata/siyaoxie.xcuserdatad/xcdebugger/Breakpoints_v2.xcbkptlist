@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "faceTagTester/ViewController.m"
-            timestampString = "445560006.108459"
+            timestampString = "445990666.050653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "32"
-            endingLineNumber = "32"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
             landmarkName = "-init"
             landmarkType = "5">
          </BreakpointContent>

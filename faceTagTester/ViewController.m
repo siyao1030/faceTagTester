@@ -8,11 +8,15 @@
 
 #import "ViewController.h"
 
-@interface ViewController () <UICollectionViewDataSource, UICollectionViewDelegate>
+@interface ViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
 @property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) NSMutableArray *photoColletions;
 @property (nonatomic, strong) FTGroup *testGroup;
 @property (nonatomic, strong) PHImageManager *imageManager;
+@property (nonatomic, strong) NSFetchedResultsController *frc;
+@property (nonatomic, strong) NSMutableArray *sectionChanges;
+@property (nonatomic, strong) NSMutableArray *itemChanges;
+
 @end
 
 @implementation ViewController
@@ -57,12 +61,40 @@
                 } afterDelay:2.0];
             }
     } else {
-        [self.testGroup setStartDate:[NSDate dateWithTimeIntervalSinceNow:-1.5*24*60*60]];
-        [self.testGroup setEndDate:[NSDate dateWithTimeIntervalSinceNow:-1*24*60*60]];
+        [self.testGroup setStartDate:[NSDate dateWithTimeIntervalSinceNow:-2.5*24*60*60]];
+        [self.testGroup setEndDate:[NSDate dateWithTimeIntervalSinceNow:-2*24*60*60]];
         [self processImagesForGroup:self.testGroup];
     }
+    //option 1: create a frc for each person
+    /*
+    for (FTPerson *person in [self.testGroup peopleArray]) {
+        NSFetchRequest *frcRequest = [[NSFetchRequest alloc] init];
+        NSPredicate *fetchPredicate = [NSPredicate predicateWithBlock:^BOOL(FTPhoto *photo, NSDictionary *bindings) {
+            return [[photo people] containsObject:person] && [[photo groups] containsObject:self.testGroup];
+        }];
+        NSSortDescriptor* dateDescriptor = [[NSSortDescriptor alloc] initWithKey:@"creationDate" ascending:NO];
+        [frcRequest setSortDescriptors:@[dateDescriptor]];
+        [frcRequest setEntity:[FTPhoto entity]];
+        [frcRequest setPredicate:fetchPredicate];
+        
+        NSFetchedResultsController *frc = [[NSFetchedResultsController alloc] initWithFetchRequest:frcRequest managedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread] sectionNameKeyPath:person.name cacheName:nil];
+        [frc setDelegate:self];
+        [frc performFetch:NULL];
+    }*/
     
-    [self fetchPhotos];
+    //option 2: use FTPhoto's peopleNames
+    NSFetchRequest *frcRequest = [[NSFetchRequest alloc] init];
+    NSPredicate *fetchPredicate = [NSPredicate predicateWithFormat:@"%@ IN groups", self.testGroup];
+    NSSortDescriptor* dateDescriptor = [[NSSortDescriptor alloc] initWithKey:@"photoAsset.creationDate" ascending:NO];
+    [frcRequest setSortDescriptors:@[dateDescriptor]];
+    [frcRequest setEntity:[FTPhoto entity]];
+    [frcRequest setPredicate:fetchPredicate];
+    [frcRequest setFetchBatchSize:20];
+
+    
+    self.frc = [[NSFetchedResultsController alloc] initWithFetchRequest:frcRequest managedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread] sectionNameKeyPath:@"peopleNamesString" cacheName:nil];
+    [self.frc setDelegate:self];
+    //[self fetchPhotos];
 
 
     return self;
@@ -157,6 +189,11 @@
         }];
 
     }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self fetchPhotos];
+        //[self.frc performFetch:NULL];
+    });
+
     
     
 }
@@ -217,16 +254,20 @@
 
 #pragma mark - UICollectionView Datasource
 - (NSInteger)collectionView:(UICollectionView *)view numberOfItemsInSection:(NSInteger)section {
+    //id <NSFetchedResultsSectionInfo> sectionInfo = [self.frc sections][section];
+    //return [sectionInfo numberOfObjects];
     return [[self.photoColletions objectAtIndex:section] count];
 }
 
 - (NSInteger)numberOfSectionsInCollectionView: (UICollectionView *)collectionView {
+    //return [[self.frc sections] count];
     return [[self.testGroup people] count];
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
     FTPhoto *photo = [[self.photoColletions objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+    //FTPhoto *photo = [self.frc objectAtIndexPath:indexPath];
     
     PHImageRequestOptions *requestOptions = [[PHImageRequestOptions alloc] init];
     [requestOptions setSynchronous:NO];
@@ -269,5 +310,90 @@
     return headerSize;
 }
  */
+
+
+#pragma mark - NSFetchedResultsControllerDelegate
+
+- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
+    self.sectionChanges = [[NSMutableArray alloc] init];
+    self.itemChanges = [[NSMutableArray alloc] init];
+}
+
+- (void)controller:(NSFetchedResultsController *)controller
+  didChangeSection:(id <NSFetchedResultsSectionInfo>)sectionInfo
+           atIndex:(NSUInteger)sectionIndex
+     forChangeType:(NSFetchedResultsChangeType)type {
+    NSMutableDictionary *change = [[NSMutableDictionary alloc] init];
+    change[@(type)] = @(sectionIndex);
+    [self.sectionChanges addObject:change];
+}
+
+- (void)controller:(NSFetchedResultsController *)controller
+   didChangeObject:(id)anObject
+       atIndexPath:(NSIndexPath *)indexPath
+     forChangeType:(NSFetchedResultsChangeType)type
+      newIndexPath:(NSIndexPath *)newIndexPath {
+    NSMutableDictionary *change = [[NSMutableDictionary alloc] init];
+    switch(type) {
+        case NSFetchedResultsChangeInsert:
+            change[@(type)] = newIndexPath;
+            break;
+        case NSFetchedResultsChangeDelete:
+            change[@(type)] = indexPath;
+            break;
+        case NSFetchedResultsChangeUpdate:
+            change[@(type)] = indexPath;
+            break;
+        case NSFetchedResultsChangeMove:
+            change[@(type)] = @[indexPath, newIndexPath];
+            break;
+    }
+    [self.itemChanges addObject:change];
+}
+
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    [self.collectionView reloadData];
+    [self.collectionView performBatchUpdates:^{
+        for (NSDictionary *change in self.sectionChanges) {
+            [change enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+                NSFetchedResultsChangeType type = [key unsignedIntegerValue];
+                switch(type) {
+                    case NSFetchedResultsChangeInsert:
+                        [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:[obj unsignedIntegerValue]]];
+                        break;
+                    case NSFetchedResultsChangeDelete:
+                        [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:[obj unsignedIntegerValue]]];
+                        break;
+                    case NSFetchedResultsChangeMove:
+                    case NSFetchedResultsChangeUpdate:
+                        break;
+                }
+            }];
+        }
+        for (NSDictionary *change in self.itemChanges) {
+            [change enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+                NSFetchedResultsChangeType type = [key unsignedIntegerValue];
+                switch(type) {
+                    case NSFetchedResultsChangeInsert:
+                        [self.collectionView insertItemsAtIndexPaths:@[obj]];
+                        break;
+                    case NSFetchedResultsChangeDelete:
+                        [self.collectionView deleteItemsAtIndexPaths:@[obj]];
+                        break;
+                    case NSFetchedResultsChangeUpdate:
+                        [self.collectionView reloadItemsAtIndexPaths:@[obj]];
+                        break;
+                    case NSFetchedResultsChangeMove:
+                        [self.collectionView moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
+                        break;
+                }
+            }];
+        }
+    } completion:^(BOOL finished) {
+        self.sectionChanges = nil;
+        self.itemChanges = nil;
+    }];
+}
+
 
 @end

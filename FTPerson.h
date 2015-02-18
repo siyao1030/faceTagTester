@@ -8,9 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import "FTModel.h"
-#import "FTPhoto.h"
 #import "FaceppAPI.h"
 #import "FTDetector.h"
+
+@class FTPhoto;
 
 @interface FTPerson : FTModel
 

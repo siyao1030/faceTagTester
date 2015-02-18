@@ -18,13 +18,14 @@
     </entity>
     <entity name="FTPhoto" representedClassName="FTPhoto" syncable="YES">
         <attribute name="assetURLString" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="peopleNamesString" optional="YES" transient="YES" attributeType="String" syncable="YES"/>
         <attribute name="photoAsset" optional="YES" attributeType="Transformable" syncable="YES"/>
         <relationship name="groups" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTGroup" inverseName="photos" inverseEntity="FTGroup" syncable="YES"/>
         <relationship name="people" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTPerson" inverseName="photos" inverseEntity="FTPerson" syncable="YES"/>
     </entity>
     <elements>
-        <element name="FTGroup" positionX="-36" positionY="36" width="128" height="148"/>
-        <element name="FTPerson" positionX="-63" positionY="-18" width="128" height="120"/>
-        <element name="FTPhoto" positionX="-54" positionY="9" width="128" height="105"/>
+        <element name="FTGroup" positionX="-137" positionY="-67" width="128" height="148"/>
+        <element name="FTPerson" positionX="-450" positionY="24" width="128" height="120"/>
+        <element name="FTPhoto" positionX="124" positionY="39" width="128" height="118"/>
     </elements>
 </model>
