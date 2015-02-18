@@ -12,6 +12,7 @@
 #import "FTPerson.h"
 #import "FTPhoto.h"
 #import "FTGroup.h"
+#import "FTAdditions.h"
 
 @interface ViewController : UIViewController
 

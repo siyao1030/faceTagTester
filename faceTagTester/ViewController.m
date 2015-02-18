@@ -26,42 +26,45 @@
     [self.collectionView setDelegate:self];
     [self.collectionView setDataSource:self];
     [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
-    [self.collectionView setBackgroundColor:[UIColor clearColor]];
+    [self.collectionView setBackgroundColor:[UIColor whiteColor]];
     
     [[self view] addSubview:self.collectionView];
     
-    FTPerson *siyao = [FTPerson fetchWithID:@"siyao"];
+    __block FTPerson *siyao = [FTPerson fetchWithID:@"siyao"];
     if (!siyao) {
-        siyao = [[FTPerson alloc] initWithName:@"siyao"];
-        [siyao addTrainingImages:@[[UIImage imageNamed:@"siyao-s.jpg"]]];
+            siyao = [[FTPerson alloc] initWithName:@"siyao"];
+            [siyao addTrainingImages:@[[UIImage imageNamed:@"siyao-s.jpg"]]];
     }
     
-    FTPerson *chengyue = [FTPerson fetchWithID:@"chengyue"];
+    __block FTPerson *chengyue = [FTPerson fetchWithID:@"chengyue"];
     if (!chengyue) {
-        chengyue = [[FTPerson alloc] initWithName:@"chengyue"];
-        [chengyue addTrainingImages:@[[UIImage imageNamed:@"chengyue-s.jpg"]]];
+            chengyue = [[FTPerson alloc] initWithName:@"chengyue"];
+            [chengyue addTrainingImages:@[[UIImage imageNamed:@"chengyue-s.jpg"]]];
     }
     
     self.testGroup = [FTGroup fetchWithID:@"testGroup"];
     if (!self.testGroup) {
-        self.testGroup = [[FTGroup alloc] initWithName:@"testGroup" andPeople:@[siyao, chengyue]];
-    }
-    [self.testGroup setStartDate:[NSDate dateWithTimeIntervalSinceNow:-7*24*60*60]];
-    [self.testGroup setEndDate:[NSDate date]];
-    
-    FaceppResult *result = [[FaceppAPI train] trainAsynchronouslyWithId:self.testGroup.fppID orName:self.testGroup.name andType:FaceppTrainIdentify];
-    NSString *sessionID = [[result content] objectForKey:@"session_id"];
-    if (sessionID) {
-        [self getResultForSession:sessionID completion:^(FaceppResult *result) {
-            if ([result success]) {
-                if ([[self.testGroup photos] count] == 0) {
-                    [self processImagesForGroup:self.testGroup];
-                }
-                [self fetchPhotos];
+            self.testGroup = [[FTGroup alloc] initWithName:@"testGroup" andPeople:@[siyao, chengyue] andStartDate:[NSDate dateWithTimeIntervalSinceNow:-2*24*60*60] andEndDate:[NSDate dateWithTimeIntervalSinceNow:-1*24*60*60]];
+            FaceppResult *result = [[FaceppAPI train] trainAsynchronouslyWithId:self.testGroup.fppID orName:self.testGroup.name andType:FaceppTrainIdentify];
+            NSString *sessionID = [[result content] objectForKey:@"session_id"];
+            if (sessionID) {
+                [self getResultForSession:sessionID completion:^(FaceppResult *result) {
+                    if ([result success]) {
+                        if ([[self.testGroup photos] count] == 0) {
+                            [self processImagesForGroup:self.testGroup];
+                        }
+                    }
+                } afterDelay:2.0];
             }
-        } afterDelay:2.0];
+    } else {
+        [self.testGroup setStartDate:[NSDate dateWithTimeIntervalSinceNow:-1.5*24*60*60]];
+        [self.testGroup setEndDate:[NSDate dateWithTimeIntervalSinceNow:-1*24*60*60]];
+        [self processImagesForGroup:self.testGroup];
     }
     
+    [self fetchPhotos];
+
+
     return self;
     
 }
@@ -84,6 +87,9 @@
         
         //get image for image assets
         [result enumerateObjectsUsingBlock:^(PHAsset *asset, NSUInteger idx, BOOL *stop) {
+            if ([[asset creationDate] compare:group.endDate] == NSOrderedDescending) {
+                return;
+            }
             if ([[asset creationDate] compare:group.startDate] == NSOrderedAscending) {
                 *stop = YES;
                 return;
@@ -92,52 +98,61 @@
                               contentMode:PHImageContentModeAspectFit
                                   options:requestOptions
                             resultHandler:^(UIImage *image, NSDictionary *info) {
-                                //only detect images that are not downloaded or screenshot
-                                if ([[info objectForKey:@"PHImageFileUTIKey"] isEqualToString:@"public.png"]) {
-                                    return;
-                                }
-                                if ([[[info objectForKey:@"PHImageFileURLKey"] absoluteString] isEqualToString:@"file:///var/mobile/Media/DCIM/106APPLE/IMG_6527.JPG"]) {
-                                    NSLog(@"should have a face!");
-                                }
-                                /*
-                                //use local detector to find faces
-                                FaceppResult *detectResult = [FTDetector detectAndUploadWithImage:image];
-                                NSArray *faces = [[detectResult content] objectForKey:@"face"];
-                                NSMutableArray *faceIDs = [[NSMutableArray alloc] init];
-                                for (NSDictionary *face in faces) {
-                                    [faceIDs addObject:[face objectForKey:@"face_id"]];
-                                }
-                                FaceppResult *identifyResult = [[FaceppAPI recognition] identifyWithGroupId:group.id orGroupName:nil andURL:nil orImageData:nil orKeyFaceId:faceIDs async:NO];
-                                */
-                                
-                                
-                                //NSArray *detectedFaces = [FTDetector detectFacesWithImage:image andImageInfo:info];
-                                //for (NSData *faceData in detectedFaces) {
-                                    //FaceppResult *identifyResult = [[FaceppAPI recognition] identifyWithGroupId:group.fppID orGroupName:group.name andURL:nil orImageData:faceData orKeyFaceId:nil async:NO];
-                                NSArray *detectedFaceIDs = [FTDetector detectFaceIDsWithImage:image];
-                                if ([detectedFaceIDs count]) {
-                                    FaceppResult *identifyResult = [[FaceppAPI recognition] identifyWithGroupId:group.fppID orGroupName:group.name andURL:nil orImageData:nil orKeyFaceId:detectedFaceIDs async:NO];
+                                @autoreleasepool {
+                                    //only detect images that are not downloaded or screenshot
+                                    if ([[info objectForKey:@"PHImageFileUTIKey"] isEqualToString:@"public.png"]) {
+                                        return;
+                                    }
+                                    /*
+                                    //use local detector to find faces
+                                    FaceppResult *detectResult = [FTDetector detectAndUploadWithImage:image];
+                                    NSArray *faces = [[detectResult content] objectForKey:@"face"];
+                                    NSMutableArray *faceIDs = [[NSMutableArray alloc] init];
+                                    for (NSDictionary *face in faces) {
+                                        [faceIDs addObject:[face objectForKey:@"face_id"]];
+                                    }
+                                    FaceppResult *identifyResult = [[FaceppAPI recognition] identifyWithGroupId:group.id orGroupName:nil andURL:nil orImageData:nil orKeyFaceId:faceIDs async:NO];
+                                    */
                                     
-                                    NSArray *identifiedFaces = [[identifyResult content] objectForKey:@"face"];
-                                    for (NSDictionary *face in identifiedFaces) {
-                                        NSArray *candidates = [face objectForKey:@"candidate"];
-                                        if ([candidates count]) {
-                                            NSDictionary *candidate = candidates[0];
-                                            if ([[candidate objectForKey:@"confidence"] floatValue] > 60) {
-                                                FTPerson *person = [FTPerson fetchWithID:[candidate objectForKey:@"person_name"]];
-                                                [[FaceppAPI person] addFaceWithPersonName:person.name orPersonId:person.fppID andFaceId:@[[face objectForKey:@"face_id"]]];
-                                                if (person) {
-                                                    FTPhoto *photo = [[FTPhoto alloc] initWithPhotoAsset:asset];
-                                                    [person addPhoto:photo];
-#warning TODO-should think about range checking for groups (date, location)
-                                                    [group addPhoto:photo];
+                                    
+                                    //NSArray *detectedFaces = [FTDetector detectFacesWithImage:image andImageInfo:info];
+                                    //for (NSData *faceData in detectedFaces) {
+                                        //FaceppResult *identifyResult = [[FaceppAPI recognition] identifyWithGroupId:group.fppID orGroupName:group.name andURL:nil orImageData:faceData orKeyFaceId:nil async:NO];
+                                    NSArray *detectedFaceIDs = [FTDetector detectFaceIDsWithImage:image andImageInfo:info];
+                                    if ([detectedFaceIDs count]) {
+                                        FaceppResult *identifyResult = [[FaceppAPI recognition] identifyWithGroupId:group.fppID orGroupName:group.name andURL:nil orImageData:nil orKeyFaceId:detectedFaceIDs async:YES];
+                                        
+                                        NSString *sessionID = [[identifyResult content] objectForKey:@"session_id"];
+                                        if (sessionID) {
+                                            [self getResultForSession:sessionID completion:^(FaceppResult *result) {
+                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                                if ([result success]) {
+                                                    NSArray *identifiedFaces = [[[result content] objectForKey:@"result"] objectForKey:@"face"];
+                                                    for (NSDictionary *face in identifiedFaces) {
+                                                        NSArray *candidates = [face objectForKey:@"candidate"];
+                                                        if ([candidates count]) {
+                                                            NSDictionary *candidate = candidates[0];
+                                                            // need to adjust confidence threshold based on performance
+                                                            CGFloat confidenceThreshold = 5;
+                                                            if ([[candidate objectForKey:@"confidence"] floatValue] > confidenceThreshold) {
+                                                                    FTPerson *person = [FTPerson fetchWithID:[candidate objectForKey:@"person_name"]];
+                                                                    [[FaceppAPI person] addFaceWithPersonName:person.name orPersonId:person.fppID andFaceId:@[[face objectForKey:@"face_id"]]];
+                                                                    if (person) {
+                                                                        FTPhoto *photo = [[FTPhoto alloc] initWithPhotoAsset:asset];
+                                                                        [person addPhoto:photo];
+                                                                        [group addPhoto:photo];
+                                                                    }
+                                                                
+                                                            }
+                                                        }
+                                                    }
+                                                    
                                                 }
-                                            }
+                                                });
+                                            } afterDelay:1.0];
                                         }
                                     }
-
                                 }
-                                
                             }];
         }];
 
@@ -185,11 +200,8 @@
     self.photoColletions = [[NSMutableArray alloc] init];
     NSArray *photos = [FTPhoto fetchAll];
     for (FTPerson *person in [self.testGroup peopleArray]) {
-        /*NSArray *collection = [FTPhoto fetchWithPredicate:[NSPredicate predicateWithBlock:^BOOL(FTPhoto *evaluatedObject, NSDictionary *bindings) {
-            return [[evaluatedObject people] containsObject:person];
-        }]];*/
-        NSArray *collection = [photos filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(FTPhoto *evaluatedObject, NSDictionary *bindings) {
-            return [[evaluatedObject people] containsObject:person];
+        NSArray *collection = [photos filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(FTPhoto *photo, NSDictionary *bindings) {
+            return [[photo people] containsObject:person] && [[photo groups] containsObject:self.testGroup];
         }]];
         [self.photoColletions addObject:collection];
     }
@@ -199,7 +211,7 @@
 #pragma mark - UICollectionViewDelegateFlowLayout
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return CGSizeMake(50, 50);
+    return CGSizeMake(100, 100);
 }
 
 
@@ -220,11 +232,11 @@
     [requestOptions setSynchronous:NO];
     [requestOptions setDeliveryMode:PHImageRequestOptionsDeliveryModeFastFormat];
     
-    [self.imageManager requestImageForAsset:photo.photoAsset targetSize:CGSizeMake(50,50)
+    [self.imageManager requestImageForAsset:photo.photoAsset targetSize:CGSizeMake(100 ,100)
                                 contentMode:PHImageContentModeAspectFit
                                     options:requestOptions
                               resultHandler:^(UIImage *image, NSDictionary *info) {
-                                  UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 50, 50)];
+                                  UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
                                   [imageView setImage:image];
                                   [cell addSubview:imageView];
                               }];

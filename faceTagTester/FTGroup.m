@@ -18,13 +18,15 @@
 @dynamic startDate;
 @dynamic endDate;
 
-- (id)initWithName:(NSString *)name andPeople:(NSArray *)people {
+- (id)initWithName:(NSString *)name andPeople:(NSArray *)people andStartDate:(NSDate *)start andEndDate:(NSDate *)end {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
     self = [FTGroup MR_createInContext:context];
     
     self.name = name;
     self.id = name;
     self.people = [NSMutableSet setWithArray:people];
+    self.startDate = start;
+    self.endDate = end;
     
     NSMutableArray *personNames = [[NSMutableArray alloc] init];
     for (FTPerson *person in self.people) {
@@ -43,6 +45,7 @@
 
 - (void)addPhoto:(FTPhoto *)photo {
     [self.photos addObject:photo];
+    [photo addGroup:self];
 }
 
 - (NSArray *)photoArray {

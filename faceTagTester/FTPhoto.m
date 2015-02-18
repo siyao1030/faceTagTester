@@ -20,8 +20,16 @@
 -(id)initWithPhotoAsset:(PHAsset *)asset {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
     self = [FTPhoto MR_createInContext:context];
-    
     self.photoAsset = asset;
     return self;
 }
+
+-(void)addPerson:(FTPerson *)person {
+    [self.people addObject:person];
+}
+
+-(void)addGroup:(FTGroup *)group {
+    [self.groups addObject:group];
+}
+
 @end

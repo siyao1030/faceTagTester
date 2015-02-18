@@ -9,14 +9,19 @@
 #import "FTModel.h"
 #import <Photos/Photos.h>
 
+@class FTPerson;
+@class FTGroup;
+
 @interface FTPhoto : FTModel
 
 @property (nonatomic, strong) NSString *assetURLString;
-@property (nonatomic, retain) NSSet *people;
+@property (nonatomic, retain) NSMutableSet *people;
 @property (nonatomic, strong) PHAsset *photoAsset;
 @property (nonatomic, strong) NSMutableSet *groups;
 @property (nonatomic, strong) NSMutableSet *faceIDs;
 
 -(id)initWithPhotoAsset:(PHAsset *)asset;
+-(void)addPerson:(FTPerson *)person;
+-(void)addGroup:(FTGroup *)group;
 
 @end

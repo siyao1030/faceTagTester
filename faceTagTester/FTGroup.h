@@ -21,7 +21,7 @@
 @property (nonatomic, strong) NSDate *startDate;
 @property (nonatomic, strong) NSDate *endDate;
 
-- (id)initWithName:(NSString *)name andPeople:(NSArray *)people;
+- (id)initWithName:(NSString *)name andPeople:(NSArray *)people andStartDate:(NSDate *)start andEndDate:(NSDate *)end;
 - (void)addPhoto:(FTPhoto *)photo;
 - (NSArray *)photoArray;
 - (NSArray *)peopleArray;

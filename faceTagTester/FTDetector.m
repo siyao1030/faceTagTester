@@ -7,6 +7,7 @@
 //
 
 #import "FTDetector.h"
+#import "UIImage+FTAdditions.h"
 
 @implementation FTDetector
 
@@ -34,21 +35,28 @@
     NSUInteger bitsPerComponent = 8;
     CGContextRef context = CGBitmapContextCreate(rawData, width, height, bitsPerComponent, bytesPerRow, colorSpace, 0);
     CGContextDrawImage(context, CGRectMake(0, 0, width, height), [image CGImage]);
+    CGColorSpaceRelease(colorSpace);
     
     CGImageRef grayImageRef = CGBitmapContextCreateImage(context);
+    CGContextRelease(context);
     free(rawData);
-    return [UIImage imageWithCGImage: grayImageRef];
+    UIImage *result = [UIImage imageWithCGImage: grayImageRef];
+    CGImageRelease(grayImageRef);
+    return result;
 }
 
-+ (NSArray *)detectFaceIDsWithImage:(UIImage *)image {
++ (NSArray *)detectFaceIDsWithImage:(UIImage *)image andImageInfo:(NSDictionary *)info {
+    UIImage *rotatedImage = [image fixOrientation];
+    
+    
     int sizeLimit = 600;
-    float scale = MAX([image size].width / sizeLimit, [image size].height / sizeLimit);
+    float scale = MAX([rotatedImage size].width / sizeLimit, [rotatedImage size].height / sizeLimit);
     if (scale > 1) {
-        image = [FaceppDetection imageWithImage:image scaledToSize:
-                        CGSizeMake([image size].width/scale, [image size].height/scale)];
+        rotatedImage = [FaceppDetection imageWithImage:rotatedImage scaledToSize:
+                        CGSizeMake([rotatedImage size].width/scale, [rotatedImage size].height/scale)];
     }
     NSMutableArray *faceIDs = [[NSMutableArray alloc] init];
-    FaceppResult *result = [[FaceppAPI detection] detectWithURL:nil orImageData:UIImageJPEGRepresentation(image, 0) mode:FaceppDetectionModeNormal attribute:FaceppDetectionAttributeNone];
+    FaceppResult *result = [[FaceppAPI detection] detectWithURL:nil orImageData:UIImageJPEGRepresentation(rotatedImage, 0) mode:FaceppDetectionModeNormal attribute:FaceppDetectionAttributeNone];
     if ([result success]) {
         NSArray *faces = [[result content] objectForKey:@"face"];
         if ([faces count]) {

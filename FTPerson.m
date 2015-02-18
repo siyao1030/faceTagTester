@@ -51,6 +51,7 @@
 
 - (void)addPhoto:(FTPhoto *)photo {
     [self.photos addObject:photo];
+    [photo addPerson:self];
 }
 
 @end
