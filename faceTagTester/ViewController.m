@@ -7,8 +7,8 @@
 //
 
 #import "ViewController.h"
-#define START_DATE [NSDate dateWithTimeIntervalSinceNow:-4*24*60*60]
-#define END_DATE [NSDate dateWithTimeIntervalSinceNow:-2*24*60*60]
+#define START_DATE [NSDate dateWithTimeIntervalSinceNow:-5*24*60*60]
+#define END_DATE [NSDate dateWithTimeIntervalSinceNow:-3*24*60*60]
 
 @interface ViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
 @property (nonatomic, strong) UICollectionView *collectionView;
@@ -60,12 +60,16 @@
         if (sessionID) {
             [self getResultForSession:sessionID completion:^(FaceppResult *result) {
                 if ([result success]) {
-                    [self processImagesForGroup:self.testGroup];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self processImagesForGroup:self.testGroup];
+                    });
                 }
-            } afterDelay:2.0];
+            } afterDelay:0.5];
         }
     } else {
-        
+        [self.testGroup setStartDate:START_DATE];
+        [self.testGroup setEndDate:END_DATE];
+        [self processImagesForGroup:self.testGroup];
         
     }
     //option 1: create a frc for each person
@@ -89,7 +93,8 @@
     NSFetchRequest *frcRequest = [[NSFetchRequest alloc] init];
     NSPredicate *fetchPredicate = [NSPredicate predicateWithFormat:@"%@ IN groups", self.testGroup];
     NSSortDescriptor* dateDescriptor = [[NSSortDescriptor alloc] initWithKey:@"creationDate" ascending:NO];
-    [frcRequest setSortDescriptors:@[dateDescriptor]];
+    NSSortDescriptor* nameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"peopleNamesString" ascending:NO];
+    [frcRequest setSortDescriptors:@[nameDescriptor, dateDescriptor]];
     [frcRequest setEntity:[FTPhoto entity]];
     [frcRequest setPredicate:fetchPredicate];
     [frcRequest setFetchBatchSize:20];
@@ -98,10 +103,8 @@
     self.frc = [[NSFetchedResultsController alloc] initWithFetchRequest:frcRequest managedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread] sectionNameKeyPath:@"peopleNamesString" cacheName:nil];
     [self.frc setDelegate:self];
     [self.frc performFetch:NULL];
-
-    [self.testGroup setStartDate:START_DATE];
-    [self.testGroup setEndDate:END_DATE];
-    [self processImagesForGroup:self.testGroup];
+    
+    [self.collectionView reloadData];
 
     return self;
     
@@ -137,8 +140,8 @@
             [imageAssets addObject:asset];
         }];
         
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
         for (PHAsset *asset in imageAssets) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0) , ^(void){
                 [self.imageManager requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth,asset.pixelHeight)
                                             contentMode:PHImageContentModeAspectFit
                                                 options:requestOptions
@@ -175,21 +178,25 @@
                                                                                   }
                                                                                   [[FaceppAPI person] addFaceWithPersonName:person.name orPersonId:person.fppID andFaceId:@[[face objectForKey:@"face_id"]]];
                                                                               });
+                                                                              
+                                                                              
+                                                                              NSArray *allPhotos = [[FTPhoto class] MR_findAllInContext:[NSManagedObjectContext MR_defaultContext]];
+                                                                              NSLog(@"all photos %lu", (unsigned long)[allPhotos count]);
                                                                           }
                                                                       }
                                                                   }
                                                                   
                                                               }
                                                               
-                                                          } afterDelay:0.0];
+                                                          } afterDelay:0.5];
                                                       }
                                                   }
                                               }
                                           }];
-            });
+            
 
         }
-
+        });
     }
     
 }
@@ -229,12 +236,6 @@
 
     
     UIBarButtonItem *createGroupButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(createGroup)];
-    
-    if (![[FTPhoto fetchAll] count]) {
-        [self.testGroup setStartDate:START_DATE];
-        [self.testGroup setEndDate:END_DATE];
-        [self processImagesForGroup:self.testGroup];
-    }
     
 }
 
@@ -398,10 +399,10 @@
                 }
             }];
         }
+        [self.collectionView reloadData];
     } completion:^(BOOL finished) {
         self.sectionChanges = nil;
         self.itemChanges = nil;
-        [self.collectionView reloadData];
     }];
 }
 

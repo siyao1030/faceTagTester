@@ -20,7 +20,7 @@
     <entity name="FTPhoto" representedClassName="FTPhoto" syncable="YES">
         <attribute name="assetURLString" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="creationDate" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="peopleNamesString" optional="YES" transient="YES" attributeType="String" syncable="YES"/>
+        <attribute name="peopleNamesString" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="photoAssetIdentifier" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="groups" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTGroup" inverseName="photos" inverseEntity="FTGroup" syncable="YES"/>
         <relationship name="people" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTPerson" inverseName="photos" inverseEntity="FTPerson" syncable="YES"/>
