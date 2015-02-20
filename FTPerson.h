@@ -17,6 +17,7 @@
 
 @property (nonatomic, strong) NSString *id;
 @property (nonatomic, strong) NSString *fppID;
+@property (nonatomic, strong) NSString *objectIDString;
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSMutableSet *photos;
 @property (nonatomic, strong) NSMutableSet *groups;

@@ -85,12 +85,17 @@ static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     // Saves changes in the application's managed object context before the application terminates.
-    [self saveContext];
+    [MagicalRecord cleanUp];
 }
+
+/*
 
 #pragma mark - Core Data stack
 
-@synthesize managedObjectContext = _managedObjectContext;
+@synthesize masterContext = _masterContext;
+@synthesize mainContext = _mainContext;
+@synthesize workerContext = _workerContext;
+
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 
@@ -140,19 +145,30 @@ static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
 
 - (NSManagedObjectContext *)managedObjectContext {
     // Returns the managed object context for the application (which is already bound to the persistent store coordinator for the application.)
-    if (_managedObjectContext != nil) {
-        return _managedObjectContext;
+    if (!_masterContext || !_mainContext || !_workerContext) {
+        [self setUpManagedObjectContexts];
     }
     
-    NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
-    if (!coordinator) {
-        return nil;
+    if ([NSThread isMainThread]) {
+        return _mainContext;
+    } else {
+        return _workerContext;
     }
-    _managedObjectContext = [[NSManagedObjectContext alloc] init];
-    [_managedObjectContext setPersistentStoreCoordinator:coordinator];
-    return _managedObjectContext;
 }
 
+- (void)setUpManagedObjectContexts {
+    NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
+    if (coordinator) {
+        _masterContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        [_masterContext setPersistentStoreCoordinator:coordinator];
+        _mainContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+        _mainContext.parentContext = _masterContext;
+        
+        _workerContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        _workerContext.parentContext = _mainContext;
+    }
+
+}
 #pragma mark - Core Data Saving support
 
 - (void)saveContext {
@@ -166,6 +182,6 @@ static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
             abort();
         }
     }
-}
+}*/
 
 @end

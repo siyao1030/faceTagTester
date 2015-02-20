@@ -60,6 +60,7 @@
 		9F4D032F1A93C85A00806AF5 /* UIImage+FTAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+FTAdditions.m"; sourceTree = "<group>"; };
 		9F4D03311A94121F00806AF5 /* FTAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTAdditions.h; sourceTree = "<group>"; };
 		9F4D03321A94121F00806AF5 /* FTAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTAdditions.m; sourceTree = "<group>"; };
+		9F4D03351A9571A800806AF5 /* faceTagTester-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "faceTagTester-Prefix.pch"; sourceTree = "<group>"; };
 		9F51478B1A8A87050089EAD1 /* faceTagTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = faceTagTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F51478F1A8A87050089EAD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F5147901A8A87050089EAD1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -214,6 +215,7 @@
 		9F51478E1A8A87050089EAD1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				9F4D03351A9571A800806AF5 /* faceTagTester-Prefix.pch */,
 				9F51478F1A8A87050089EAD1 /* Info.plist */,
 				9F5147901A8A87050089EAD1 /* main.m */,
 			);
@@ -615,6 +617,8 @@
 				CLANG_CXX_LIBRARY = "compiler-default";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "faceTagTester/faceTagTester-Prefix.pch";
 				INFOPLIST_FILE = faceTagTester/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
@@ -636,6 +640,8 @@
 				CLANG_CXX_LIBRARY = "compiler-default";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "faceTagTester/faceTagTester-Prefix.pch";
 				INFOPLIST_FILE = faceTagTester/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (

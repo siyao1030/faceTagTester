@@ -13,6 +13,7 @@
 
 @dynamic id;
 @dynamic fppID;
+@dynamic objectIDString;
 @dynamic name;
 @dynamic photos;
 @dynamic groups;
@@ -22,15 +23,14 @@
     self = [FTPerson MR_createInContext:context];
     self.name = name;
     self.id = name;
-    
+    self.objectIDString = [[self.objectID URIRepresentation] absoluteString];
     FaceppResult *result = [[FaceppAPI person] createWithPersonName:self.name andFaceId:nil andTag:nil andGroupId:nil orGroupName:nil];
     
     if ([result success]) {
         self.fppID = [[result content] objectForKey:@"person_id"];
     }
     
-    [context MR_saveOnlySelfAndWait];
-
+    [context MR_saveToPersistentStoreAndWait];
     return self;
 }
 

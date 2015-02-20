@@ -12,5 +12,6 @@
 @interface FTAdditions : NSObject
 
 dispatch_queue_t CoreDataWriteQueue(void);
+dispatch_queue_t BackgroundQueue(void);
 
 @end

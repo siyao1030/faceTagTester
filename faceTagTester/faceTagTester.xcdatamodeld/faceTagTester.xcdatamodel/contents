@@ -13,19 +13,21 @@
         <attribute name="fppID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="objectIDString" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="groups" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTGroup" inverseName="people" inverseEntity="FTGroup" syncable="YES"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTPhoto" inverseName="people" inverseEntity="FTPhoto" syncable="YES"/>
     </entity>
     <entity name="FTPhoto" representedClassName="FTPhoto" syncable="YES">
         <attribute name="assetURLString" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="creationDate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="peopleNamesString" optional="YES" transient="YES" attributeType="String" syncable="YES"/>
-        <attribute name="photoAsset" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="photoAssetIdentifier" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="groups" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTGroup" inverseName="photos" inverseEntity="FTGroup" syncable="YES"/>
         <relationship name="people" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTPerson" inverseName="photos" inverseEntity="FTPerson" syncable="YES"/>
     </entity>
     <elements>
         <element name="FTGroup" positionX="-137" positionY="-67" width="128" height="148"/>
-        <element name="FTPerson" positionX="-450" positionY="24" width="128" height="120"/>
-        <element name="FTPhoto" positionX="124" positionY="39" width="128" height="118"/>
+        <element name="FTPerson" positionX="-450" positionY="24" width="128" height="133"/>
+        <element name="FTPhoto" positionX="124" positionY="39" width="128" height="133"/>
     </elements>
 </model>

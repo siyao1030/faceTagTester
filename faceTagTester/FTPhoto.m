@@ -12,15 +12,16 @@
 
 @dynamic assetURLString;
 @dynamic people;
-@dynamic photoAsset;
+@dynamic photoAssetIdentifier;
 @dynamic groups;
 @dynamic faceIDs;
+@dynamic creationDate;
 
 
 -(id)initWithPhotoAsset:(PHAsset *)asset {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
     self = [FTPhoto MR_createInContext:context];
-    self.photoAsset = asset;
+    self.photoAssetIdentifier = asset.localIdentifier;
     return self;
 }
 

@@ -23,4 +23,13 @@ dispatch_queue_t CoreDataWriteQueue(void) {
 }
 
 
+dispatch_queue_t BackgroundQueue(void) {
+    static dispatch_queue_t sDispatchQueue = NULL;
+    if (!sDispatchQueue) {
+        sDispatchQueue = dispatch_queue_create("siyaoxie.faceTagTester.background", NULL);
+        dispatch_queue_set_specific(sDispatchQueue, __ptQueueIdentifier, (void *)CFSTR("ftCoreDataWriteQueue"), NULL);
+    }
+    return sDispatchQueue;
+}
+
 @end
