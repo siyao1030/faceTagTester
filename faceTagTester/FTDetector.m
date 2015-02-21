@@ -55,7 +55,8 @@
         rotatedImage = [FaceppDetection imageWithImage:rotatedImage scaledToSize:
                         CGSizeMake([rotatedImage size].width/scale, [rotatedImage size].height/scale)];
     }
-    NSMutableArray *faceIDs = [[NSMutableArray alloc] init];
+    __block NSMutableArray *faceIDs = [[NSMutableArray alloc] init];
+
     FaceppResult *result = [[FaceppAPI detection] detectWithURL:nil orImageData:UIImageJPEGRepresentation(rotatedImage, 0) mode:FaceppDetectionModeNormal attribute:FaceppDetectionAttributeNone];
     if ([result success]) {
         NSArray *faces = [[result content] objectForKey:@"face"];

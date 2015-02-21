@@ -11,7 +11,7 @@
 #import "FaceppAPI.h"
 #import "FTPerson.h"
 #import "FTGroup.h"
-#import "ViewController.h"
+#import "FTGroupPhotosViewController.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 

@@ -51,7 +51,7 @@ static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
     [FaceppAPI initWithApiKey:FACEPP_API_KEY andApiSecret:FACEPP_API_SECRET andRegion:APIServerRegionUS];
     [FaceppAPI setDebugMode:YES];
     
-    ViewController *mainView = [[ViewController alloc] init];
+    FTGroupPhotosViewController *mainView = [[FTGroupPhotosViewController alloc] init];
     [[mainView navigationItem] setTitle:@"Photos"];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:mainView];
     

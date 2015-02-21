@@ -13,8 +13,9 @@
 #import "FTPhoto.h"
 #import "FTGroup.h"
 #import "FTAdditions.h"
+#import "FTGroupManagingViewController.h"
 
-@interface ViewController : UIViewController
+@interface FTGroupPhotosViewController : UIViewController
 
 @end
 

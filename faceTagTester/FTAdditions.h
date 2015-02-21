@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "UIImage+FTAdditions.h"
+#import "UIColor+FTAdditions.h"
 
 @interface FTAdditions : NSObject
 

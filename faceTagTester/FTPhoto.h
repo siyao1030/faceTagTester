@@ -19,7 +19,7 @@
 @property (nonatomic, strong) NSString *photoAssetIdentifier;
 @property (nonatomic, strong) NSMutableSet *groups;
 @property (nonatomic, strong) NSMutableSet *faceIDs;
-@property (nonatomic, readonly) NSString *peopleNamesString;
+@property (nonatomic, strong) NSString *peopleNamesString;
 @property (nonatomic, strong) NSDate *creationDate;
 
 -(id)initWithPhotoAsset:(PHAsset *)asset;

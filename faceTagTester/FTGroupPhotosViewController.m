@@ -6,11 +6,11 @@
 //  Copyright (c) 2015 Siyao Xie. All rights reserved.
 //
 
-#import "ViewController.h"
+#import "FTGroupPhotosViewController.h"
 #define START_DATE [NSDate dateWithTimeIntervalSinceNow:-5*24*60*60]
 #define END_DATE [NSDate dateWithTimeIntervalSinceNow:-3*24*60*60]
 
-@interface ViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
+@interface FTGroupPhotosViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
 @property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) NSMutableArray *photoColletions;
 @property (nonatomic, strong) FTGroup *testGroup;
@@ -21,7 +21,7 @@
 
 @end
 
-@implementation ViewController
+@implementation FTGroupPhotosViewController
 
 - (id)init {
     self = [super init];
@@ -67,9 +67,10 @@
             } afterDelay:0.5];
         }
     } else {
+        /*
         [self.testGroup setStartDate:START_DATE];
         [self.testGroup setEndDate:END_DATE];
-        [self processImagesForGroup:self.testGroup];
+        [self processImagesForGroup:self.testGroup];*/
         
     }
     //option 1: create a frc for each person
@@ -92,9 +93,9 @@
     //option 2: use FTPhoto's peopleNames
     NSFetchRequest *frcRequest = [[NSFetchRequest alloc] init];
     NSPredicate *fetchPredicate = [NSPredicate predicateWithFormat:@"%@ IN groups", self.testGroup];
-    NSSortDescriptor* dateDescriptor = [[NSSortDescriptor alloc] initWithKey:@"creationDate" ascending:NO];
+    //NSSortDescriptor* dateDescriptor = [[NSSortDescriptor alloc] initWithKey:@"creationDate" ascending:NO];
     NSSortDescriptor* nameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"peopleNamesString" ascending:NO];
-    [frcRequest setSortDescriptors:@[nameDescriptor, dateDescriptor]];
+    [frcRequest setSortDescriptors:@[nameDescriptor]];
     [frcRequest setEntity:[FTPhoto entity]];
     [frcRequest setPredicate:fetchPredicate];
     [frcRequest setFetchBatchSize:20];
@@ -171,6 +172,7 @@
                                                                               dispatch_async(CoreDataWriteQueue(), ^{
                                                                                   FTPerson *person = [FTPerson fetchWithID:[candidate objectForKey:@"person_name"]];
                                                                                   if (person) {
+#warning TODO:should check for existence
                                                                                       FTPhoto *photo = [[FTPhoto alloc] initWithPhotoAsset:asset];
                                                                                       [person addPhoto:photo];
                                                                                       [group addPhoto:photo];
@@ -178,10 +180,7 @@
                                                                                   }
                                                                                   [[FaceppAPI person] addFaceWithPersonName:person.name orPersonId:person.fppID andFaceId:@[[face objectForKey:@"face_id"]]];
                                                                               });
-                                                                              
-                                                                              
-                                                                              NSArray *allPhotos = [[FTPhoto class] MR_findAllInContext:[NSManagedObjectContext MR_defaultContext]];
-                                                                              NSLog(@"all photos %lu", (unsigned long)[allPhotos count]);
+
                                                                           }
                                                                       }
                                                                   }
@@ -225,7 +224,7 @@
     // Do any additional setup after loading the view, typically from a nib.
     
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    flowLayout.sectionInset = UIEdgeInsetsMake(20, 0, 20, 0);
+    flowLayout.sectionInset = UIEdgeInsetsMake(0, 0, 10, 0);
     self.collectionView = [[UICollectionView alloc] initWithFrame:[[self view] bounds] collectionViewLayout:flowLayout];
     [self.collectionView setDelegate:self];
     [self.collectionView setDataSource:self];
@@ -235,8 +234,15 @@
     [[self view] addSubview:self.collectionView];
 
     
-    UIBarButtonItem *createGroupButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(createGroup)];
+    [self.collectionView registerClass:[UICollectionReusableView class]
+            forSupplementaryViewOfKind: UICollectionElementKindSectionHeader
+                   withReuseIdentifier:@"HeaderView"];
     
+    //UIBarButtonItem *createGroupButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(createGroupButtonPressed)];
+    //self.navigationItem.rightBarButtonItem = createGroupButton;
+    
+    UIBarButtonItem *editGroupButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editGroupButtonPressed)];
+    self.navigationItem.rightBarButtonItem = editGroupButton;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -244,16 +250,49 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)fetchPhotos {
-    self.photoColletions = [[NSMutableArray alloc] init];
-    NSArray *photos = [FTPhoto fetchAll];
-    for (FTPerson *person in [self.testGroup peopleArray]) {
-        NSArray *collection = [photos filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(FTPhoto *photo, NSDictionary *bindings) {
-            return [[photo people] containsObject:person] && [[photo groups] containsObject:self.testGroup];
-        }]];
-        [self.photoColletions addObject:collection];
+
+- (void)createGroupButtonPressed {
+    //group name
+    //start and end date (optional) or select a range of photos (https://github.com/chiunam/CTAssetsPickerController)
+    
+}
+
+- (void)editGroupButtonPressed {
+    FTGroupManagingViewController *groupManagingViewController = [[FTGroupManagingViewController alloc] initWithGroup:self.testGroup];
+    
+    [groupManagingViewController setDelegate:self];
+    [groupManagingViewController setAction:@selector(updateGroup:)];
+    [self.navigationController showViewController:groupManagingViewController sender:self];
+    //same as createGroup with populated info
+}
+
+- (void)updateGroup:(FTGroup *)editedGroup {
+    BOOL needsReProcessing = NO;
+    if (![editedGroup.name isEqualToString:self.testGroup.name]) {
+#warning TODO: need to make name editable but let id stays the same
+        //[self.testGroup setName:editedGroup.name];
+        //update whatever label
+    } else if ([editedGroup.startDate isEqualToDate:self.testGroup.startDate]) {
+        [self.testGroup setStartDate:self.testGroup.startDate];
+        needsReProcessing = YES;
+    } else if ([editedGroup.endDate isEqualToDate:self.testGroup.endDate]) {
+        [self.testGroup setEndDate:self.testGroup.endDate];
+        needsReProcessing = YES;
     }
-    [self.collectionView reloadData];
+    
+    if (needsReProcessing) {
+        [self processImagesForGroup:self.testGroup];
+    }
+}
+- (void)addPeopleButtonPressed {
+    //pick from existing ppl
+    //create new people
+}
+
+- (void)createPeopleButtonPressed {
+    //name
+    //photo(s)
+    //select or take new ones -> https://github.com/chiunam/CTAssetsPickerController
 }
 
 #pragma mark - UICollectionViewDelegateFlowLayout
@@ -267,17 +306,14 @@
 - (NSInteger)collectionView:(UICollectionView *)view numberOfItemsInSection:(NSInteger)section {
     id <NSFetchedResultsSectionInfo> sectionInfo = [self.frc sections][section];
     return [sectionInfo numberOfObjects];
-    //return [[self.photoColletions objectAtIndex:section] count];
 }
 
 - (NSInteger)numberOfSectionsInCollectionView: (UICollectionView *)collectionView {
     return [[self.frc sections] count];
-    //return [[self.testGroup people] count];
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
-    //FTPhoto *photo = [[self.photoColletions objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
     FTPhoto *photo = [self.frc objectAtIndexPath:indexPath];
     PHAsset *asset = [[PHAsset fetchAssetsWithLocalIdentifiers:@[photo.photoAssetIdentifier] options:nil] firstObject];
     PHImageRequestOptions *requestOptions = [[PHImageRequestOptions alloc] init];
@@ -285,7 +321,7 @@
     [requestOptions setDeliveryMode:PHImageRequestOptionsDeliveryModeFastFormat];
     
     [self.imageManager requestImageForAsset:asset targetSize:CGSizeMake(100 ,100)
-                                contentMode:PHImageContentModeAspectFit
+                                contentMode:PHImageContentModeAspectFill
                                     options:requestOptions
                               resultHandler:^(UIImage *image, NSDictionary *info) {
                                   UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
@@ -296,31 +332,40 @@
     return cell;
 }
 
-/*
+
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
     if (kind == UICollectionElementKindSectionHeader) {
         
         UICollectionReusableView *reusableview = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView" forIndexPath:indexPath];
         
-        if (reusableview==nil) {
-            reusableview=[[UICollectionReusableView alloc] initWithFrame:CGRectMake(0, 0, [self.view bounds].size.width, 44)];
+        if (reusableview == nil) {
+            reusableview = [[UICollectionReusableView alloc] initWithFrame:CGRectMake(0, 0, [self.view bounds].size.width, 25)];
         }
         
-        UILabel *label=[[UILabel alloc] initWithFrame:CGRectMake(0, 0, [self.view bounds].size.width, 44)];
-        FTPerson *person = [[self.testGroup peopleArray] objectAtIndex:indexPath.section];
-        label.text = [NSString stringWithFormat:@"%@", person.name];
+        id <NSFetchedResultsSectionInfo> sectionInfo = [self.frc sections][indexPath.section];
+        UILabel *label = [[UILabel alloc] init];
+        [label setText:[NSString stringWithFormat:@"#%@", [sectionInfo name]]];
+        [label setFont:[UIFont boldSystemFontOfSize:18]];
+        //[label setTextColor:[UIColor whiteColor]];
+        [label setTextColor:[UIColor colorForText:[sectionInfo name]]];
+        [label sizeToFit];
+        CGRect labelFrame = [label frame];
+        labelFrame.origin.x = 5;
+        [label setFrame:labelFrame];
+        
         [reusableview addSubview:label];
+        //[reusableview setBackgroundColor:[UIColor colorForText:[sectionInfo name]]];
         return reusableview;
     }
     return nil;
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
-    CGSize headerSize = CGSizeMake([self.view bounds].size.width, 44);
+    CGSize headerSize = CGSizeMake([self.view bounds].size.width, 25);
     return headerSize;
 }
- */
+
 
 
 #pragma mark - NSFetchedResultsControllerDelegate

@@ -10,10 +10,13 @@
 		8828DC65D52725E072566437 /* libPods-faceTagTester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CCA340E593D8FC9F165DACC /* libPods-faceTagTester.a */; };
 		9F4D03301A93C85A00806AF5 /* UIImage+FTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F4D032F1A93C85A00806AF5 /* UIImage+FTAdditions.m */; };
 		9F4D03331A94121F00806AF5 /* FTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F4D03321A94121F00806AF5 /* FTAdditions.m */; };
+		9F4D03381A97E3F500806AF5 /* UIColor+FTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F4D03371A97E3F500806AF5 /* UIColor+FTAdditions.m */; };
+		9F4D033B1A97ECFE00806AF5 /* FTGroupManagingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F4D033A1A97ECFE00806AF5 /* FTGroupManagingViewController.m */; };
+		9F4D033E1A97F50C00806AF5 /* FTPeopleCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F4D033D1A97F50C00806AF5 /* FTPeopleCollectionView.m */; };
 		9F5147911A8A87050089EAD1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147901A8A87050089EAD1 /* main.m */; };
 		9F5147941A8A87050089EAD1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147931A8A87050089EAD1 /* AppDelegate.m */; };
 		9F5147971A8A87050089EAD1 /* faceTagTester.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147951A8A87050089EAD1 /* faceTagTester.xcdatamodeld */; };
-		9F51479A1A8A87050089EAD1 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147991A8A87050089EAD1 /* ViewController.m */; };
+		9F51479A1A8A87050089EAD1 /* FTGroupPhotosViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147991A8A87050089EAD1 /* FTGroupPhotosViewController.m */; };
 		9F51479D1A8A87050089EAD1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F51479B1A8A87050089EAD1 /* Main.storyboard */; };
 		9F51479F1A8A87050089EAD1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F51479E1A8A87050089EAD1 /* Images.xcassets */; };
 		9F5147A21A8A87050089EAD1 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9F5147A01A8A87050089EAD1 /* LaunchScreen.xib */; };
@@ -61,14 +64,20 @@
 		9F4D03311A94121F00806AF5 /* FTAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTAdditions.h; sourceTree = "<group>"; };
 		9F4D03321A94121F00806AF5 /* FTAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTAdditions.m; sourceTree = "<group>"; };
 		9F4D03351A9571A800806AF5 /* faceTagTester-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "faceTagTester-Prefix.pch"; sourceTree = "<group>"; };
+		9F4D03361A97E3F500806AF5 /* UIColor+FTAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+FTAdditions.h"; sourceTree = "<group>"; };
+		9F4D03371A97E3F500806AF5 /* UIColor+FTAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+FTAdditions.m"; sourceTree = "<group>"; };
+		9F4D03391A97ECFE00806AF5 /* FTGroupManagingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTGroupManagingViewController.h; sourceTree = "<group>"; };
+		9F4D033A1A97ECFE00806AF5 /* FTGroupManagingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTGroupManagingViewController.m; sourceTree = "<group>"; };
+		9F4D033C1A97F50C00806AF5 /* FTPeopleCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTPeopleCollectionView.h; sourceTree = "<group>"; };
+		9F4D033D1A97F50C00806AF5 /* FTPeopleCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTPeopleCollectionView.m; sourceTree = "<group>"; };
 		9F51478B1A8A87050089EAD1 /* faceTagTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = faceTagTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F51478F1A8A87050089EAD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F5147901A8A87050089EAD1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9F5147921A8A87050089EAD1 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9F5147931A8A87050089EAD1 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		9F5147961A8A87050089EAD1 /* faceTagTester.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = faceTagTester.xcdatamodel; sourceTree = "<group>"; };
-		9F5147981A8A87050089EAD1 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		9F5147991A8A87050089EAD1 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		9F5147981A8A87050089EAD1 /* FTGroupPhotosViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTGroupPhotosViewController.h; sourceTree = "<group>"; };
+		9F5147991A8A87050089EAD1 /* FTGroupPhotosViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FTGroupPhotosViewController.m; sourceTree = "<group>"; };
 		9F51479C1A8A87050089EAD1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9F51479E1A8A87050089EAD1 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		9F5147A11A8A87050089EAD1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -164,6 +173,8 @@
 		9F4D03341A9412C000806AF5 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				9F4D03361A97E3F500806AF5 /* UIColor+FTAdditions.h */,
+				9F4D03371A97E3F500806AF5 /* UIColor+FTAdditions.m */,
 				9F4D032E1A93C85A00806AF5 /* UIImage+FTAdditions.h */,
 				9F4D032F1A93C85A00806AF5 /* UIImage+FTAdditions.m */,
 				9F4D03311A94121F00806AF5 /* FTAdditions.h */,
@@ -199,8 +210,12 @@
 				D1B9F8FE1A8B3723002538E0 /* Models */,
 				9F5147921A8A87050089EAD1 /* AppDelegate.h */,
 				9F5147931A8A87050089EAD1 /* AppDelegate.m */,
-				9F5147981A8A87050089EAD1 /* ViewController.h */,
-				9F5147991A8A87050089EAD1 /* ViewController.m */,
+				9F5147981A8A87050089EAD1 /* FTGroupPhotosViewController.h */,
+				9F5147991A8A87050089EAD1 /* FTGroupPhotosViewController.m */,
+				9F4D03391A97ECFE00806AF5 /* FTGroupManagingViewController.h */,
+				9F4D033A1A97ECFE00806AF5 /* FTGroupManagingViewController.m */,
+				9F4D033C1A97F50C00806AF5 /* FTPeopleCollectionView.h */,
+				9F4D033D1A97F50C00806AF5 /* FTPeopleCollectionView.m */,
 				9F4D03341A9412C000806AF5 /* Utilities */,
 				9F5147BA1A8AC11C0089EAD1 /* face++ */,
 				9F51479B1A8A87050089EAD1 /* Main.storyboard */,
@@ -471,13 +486,16 @@
 				9F5148311A8BE6200089EAD1 /* FaceppInfo.m in Sources */,
 				9F5147B91A8A8CAA0089EAD1 /* FTPerson.m in Sources */,
 				9F5148301A8BE6200089EAD1 /* FaceppGrouping.m in Sources */,
+				9F4D033B1A97ECFE00806AF5 /* FTGroupManagingViewController.m in Sources */,
 				9F5147911A8A87050089EAD1 /* main.m in Sources */,
 				9F5148331A8BE6200089EAD1 /* FaceppRecognition.m in Sources */,
 				9F5148361A8BE6200089EAD1 /* FaceppResult.m in Sources */,
+				9F4D03381A97E3F500806AF5 /* UIColor+FTAdditions.m in Sources */,
 				9F51482E1A8BE6200089EAD1 /* FaceppFaceset.m in Sources */,
 				9F5147BF1A8AC13C0089EAD1 /* FaceppDetection+LocalResultUploader.m in Sources */,
-				9F51479A1A8A87050089EAD1 /* ViewController.m in Sources */,
+				9F51479A1A8A87050089EAD1 /* FTGroupPhotosViewController.m in Sources */,
 				9F4D03301A93C85A00806AF5 /* UIImage+FTAdditions.m in Sources */,
+				9F4D033E1A97F50C00806AF5 /* FTPeopleCollectionView.m in Sources */,
 				9F5147971A8A87050089EAD1 /* faceTagTester.xcdatamodeld in Sources */,
 				9F51482C1A8BE6200089EAD1 /* FaceppClient.m in Sources */,
 				9F5148351A8BE6200089EAD1 /* FaceppError.m in Sources */,

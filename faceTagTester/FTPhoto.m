@@ -16,16 +16,23 @@
 @dynamic groups;
 @dynamic faceIDs;
 @dynamic creationDate;
+@dynamic peopleNamesString;
 
 
 -(id)initWithPhotoAsset:(PHAsset *)asset {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
     self = [FTPhoto MR_createInContext:context];
     self.photoAssetIdentifier = asset.localIdentifier;
+    self.peopleNamesString = @"";
     return self;
 }
 
 -(void)addPerson:(FTPerson *)person {
+    if (![self.people count]) {
+        self.peopleNamesString = person.name;
+    } else {
+        self.peopleNamesString = [self.peopleNamesString  stringByAppendingString:[NSString stringWithFormat:@", %@", person.name]];
+    }
     [self.people addObject:person];
 }
 
@@ -34,6 +41,7 @@
 }
 
 
+/*
 -(NSString *)peopleNamesString {
     [self willAccessValueForKey:@"peopleNamesString"];
     NSString *names = @"";
@@ -47,6 +55,6 @@
     }
     [self didAccessValueForKey:@"peopleNamesString"];
     return names;
-}
+}*/
 
 @end
