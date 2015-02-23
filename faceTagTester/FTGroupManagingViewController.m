@@ -17,6 +17,9 @@
 
     if (group) {
         [self setGroup:group];
+        [self setGroupName:group.name];
+        [self setStartDate:group.startDate];
+        [self setEndDate:group.endDate];
     }
     
     return self;
@@ -34,10 +37,9 @@
     [self.groupNameField setFont:[UIFont boldSystemFontOfSize:24]];
     [self.groupNameField setPlaceholder:@"Name of the Group"];
     [self.groupNameField setTextAlignment:NSTextAlignmentLeft];
-    NSString *groupName = [self.group name];
-    if (groupName) {
-        [self.groupNameField setText:groupName];
-        [self.groupNameField setTextColor:[UIColor colorForText:groupName]];
+    if (self.groupName) {
+        [self.groupNameField setText:self.groupName];
+        [self.groupNameField setTextColor:[UIColor colorForText:self.groupName]];
     }
     [self.view addSubview:self.groupNameField];
     [self.groupNameField becomeFirstResponder];
@@ -63,12 +65,11 @@
     [self.startDateField setUserInteractionEnabled:YES];
     [self.startDateField setInputView:startDatePicker];
     [self.startDateField setFont:[UIFont boldSystemFontOfSize:22]];
-    NSDate *startDate = [self.group startDate];
-    if (startDate) {
-        NSString *startDateString = [dateFormatter stringFromDate:startDate];
+    if (self.startDate) {
+        NSString *startDateString = [dateFormatter stringFromDate:self.startDate];
         [self.startDateField setText:startDateString];
         [self.startDateField setTextColor:dateColor];
-        [startDatePicker setDate:startDate];
+        [startDatePicker setDate:self.startDate];
     } else {
         [self.startDateField setText:@"Once upon a time..."];
         [self.startDateField setTextColor:[dateColor pathDarkColor]];
@@ -112,12 +113,11 @@
     [self.endDateField setUserInteractionEnabled:YES];
     [self.endDateField setInputView:endDatePicker];
     [self.endDateField setFont:[UIFont boldSystemFontOfSize:22]];
-    NSDate *endDate = [self.group endDate];
-    if (endDate) {
-        NSString *endDateString = [dateFormatter stringFromDate:endDate];
+    if (self.endDate) {
+        NSString *endDateString = [dateFormatter stringFromDate:self.endDate];
         [self.endDateField setText:endDateString];
         [self.endDateField setTextColor:dateColor];
-        [endDatePicker setDate:endDate];
+        [endDatePicker setDate:self.endDate];
     } else {
         [self.endDateField setText:@"Once upon a time..."];
         [self.endDateField setTextColor:[dateColor pathDarkColor]];
@@ -190,7 +190,7 @@
 }
 
 - (void)startDateSelected:(UIDatePicker *)datePicker {
-    [self.group setStartDate:[datePicker date]];
+    [self setStartDate:[datePicker date]];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
@@ -199,7 +199,7 @@
 }
 
 - (void)endDateSelected:(UIDatePicker *)datePicker {
-    [self.group setEndDate:[datePicker date]];
+    [self setEndDate:[datePicker date]];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
@@ -208,7 +208,12 @@
 }
 
 - (void)doneButtonPressed {
-    [self.delegate performSelector:self.action withObject:self.group afterDelay:0];
+    NSMutableDictionary *editedGroupInfo = [[NSMutableDictionary alloc] init];
+    [editedGroupInfo setValue:self.groupName forKey:@"groupName"];
+    [editedGroupInfo setValue:self.startDate forKey:@"startDate"];
+    [editedGroupInfo setValue:self.endDate forKey:@"endDate"];
+
+    [self.delegate performSelector:self.action withObject:editedGroupInfo afterDelay:0];
     [self.navigationController popViewControllerAnimated:YES];
 }
 

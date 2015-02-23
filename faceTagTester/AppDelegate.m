@@ -11,6 +11,9 @@
 #define FACEPP_API_KEY @"279b8c5e109befce7316babba101d688"
 #define FACEPP_API_SECRET @"689AlR1nBILA-GWrZCOkI6EG9egy2_Yd"
 
+#define START_DATE [NSDate dateWithTimeIntervalSinceNow:-5*24*60*60]
+#define END_DATE [NSDate dateWithTimeIntervalSinceNow:-3*24*60*60]
+
 @interface AppDelegate ()
 
 @end
@@ -51,8 +54,31 @@ static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
     [FaceppAPI initWithApiKey:FACEPP_API_KEY andApiSecret:FACEPP_API_SECRET andRegion:APIServerRegionUS];
     [FaceppAPI setDebugMode:YES];
     
-    FTGroupPhotosViewController *mainView = [[FTGroupPhotosViewController alloc] init];
-    [[mainView navigationItem] setTitle:@"Photos"];
+    //temp setup for testing
+    __block FTPerson *siyao = [FTPerson fetchWithID:@"siyao"];
+    if (!siyao) {
+        dispatch_sync(CoreDataWriteQueue(), ^{
+            siyao = [[FTPerson alloc] initWithName:@"siyao"];
+        });
+        [siyao addTrainingImages:@[[UIImage imageNamed:@"siyao-s.jpg"]]];
+    }
+    
+    __block FTPerson *chengyue = [FTPerson fetchWithID:@"chengyue"];
+    if (!chengyue) {
+        dispatch_sync(CoreDataWriteQueue(), ^{
+            chengyue = [[FTPerson alloc] initWithName:@"chengyue"];
+        });
+        [chengyue addTrainingImages:@[[UIImage imageNamed:@"chengyue-s.jpg"]]];
+    }
+    
+    __block FTGroup *testGroup = [FTGroup fetchWithID:@"testGroup"];
+    if (!testGroup) {
+        dispatch_sync(CoreDataWriteQueue(), ^{
+            testGroup = [[FTGroup alloc] initWithName:@"testGroup" andPeople:@[siyao, chengyue] andStartDate:START_DATE andEndDate:END_DATE];
+        });
+    }
+    
+    FTGroupPhotosViewController *mainView = [[FTGroupPhotosViewController alloc] initWithGroup:testGroup];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:mainView];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];

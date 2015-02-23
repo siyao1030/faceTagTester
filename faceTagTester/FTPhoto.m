@@ -24,6 +24,7 @@
     self = [FTPhoto MR_createInContext:context];
     self.photoAssetIdentifier = asset.localIdentifier;
     self.peopleNamesString = @"";
+    self.creationDate = [asset creationDate];
     return self;
 }
 
@@ -40,21 +41,5 @@
     [self.groups addObject:group];
 }
 
-
-/*
--(NSString *)peopleNamesString {
-    [self willAccessValueForKey:@"peopleNamesString"];
-    NSString *names = @"";
-    NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
-    NSArray *sortedPeople = [self.people sortedArrayUsingDescriptors:@[descriptor]];
-    for (FTPerson * person in sortedPeople) {
-        names = [names stringByAppendingString:[NSString stringWithFormat:@"%@, ", person.name]];
-    }
-    if ([names length]) {
-        names = [names substringToIndex:[names length] - 2];
-    }
-    [self didAccessValueForKey:@"peopleNamesString"];
-    return names;
-}*/
 
 @end

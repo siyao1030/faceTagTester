@@ -24,7 +24,7 @@
     self.name = name;
     self.id = name;
     self.objectIDString = [[self.objectID URIRepresentation] absoluteString];
-    FaceppResult *result = [[FaceppAPI person] createWithPersonName:self.name andFaceId:nil andTag:nil andGroupId:nil orGroupName:nil];
+    FaceppResult *result = [[FaceppAPI person] createWithPersonName:self.id andFaceId:nil andTag:nil andGroupId:nil orGroupName:nil];
     
     if ([result success]) {
         self.fppID = [[result content] objectForKey:@"person_id"];
@@ -47,7 +47,7 @@
             }
         }
     }
-    [[FaceppAPI person] addFaceWithPersonName:self.name orPersonId:self.fppID andFaceId:faceIDs];
+    [[FaceppAPI person] addFaceWithPersonName:self.id orPersonId:self.fppID andFaceId:faceIDs];
 }
 
 - (void)addPhoto:(FTPhoto *)photo {

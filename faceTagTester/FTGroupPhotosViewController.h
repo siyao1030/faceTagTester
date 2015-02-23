@@ -17,5 +17,7 @@
 
 @interface FTGroupPhotosViewController : UIViewController
 
+- (id)initWithGroup:(FTGroup *)group;
+
 @end
 

@@ -10,6 +10,7 @@
 #import "FaceppAPI.h"
 #import "FTPerson.h"
 #import "FTPhoto.h"
+#import "FTDateRange.h"
 
 @interface FTGroup : FTModel
 

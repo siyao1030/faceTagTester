@@ -22,8 +22,8 @@
     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
     self = [FTGroup MR_createInContext:context];
     
-    self.name = name;
-    self.id = name;
+    self.name = name; //display, can change
+    self.id = name; //for fetching photos and for api uses, cannot change
     self.people = [NSMutableSet setWithArray:people];
     self.startDate = start;
     self.endDate = end;
@@ -33,7 +33,7 @@
         [personNames addObject:person.name];
     }
     
-    FaceppResult *result = [[FaceppAPI group] createWithGroupName:name andTag:nil andPersonId:nil orPersonName:personNames];
+    FaceppResult *result = [[FaceppAPI group] createWithGroupName:self.id andTag:nil andPersonId:nil orPersonName:personNames];
     
     if ([result success]) {
         self.fppID = [[result content] objectForKey:@"group_id"];

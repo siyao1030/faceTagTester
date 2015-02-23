@@ -19,5 +19,6 @@
 #import "AppDelegate.h"
 #import "FTAdditions.h"
 #import "FTModel.h"
+#import "FTNetwork.h"
 
 #define TESTING 1
