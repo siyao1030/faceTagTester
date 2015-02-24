@@ -17,7 +17,7 @@
 
 //+ (id)sharedDetector;
 //+ (FaceppResult *)detectAndUploadWithImage:(UIImage *)image;
-+ (NSArray *)detectFaceIDsWithImage:(UIImage *)image andImageInfo:(NSDictionary *)info;
++ (NSArray *)detectFaceIDsWithImage:(UIImage *)image;
 + (NSArray *)detectFacesWithImage:(UIImage *)image andImageInfo:(NSDictionary *)info;
 + (NSArray *)detectFaceIDsWithImage:(UIImage *)image;
 @end

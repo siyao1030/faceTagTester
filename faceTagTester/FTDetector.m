@@ -45,7 +45,7 @@
     return result;
 }
 
-+ (NSArray *)detectFaceIDsWithImage:(UIImage *)image andImageInfo:(NSDictionary *)info {
++ (NSArray *)detectFaceIDsWithImage:(UIImage *)image {
     UIImage *rotatedImage = [image fixOrientation];
     
     
@@ -60,8 +60,8 @@
     FaceppResult *result = [[FaceppAPI detection] detectWithURL:nil orImageData:UIImageJPEGRepresentation(rotatedImage, 0) mode:FaceppDetectionModeNormal attribute:FaceppDetectionAttributeNone];
     if ([result success]) {
         NSArray *faces = [[result content] objectForKey:@"face"];
-        if ([faces count]) {
-            NSString *faceID = [[faces objectAtIndex:0] objectForKey:@"face_id"];
+        for (NSDictionary *faceDict in faces) {
+            NSString *faceID = [faceDict objectForKey:@"face_id"];
             [faceIDs addObject:faceID];
         }
     }

@@ -22,6 +22,7 @@
 -(id)initWithPhotoAsset:(PHAsset *)asset {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
     self = [FTPhoto MR_createInContext:context];
+    
     self.photoAssetIdentifier = asset.localIdentifier;
     self.peopleNamesString = @"";
     self.creationDate = [asset creationDate];
@@ -29,16 +30,22 @@
 }
 
 -(void)addPerson:(FTPerson *)person {
-    if (![self.people count]) {
-        self.peopleNamesString = person.name;
-    } else {
-        self.peopleNamesString = [self.peopleNamesString  stringByAppendingString:[NSString stringWithFormat:@", %@", person.name]];
+    if (![self.people containsObject:person]) {
+        if (![self.people count]) {
+            self.peopleNamesString = person.name;
+        } else {
+            self.peopleNamesString = [self.peopleNamesString  stringByAppendingString:[NSString stringWithFormat:@", %@", person.name]];
+        }
+        [self.people addObject:person];
+        [person addPhoto:self];
     }
-    [self.people addObject:person];
+    
 }
+
 
 -(void)addGroup:(FTGroup *)group {
     [self.groups addObject:group];
+    [group addPhoto:self];
 }
 
 

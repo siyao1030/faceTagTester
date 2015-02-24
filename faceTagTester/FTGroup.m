@@ -45,7 +45,6 @@
 
 - (void)addPhoto:(FTPhoto *)photo {
     [self.photos addObject:photo];
-    [photo addGroup:self];
 }
 
 - (NSArray *)photoArray {
