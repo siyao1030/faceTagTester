@@ -11,10 +11,10 @@
 
 @interface FTGroupManagingViewController : UIViewController
 
-@property (nonatomic, strong) FTGroup *group;
 @property (nonatomic, strong) NSString *groupName;
 @property (nonatomic, strong) NSDate *startDate;
 @property (nonatomic, strong) NSDate *endDate;
+@property (nonatomic, strong) NSMutableArray *people;
 
 @property (nonatomic, strong) UITextField *groupNameField;
 @property (nonatomic, strong) UILabel *fromLabel;
@@ -24,7 +24,7 @@
 @property (nonatomic, strong) UICollectionView *peopleView;
 @property (nonatomic, strong) UIDatePicker *datePicker;
 
-@property (weak) id delegate;
+@property (weak) id target;
 @property SEL action;
 
 

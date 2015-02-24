@@ -17,6 +17,7 @@
 
 #import "CoreData+MagicalRecord.h"
 #import "AppDelegate.h"
+#import "FaceppAPI.h"
 #import "FTAdditions.h"
 #import "FTModel.h"
 #import "FTNetwork.h"

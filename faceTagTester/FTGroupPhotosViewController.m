@@ -42,7 +42,6 @@
     [frcRequest setPredicate:fetchPredicate];
     [frcRequest setFetchBatchSize:20];
     
-    
     self.frc = [[NSFetchedResultsController alloc] initWithFetchRequest:frcRequest managedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread] sectionNameKeyPath:@"peopleNamesString" cacheName:nil];
     [self.frc setDelegate:self];
     [self.frc performFetch:NULL];
@@ -56,24 +55,7 @@
         [options setSortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]]];
         self.cameraRollFetchResult = [PHAsset fetchAssetsInAssetCollection:collectionResult[0] options:options];
     }
-    
-    //train the group
-    if (!_didFinishTraining) {
-        FaceppResult *result = [[FaceppAPI train] trainAsynchronouslyWithId:self.group.fppID orName:self.group.id andType:FaceppTrainIdentify];
-        NSString *sessionID = [[result content] objectForKey:@"session_id"];
-        if (sessionID) {
-            [FTNetwork getResultForSession:sessionID completion:^(FaceppResult *result) {
-                if ([result success]) {
-                    _didFinishTraining = YES;
-                    if (![[self.frc fetchedObjects] count] && !_didFinishProcessing) {
-                        [self processImagesFromStartDate:self.group.startDate toEndDate:self.group.endDate];
-                    }
-                }
-            } afterDelay:0.5];
-        }
-    }
-    
-    [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
+
 
     return self;
 }
@@ -218,7 +200,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    
+    [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
     [[self navigationItem] setTitle:self.group.name];
 
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
@@ -235,12 +217,30 @@
     [self.collectionView registerClass:[UICollectionReusableView class]
             forSupplementaryViewOfKind: UICollectionElementKindSectionHeader
                    withReuseIdentifier:@"HeaderView"];
-    
-    //UIBarButtonItem *createGroupButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(createGroupButtonPressed)];
-    //self.navigationItem.rightBarButtonItem = createGroupButton;
-    
+
     UIBarButtonItem *editGroupButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editGroupButtonPressed)];
     self.navigationItem.rightBarButtonItem = editGroupButton;
+    
+    
+    //train the group
+    if (!_didFinishTraining) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            FaceppResult *result = [[FaceppAPI train] trainAsynchronouslyWithId:self.group.fppID orName:self.group.id andType:FaceppTrainIdentify];
+            NSString *sessionID = [[result content] objectForKey:@"session_id"];
+            if (sessionID) {
+                [FTNetwork getResultForSession:sessionID completion:^(FaceppResult *result) {
+                    if ([result success]) {
+                        _didFinishTraining = YES;
+                        if (![[self.frc fetchedObjects] count] && !_didFinishProcessing) {
+                            [self processImagesFromStartDate:self.group.startDate toEndDate:self.group.endDate];
+                        }
+                    }
+                } afterDelay:0.5];
+            }
+
+        });
+    }
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -248,17 +248,10 @@
     // Dispose of any resources that can be recreated.
 }
 
-
-- (void)createGroupButtonPressed {
-    //group name
-    //start and end date (optional) or select a range of photos (https://github.com/chiunam/CTAssetsPickerController)
-    
-}
-
 - (void)editGroupButtonPressed {
     FTGroupManagingViewController *groupManagingViewController = [[FTGroupManagingViewController alloc] initWithGroup:self.group];
     
-    [groupManagingViewController setDelegate:self];
+    [groupManagingViewController setTarget:self];
     [groupManagingViewController setAction:@selector(updateGroup:)];
     [self.navigationController showViewController:groupManagingViewController sender:self];
     //same as createGroup with populated info

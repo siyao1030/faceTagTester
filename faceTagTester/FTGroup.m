@@ -7,6 +7,7 @@
 //
 
 #import "FTGroup.h"
+#import "FTPhoto.h"
 
 @implementation FTGroup
 

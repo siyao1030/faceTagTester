@@ -9,8 +9,9 @@
 #import "FTModel.h"
 #import "FaceppAPI.h"
 #import "FTPerson.h"
-#import "FTPhoto.h"
 #import "FTDateRange.h"
+
+@class FTPhoto;
 
 @interface FTGroup : FTModel
 

@@ -7,6 +7,9 @@
 //
 
 #import "AppDelegate.h"
+#import "FTPerson.h"
+#import "FTGroup.h"
+#import "FTGroupsListViewController.h"
 
 #define FACEPP_API_KEY @"279b8c5e109befce7316babba101d688"
 #define FACEPP_API_SECRET @"689AlR1nBILA-GWrZCOkI6EG9egy2_Yd"
@@ -78,7 +81,9 @@ static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
         });
     }
     
-    FTGroupPhotosViewController *mainView = [[FTGroupPhotosViewController alloc] initWithGroup:testGroup];
+    
+    //FTGroupPhotosViewController *mainView = [[FTGroupPhotosViewController alloc] initWithGroup:testGroup];
+    FTGroupsListViewController *mainView = [[FTGroupsListViewController alloc] init];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:mainView];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];

@@ -7,6 +7,7 @@
 //
 
 #import "FTGroupManagingViewController.h"
+#import "FTGroupPhotosViewController.h"
 
 #define SIDE_PADDING 40
 
@@ -16,10 +17,15 @@
     self = [super init];
 
     if (group) {
-        [self setGroup:group];
         [self setGroupName:group.name];
         [self setStartDate:group.startDate];
         [self setEndDate:group.endDate];
+        
+        UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonPressed)];
+        self.navigationItem.rightBarButtonItem = doneButton;
+    } else {
+        UIBarButtonItem *createButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(createButtonPressed)];
+        self.navigationItem.rightBarButtonItem = createButton;
     }
     
     return self;
@@ -28,8 +34,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonPressed)];
-    self.navigationItem.rightBarButtonItem = doneButton;
+    
     
     [self.view setBackgroundColor:[UIColor whiteColor]];
     
@@ -75,25 +80,6 @@
         [self.startDateField setTextColor:[dateColor pathDarkColor]];
     }
     [self.view addSubview:self.startDateField];
-    /*
-    self.startDateButton = [[UIButton alloc] init];
-    [self.startDateButton setUserInteractionEnabled:YES];
-    [self.startDateButton addTarget:self action:@selector(selectStartDate) forControlEvents:UIControlEventTouchUpInside];
-    [[self.startDateButton titleLabel] setFont:[UIFont boldSystemFontOfSize:22]];
-    NSDate *startDate = [self.group startDate];
-    if (startDate) {
-        NSString *startDateString = [dateFormatter stringFromDate:startDate];
-        [self.startDateButton setTitle:startDateString forState:UIControlStateNormal];
-        [self.startDateButton setTitleColor:dateColor forState:UIControlStateNormal];
-        [[self.startDateButton titleLabel] setTextColor:dateColor];
-    } else {
-        [self.startDateButton setTitle:@"Once upon a time..." forState:UIControlStateNormal];
-        [self.startDateButton setTitleColor:[dateColor pathDarkColor] forState:UIControlStateNormal];
-        [[self.startDateButton titleLabel] setTextColor:[dateColor pathDarkColor]];
-    }
-    [self.view addSubview:self.startDateButton];
-    */
-    
     
     self.toLabel = [[UILabel alloc] init];
     [self.toLabel setText:@"TO"];
@@ -119,29 +105,10 @@
         [self.endDateField setTextColor:dateColor];
         [endDatePicker setDate:self.endDate];
     } else {
-        [self.endDateField setText:@"Once upon a time..."];
+        [self.endDateField setText:@"The end of the world..."];
         [self.endDateField setTextColor:[dateColor pathDarkColor]];
     }
     [self.view addSubview:self.endDateField];
-    
-    /*
-    self.endDateButton = [[UIButton alloc] init];
-    [self.endDateButton setUserInteractionEnabled:YES];
-    [self.endDateButton addTarget:self action:@selector(selectEndDate) forControlEvents:UIControlEventTouchUpInside];
-    [[self.endDateButton titleLabel] setFont:[UIFont boldSystemFontOfSize:22]];
-    NSDate *endDate = [self.group endDate];
-    if (startDate) {
-        NSString *endDateString = [dateFormatter stringFromDate:endDate];
-        [self.endDateButton setTitle:endDateString forState:UIControlStateNormal];
-        [self.endDateButton setTitleColor:dateColor forState:UIControlStateNormal];
-        [[self.endDateButton titleLabel] setTextColor:dateColor];
-    } else {
-        [self.endDateButton setTitle:@"End of the world..." forState:UIControlStateNormal];
-        [self.endDateButton setTitleColor:[dateColor pathDarkColor] forState:UIControlStateNormal];
-        [[self.endDateButton titleLabel] setTextColor:[dateColor pathDarkColor]];
-    }
-    [self.view addSubview:self.endDateButton];
-    */
 }
 
 - (void)viewWillLayoutSubviews {
@@ -190,6 +157,7 @@
 }
 
 - (void)startDateSelected:(UIDatePicker *)datePicker {
+    NSLog(@"start selected:%@", [datePicker date]);
     [self setStartDate:[datePicker date]];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -199,6 +167,7 @@
 }
 
 - (void)endDateSelected:(UIDatePicker *)datePicker {
+    NSLog(@"end selected:%@", [datePicker date]);
     [self setEndDate:[datePicker date]];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -209,12 +178,20 @@
 
 - (void)doneButtonPressed {
     NSMutableDictionary *editedGroupInfo = [[NSMutableDictionary alloc] init];
-    [editedGroupInfo setValue:self.groupName forKey:@"groupName"];
+    [editedGroupInfo setValue:self.groupNameField.text forKey:@"groupName"];
     [editedGroupInfo setValue:self.startDate forKey:@"startDate"];
     [editedGroupInfo setValue:self.endDate forKey:@"endDate"];
 
-    [self.delegate performSelector:self.action withObject:editedGroupInfo afterDelay:0];
+    [self.target performSelector:self.action withObject:editedGroupInfo afterDelay:0];
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)createButtonPressed {
+    dispatch_sync(CoreDataWriteQueue(), ^{
+        FTGroup *newGroup = [[FTGroup alloc] initWithName:self.groupNameField.text andPeople:self.people andStartDate:self.startDate andEndDate:self.endDate];
+        FTGroupPhotosViewController *groupPhotosView = [[FTGroupPhotosViewController alloc] initWithGroup:newGroup];
+        [self.navigationController showViewController:groupPhotosView sender:self];
+    });
 }
 
 @end

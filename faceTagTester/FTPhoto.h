@@ -9,8 +9,7 @@
 #import "FTModel.h"
 #import <Photos/Photos.h>
 #import "FTPerson.h"
-
-@class FTGroup;
+#import "FTGroup.h"
 
 @interface FTPhoto : FTModel
 
