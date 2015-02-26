@@ -10,6 +10,11 @@
 #import "FTGroupPhotosViewController.h"
 
 #define SIDE_PADDING 40
+#define PEOPLE_GRID_WIDTH 70
+
+@interface FTGroupManagingViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
+
+@end
 
 @implementation FTGroupManagingViewController
 
@@ -17,6 +22,7 @@
     self = [super init];
 
     if (group) {
+        [self setGroup:group];
         [self setGroupName:group.name];
         [self setStartDate:group.startDate];
         [self setEndDate:group.endDate];
@@ -33,8 +39,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    
     
     [self.view setBackgroundColor:[UIColor whiteColor]];
     
@@ -109,6 +113,53 @@
         [self.endDateField setTextColor:[dateColor pathDarkColor]];
     }
     [self.view addSubview:self.endDateField];
+    
+    self.addPeopleButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, PEOPLE_GRID_WIDTH, PEOPLE_GRID_WIDTH)];
+    self.addPeopleButton.layer.cornerRadius = rintf(PEOPLE_GRID_WIDTH / 2);
+    self.addPeopleButton.clipsToBounds = YES;
+    self.addPeopleButton.layer.borderWidth = 3.0f;
+    self.addPeopleButton.layer.borderColor = [UIColor whiteColor].CGColor;
+    [self.addPeopleButton setTitle:@"Add" forState:UIControlStateNormal];
+    [self.addPeopleButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [[self.addPeopleButton titleLabel] setFont:[UIFont boldSystemFontOfSize:16]];
+    [[self.addPeopleButton titleLabel] setTextAlignment:NSTextAlignmentCenter];
+    [self.addPeopleButton setBackgroundColor:[[UIColor grayColor] colorWithAlphaComponent:0.5]];
+    [self.addPeopleButton addTarget:self action:@selector(addPeopleButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    self.peopleCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:flowLayout];
+    [self.peopleCollectionView setDelegate:self];
+    [self.peopleCollectionView setDataSource:self];
+    [self.peopleCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
+    [self.peopleCollectionView setBackgroundColor:[UIColor whiteColor]];
+    [self.view addSubview:self.peopleCollectionView];
+    
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+    
+    /*
+    NSFetchRequest *allPeopleRequest = [[NSFetchRequest alloc] init];
+    NSSortDescriptor* nameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+    [allPeopleRequest setSortDescriptors:@[nameDescriptor]];
+    [allPeopleRequest setEntity:[FTPerson entity]];
+    [allPeopleRequest setFetchBatchSize:20];
+    
+    self.allPeopleFRC = [[NSFetchedResultsController alloc] initWithFetchRequest:allPeopleRequest managedObjectContext:context sectionNameKeyPath:@"peopleNamesString" cacheName:nil];
+    [self.allPeopleFRC setDelegate:self];
+    [self.allPeopleFRC performFetch:NULL];
+    */
+    
+    NSFetchRequest *groupPeopleRequest = [[NSFetchRequest alloc] init];
+    NSSortDescriptor* nameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+    NSPredicate *fetchPredicate = [NSPredicate predicateWithFormat:@"%@ IN groups", self.group];
+    [groupPeopleRequest setSortDescriptors:@[nameDescriptor]];
+    [groupPeopleRequest setEntity:[FTPerson entity]];
+    [groupPeopleRequest setPredicate:fetchPredicate];
+    [groupPeopleRequest setFetchBatchSize:10];
+    
+    self.groupPeopleFRC = [[NSFetchedResultsController alloc] initWithFetchRequest:groupPeopleRequest managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+    [self.groupPeopleFRC setDelegate:self];
+    [self.groupPeopleFRC performFetch:NULL];
+
 }
 
 - (void)viewWillLayoutSubviews {
@@ -151,13 +202,20 @@
     endDateFieldFrame.origin.y = toLabelFrame.origin.y - rintf((endDateFieldFrame.size.height - toLabelFrame.size.height) / 2.0);
     [self.endDateField setFrame:endDateFieldFrame];
     
-    yOffset = CGRectGetMaxY(fromLabelFrame) + 20;
-
+    yOffset = CGRectGetMaxY(endDateFieldFrame) + 20;
     
+    CGRect collectionFrame = [self.peopleCollectionView frame];
+    collectionFrame.size.width = bounds.size.width - SIDE_PADDING * 2;
+    float peoplePerRow = floorf(bounds.size.width / PEOPLE_GRID_WIDTH);
+    int numOfRows = ceilf(([[self.groupPeopleFRC fetchedObjects] count] + 1) / peoplePerRow);
+    collectionFrame.size.height = numOfRows * (PEOPLE_GRID_WIDTH + 10);
+    collectionFrame.origin.x = SIDE_PADDING;
+    collectionFrame.origin.y = yOffset;
+    [self.peopleCollectionView setFrame:collectionFrame];
+
 }
 
 - (void)startDateSelected:(UIDatePicker *)datePicker {
-    NSLog(@"start selected:%@", [datePicker date]);
     [self setStartDate:[datePicker date]];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -167,13 +225,24 @@
 }
 
 - (void)endDateSelected:(UIDatePicker *)datePicker {
-    NSLog(@"end selected:%@", [datePicker date]);
     [self setEndDate:[datePicker date]];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
     NSString *dateString = [dateFormatter stringFromDate:[datePicker date]];
     [self.endDateField setText:dateString];
+}
+
+
+- (void)addPeopleButtonPressed {
+    //pick from existing ppl
+    //create new people
+}
+
+- (void)createPeopleButtonPressed {
+    //name
+    //photo(s)
+    //select or take new ones -> https://github.com/chiunam/CTAssetsPickerController
 }
 
 - (void)doneButtonPressed {
@@ -193,5 +262,130 @@
         [self.navigationController showViewController:groupPhotosView sender:self];
     });
 }
+
+
+#pragma mark - UICollectionViewDelegateFlowLayout
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    return CGSizeMake(PEOPLE_GRID_WIDTH, PEOPLE_GRID_WIDTH);
+}
+
+
+#pragma mark - UICollectionView Datasource
+- (NSInteger)collectionView:(UICollectionView *)view numberOfItemsInSection:(NSInteger)section {
+    id <NSFetchedResultsSectionInfo> sectionInfo = [self.groupPeopleFRC sections][section];
+    return [sectionInfo numberOfObjects] + 1;
+}
+
+- (NSInteger)numberOfSectionsInCollectionView: (UICollectionView *)collectionView {
+    return 1;
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
+    
+    if (indexPath.row == [[self.groupPeopleFRC fetchedObjects] count]) {
+        [cell addSubview:self.addPeopleButton];
+    } else {
+        FTPerson *person = [self.groupPeopleFRC objectAtIndexPath:indexPath];
+        
+        UIImage *profileImage = [UIImage imageWithData:person.profileImageData];
+        UIImageView *profileView = [[UIImageView alloc] initWithImage:profileImage];
+        [profileView setContentMode:UIViewContentModeScaleAspectFill];
+        [profileView setFrame:CGRectMake(0, 0, PEOPLE_GRID_WIDTH, PEOPLE_GRID_WIDTH)];
+        profileView.layer.cornerRadius = rintf(profileView.frame.size.width / 2);
+        profileView.clipsToBounds = YES;
+        profileView.layer.borderWidth = 3.0f;
+        profileView.layer.borderColor = [UIColor whiteColor].CGColor;
+        [cell addSubview:profileView];
+    }
+    return cell;
+}
+
+
+#pragma mark - NSFetchedResultsControllerDelegate
+
+- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
+    self.sectionChanges = [[NSMutableArray alloc] init];
+    self.itemChanges = [[NSMutableArray alloc] init];
+}
+
+- (void)controller:(NSFetchedResultsController *)controller
+  didChangeSection:(id <NSFetchedResultsSectionInfo>)sectionInfo
+           atIndex:(NSUInteger)sectionIndex
+     forChangeType:(NSFetchedResultsChangeType)type {
+    NSMutableDictionary *change = [[NSMutableDictionary alloc] init];
+    change[@(type)] = @(sectionIndex);
+    [self.sectionChanges addObject:change];
+}
+
+- (void)controller:(NSFetchedResultsController *)controller
+   didChangeObject:(id)anObject
+       atIndexPath:(NSIndexPath *)indexPath
+     forChangeType:(NSFetchedResultsChangeType)type
+      newIndexPath:(NSIndexPath *)newIndexPath {
+    NSMutableDictionary *change = [[NSMutableDictionary alloc] init];
+    switch(type) {
+        case NSFetchedResultsChangeInsert:
+            change[@(type)] = newIndexPath;
+            break;
+        case NSFetchedResultsChangeDelete:
+            change[@(type)] = indexPath;
+            break;
+        case NSFetchedResultsChangeUpdate:
+            change[@(type)] = indexPath;
+            break;
+        case NSFetchedResultsChangeMove:
+            change[@(type)] = @[indexPath, newIndexPath];
+            break;
+    }
+    [self.itemChanges addObject:change];
+}
+
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    [self.peopleCollectionView performBatchUpdates:^{
+        for (NSDictionary *change in self.sectionChanges) {
+            [change enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+                NSFetchedResultsChangeType type = [key unsignedIntegerValue];
+                switch(type) {
+                    case NSFetchedResultsChangeInsert:
+                        [self.peopleCollectionView insertSections:[NSIndexSet indexSetWithIndex:[obj unsignedIntegerValue]]];
+                        break;
+                    case NSFetchedResultsChangeDelete:
+                        [self.peopleCollectionView deleteSections:[NSIndexSet indexSetWithIndex:[obj unsignedIntegerValue]]];
+                        break;
+                    case NSFetchedResultsChangeMove:
+                    case NSFetchedResultsChangeUpdate:
+                        break;
+                }
+            }];
+        }
+        for (NSDictionary *change in self.itemChanges) {
+            [change enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+                NSFetchedResultsChangeType type = [key unsignedIntegerValue];
+                switch(type) {
+                    case NSFetchedResultsChangeInsert:
+                        [self.peopleCollectionView insertItemsAtIndexPaths:@[obj]];
+                        break;
+                    case NSFetchedResultsChangeDelete:
+                        [self.peopleCollectionView deleteItemsAtIndexPaths:@[obj]];
+                        break;
+                    case NSFetchedResultsChangeUpdate:
+                        [self.peopleCollectionView reloadItemsAtIndexPaths:@[obj]];
+                        break;
+                    case NSFetchedResultsChangeMove:
+                        [self.peopleCollectionView moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
+                        break;
+                }
+            }];
+        }
+        [self.peopleCollectionView reloadData];
+    } completion:^(BOOL finished) {
+        self.sectionChanges = nil;
+        self.itemChanges = nil;
+    }];
+}
+
 
 @end

@@ -19,6 +19,12 @@
 @dynamic startDate;
 @dynamic endDate;
 
+
+@dynamic lastProcessedDate;
+@dynamic photosTrained;
+@dynamic didFinishProcessing;
+@dynamic didFinishTraining;
+
 - (id)initWithName:(NSString *)name andPeople:(NSArray *)people andStartDate:(NSDate *)start andEndDate:(NSDate *)end {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
     self = [FTGroup MR_createInContext:context];
@@ -28,6 +34,11 @@
     self.people = [NSMutableSet setWithArray:people];
     self.startDate = start;
     self.endDate = end;
+    
+    self.didFinishTraining = NO;
+    self.didFinishProcessing = NO;
+    self.photosTrained = @(0);
+    self.lastProcessedDate = [NSDate date];
     
     NSMutableArray *personNames = [[NSMutableArray alloc] init];
     for (FTPerson *person in self.people) {

@@ -32,4 +32,12 @@ dispatch_queue_t BackgroundQueue(void) {
     return sDispatchQueue;
 }
 
+dispatch_group_t ProcessImageGroup(void) {
+    static dispatch_group_t sGroup = NULL;
+    if (!sGroup) {
+        sGroup = dispatch_group_create();
+    }
+    return sGroup;
+}
+
 @end

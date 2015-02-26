@@ -11,6 +11,7 @@
 
 @interface FTGroupManagingViewController : UIViewController
 
+@property (nonatomic, strong) FTGroup *group;
 @property (nonatomic, strong) NSString *groupName;
 @property (nonatomic, strong) NSDate *startDate;
 @property (nonatomic, strong) NSDate *endDate;
@@ -22,7 +23,15 @@
 @property (nonatomic, strong) UITextField *startDateField;
 @property (nonatomic, strong) UITextField *endDateField;
 @property (nonatomic, strong) UICollectionView *peopleView;
-@property (nonatomic, strong) UIDatePicker *datePicker;
+
+@property (nonatomic, strong) UIButton *addPeopleButton;
+@property (nonatomic, strong) UICollectionView *peopleCollectionView;
+
+@property (nonatomic, strong) NSFetchedResultsController *allPeopleFRC;
+@property (nonatomic, strong) NSFetchedResultsController *groupPeopleFRC;
+
+@property (nonatomic, strong) NSMutableArray *sectionChanges;
+@property (nonatomic, strong) NSMutableArray *itemChanges;
 
 @property (weak) id target;
 @property SEL action;

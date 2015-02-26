@@ -61,17 +61,15 @@ static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
     __block FTPerson *siyao = [FTPerson fetchWithID:@"siyao"];
     if (!siyao) {
         dispatch_sync(CoreDataWriteQueue(), ^{
-            siyao = [[FTPerson alloc] initWithName:@"siyao"];
+            siyao = [[FTPerson alloc] initWithName:@"siyao" andInitialTrainingImages:@[[UIImage imageNamed:@"siyao-s.jpg"]]];
         });
-        [siyao addTrainingImages:@[[UIImage imageNamed:@"siyao-s.jpg"]]];
     }
     
     __block FTPerson *chengyue = [FTPerson fetchWithID:@"chengyue"];
     if (!chengyue) {
         dispatch_sync(CoreDataWriteQueue(), ^{
-            chengyue = [[FTPerson alloc] initWithName:@"chengyue"];
+            chengyue = [[FTPerson alloc] initWithName:@"chengyue" andInitialTrainingImages:@[[UIImage imageNamed:@"chengyue-s.jpg"]]];
         });
-        [chengyue addTrainingImages:@[[UIImage imageNamed:@"chengyue-s.jpg"]]];
     }
     
     __block FTGroup *testGroup = [FTGroup fetchWithID:@"testGroup"];
@@ -82,7 +80,6 @@ static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
     }
     
     
-    //FTGroupPhotosViewController *mainView = [[FTGroupPhotosViewController alloc] initWithGroup:testGroup];
     FTGroupsListViewController *mainView = [[FTGroupsListViewController alloc] init];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:mainView];
     

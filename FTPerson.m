@@ -15,10 +15,13 @@
 @dynamic fppID;
 @dynamic objectIDString;
 @dynamic name;
+@dynamic profileImageData;
 @dynamic photos;
 @dynamic groups;
+@dynamic facesTrained;
 
-- (id)initWithName:(NSString *)name {
+
+- (id)initWithName:(NSString *)name andInitialTrainingImages:(NSArray *)images {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
     self = [FTPerson MR_createInContext:context];
     self.name = name;
@@ -28,13 +31,15 @@
     
     if ([result success]) {
         self.fppID = [[result content] objectForKey:@"person_id"];
+        [self trainWithImages:images];
     }
     
+    self.profileImageData = UIImageJPEGRepresentation(images[0], 0);
     [context MR_saveToPersistentStoreAndWait];
     return self;
 }
 
-- (void)addTrainingImages:(NSArray *)images {
+- (void)trainWithImages:(NSArray *)images {
     NSMutableArray *faceIDs = [[NSMutableArray alloc] init];
     for (UIImage *image in images) {
         //FaceppResult *result = [FTDetector detectAndUploadWithImage:image];

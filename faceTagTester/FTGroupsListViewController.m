@@ -87,8 +87,6 @@
 - (void)createGroupButtonPressed {
     FTGroupManagingViewController *groupManagingView = [[FTGroupManagingViewController alloc] initWithGroup:nil];
     [groupManagingView setTarget:self];
-    [groupManagingView setAction:@selector(newGroupAdded:)];
-
     [self.navigationController showViewController:groupManagingView sender:self];
     //group name
     //start and end date (optional) or select a range of photos (https://github.com/chiunam/CTAssetsPickerController)

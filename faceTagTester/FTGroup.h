@@ -23,6 +23,11 @@
 @property (nonatomic, strong) NSDate *startDate;
 @property (nonatomic, strong) NSDate *endDate;
 
+@property (nonatomic, strong) NSDate *lastProcessedDate;
+@property (nonatomic, strong) NSNumber *photosTrained;
+@property (nonatomic) BOOL didFinishProcessing;
+@property (nonatomic) BOOL didFinishTraining;
+
 - (id)initWithName:(NSString *)name andPeople:(NSArray *)people andStartDate:(NSDate *)start andEndDate:(NSDate *)end;
 - (void)addPhoto:(FTPhoto *)photo;
 - (NSArray *)photoArray;

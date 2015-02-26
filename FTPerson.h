@@ -19,11 +19,14 @@
 @property (nonatomic, strong) NSString *fppID;
 @property (nonatomic, strong) NSString *objectIDString;
 @property (nonatomic, strong) NSString *name;
+@property (nonatomic, strong) NSNumber *facesTrained;
+@property (nonatomic, strong) NSData *profileImageData;
+
 @property (nonatomic, strong) NSMutableSet *photos;
 @property (nonatomic, strong) NSMutableSet *groups;
 
-- (id)initWithName:(NSString *)name;
-- (void)addTrainingImages:(NSArray *)images;
+- (id)initWithName:(NSString *)name andInitialTrainingImages:(NSArray *)images;
+- (void)trainWithImages:(NSArray *)images;
 - (void)addPhoto:(FTPhoto *)photo;
 
 @end

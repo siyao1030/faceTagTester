@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="14A389" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="FTGroup" representedClassName="FTGroup" syncable="YES">
+        <attribute name="didFinishProcessing" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="didFinishTraining" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="endDate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="fppID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lastProcessedDate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="photosTrained" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="startDate" optional="YES" attributeType="Date" syncable="YES"/>
         <relationship name="people" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTPerson" inverseName="groups" inverseEntity="FTPerson" syncable="YES"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTPhoto" inverseName="groups" inverseEntity="FTPhoto" syncable="YES"/>
     </entity>
     <entity name="FTPerson" representedClassName="FTPerson" syncable="YES">
+        <attribute name="facesTrained" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="fppID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="objectIDString" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="profileImageData" optional="YES" attributeType="Binary" syncable="YES"/>
         <relationship name="groups" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTGroup" inverseName="people" inverseEntity="FTGroup" syncable="YES"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTPhoto" inverseName="people" inverseEntity="FTPhoto" syncable="YES"/>
     </entity>
@@ -26,8 +32,8 @@
         <relationship name="people" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTPerson" inverseName="photos" inverseEntity="FTPerson" syncable="YES"/>
     </entity>
     <elements>
-        <element name="FTGroup" positionX="-137" positionY="-67" width="128" height="148"/>
-        <element name="FTPerson" positionX="-450" positionY="24" width="128" height="133"/>
+        <element name="FTGroup" positionX="-137" positionY="-67" width="128" height="208"/>
+        <element name="FTPerson" positionX="-450" positionY="24" width="128" height="165"/>
         <element name="FTPhoto" positionX="124" positionY="39" width="128" height="133"/>
     </elements>
 </model>
