@@ -19,19 +19,22 @@
 @dynamic photos;
 @dynamic groups;
 @dynamic facesTrained;
+@dynamic trainingImages;
 
 
 - (id)initWithName:(NSString *)name andInitialTrainingImages:(NSArray *)images {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
     self = [FTPerson MR_createInContext:context];
     self.name = name;
-    self.id = name;
+    self.id = [[NSUUID UUID] UUIDString];
     self.objectIDString = [[self.objectID URIRepresentation] absoluteString];
+    self.trainingImages = [[NSMutableArray alloc] init];
+    
     FaceppResult *result = [[FaceppAPI person] createWithPersonName:self.id andFaceId:nil andTag:nil andGroupId:nil orGroupName:nil];
     
     if ([result success]) {
         self.fppID = [[result content] objectForKey:@"person_id"];
-        [self trainWithImages:images];
+        [self train];
     }
     
     self.profileImageData = UIImageJPEGRepresentation(images[0], 0);
@@ -41,8 +44,17 @@
 
 - (void)trainWithImages:(NSArray *)images {
     NSMutableArray *faceIDs = [[NSMutableArray alloc] init];
+    int index = (int)self.trainingImages.count;
     for (UIImage *image in images) {
-        //FaceppResult *result = [FTDetector detectAndUploadWithImage:image];
+        //save to local
+        NSString *directory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+        NSString *fileName = [NSString stringWithFormat:@"%@%d.jpeg",[self.name removeAllWhitespace],index];
+        NSString *filePath = [NSString stringWithFormat:@"%@/%@",directory,fileName];
+        NSData *data = [NSData dataWithData:UIImageJPEGRepresentation(image, 1.0f)];//1.0f = 100% quality
+        [data writeToFile:filePath atomically:YES];
+        [self.trainingImages addObject:fileName];
+        
+        //train
         FaceppResult *result = [[FaceppAPI detection] detectWithURL:nil orImageData:UIImageJPEGRepresentation(image, 0.5) mode:FaceppDetectionModeOneFace];
         if ([result success]) {
             NSArray *faces = [[result content] objectForKey:@"face"];

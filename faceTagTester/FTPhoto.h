@@ -25,4 +25,5 @@
 -(void)addPerson:(FTPerson *)person;
 -(void)addGroup:(FTGroup *)group;
 
+-(NSString *)namesString;
 @end

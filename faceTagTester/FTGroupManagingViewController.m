@@ -8,6 +8,7 @@
 
 #import "FTGroupManagingViewController.h"
 #import "FTGroupPhotosViewController.h"
+#import "FTPersonView.h"
 
 #define SIDE_PADDING 40
 #define PEOPLE_GRID_WIDTH 70
@@ -134,7 +135,6 @@
     [self.peopleCollectionView setBackgroundColor:[UIColor whiteColor]];
     [self.view addSubview:self.peopleCollectionView];
     
-    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
     
     /*
     NSFetchRequest *allPeopleRequest = [[NSFetchRequest alloc] init];
@@ -148,19 +148,24 @@
     [self.allPeopleFRC performFetch:NULL];
     */
     
-    NSFetchRequest *groupPeopleRequest = [[NSFetchRequest alloc] init];
-    NSSortDescriptor* nameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
-    NSPredicate *fetchPredicate = [NSPredicate predicateWithFormat:@"%@ IN groups", self.group];
-    [groupPeopleRequest setSortDescriptors:@[nameDescriptor]];
-    [groupPeopleRequest setEntity:[FTPerson entity]];
-    [groupPeopleRequest setPredicate:fetchPredicate];
-    [groupPeopleRequest setFetchBatchSize:10];
-    
-    self.groupPeopleFRC = [[NSFetchedResultsController alloc] initWithFetchRequest:groupPeopleRequest managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
-    [self.groupPeopleFRC setDelegate:self];
-    [self.groupPeopleFRC performFetch:NULL];
+    if (self.group) {
+        NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+
+        NSFetchRequest *groupPeopleRequest = [[NSFetchRequest alloc] init];
+        NSSortDescriptor* nameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+        NSPredicate *fetchPredicate = [NSPredicate predicateWithFormat:@"%@ IN groups", self.group];
+        [groupPeopleRequest setSortDescriptors:@[nameDescriptor]];
+        [groupPeopleRequest setEntity:[FTPerson entity]];
+        [groupPeopleRequest setPredicate:fetchPredicate];
+        [groupPeopleRequest setFetchBatchSize:10];
+        
+        self.groupPeopleFRC = [[NSFetchedResultsController alloc] initWithFetchRequest:groupPeopleRequest managedObjectContext:context sectionNameKeyPath:nil cacheName:nil];
+        [self.groupPeopleFRC setDelegate:self];
+        [self.groupPeopleFRC performFetch:NULL];
+    }
 
 }
+
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
@@ -216,6 +221,8 @@
 }
 
 - (void)startDateSelected:(UIDatePicker *)datePicker {
+    [self.groupNameField resignFirstResponder];
+
     [self setStartDate:[datePicker date]];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -225,6 +232,8 @@
 }
 
 - (void)endDateSelected:(UIDatePicker *)datePicker {
+    [self.groupNameField resignFirstResponder];
+
     [self setEndDate:[datePicker date]];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -235,10 +244,26 @@
 
 
 - (void)addPeopleButtonPressed {
-    //pick from existing ppl
-    //create new people
+    [self presentPersonViewForPerson:nil];
 }
 
+- (void)presentPersonViewForPerson:(FTPerson *)person {
+    if ([self.groupNameField isFirstResponder]) {
+        [self.groupNameField resignFirstResponder];
+    }
+    
+    UIView *dimView = [[UIView alloc] initWithFrame:self.view.bounds];
+    [dimView setBackgroundColor:[[UIColor blackColor] colorWithAlphaComponent:0.6]];
+    [self.view addSubview:dimView];
+    
+    FTPersonView *personView = [[FTPersonView alloc] initWithPerson:person];
+    CGRect personFrame = [personView frame];
+    personFrame.origin.x = rintf((self.view.bounds.size.width - personFrame.size.width) / 2.0);
+    personFrame.origin.y = rintf((self.view.bounds.size.height - personFrame.size.height) / 2.0);
+    [personView setFrame:personFrame];
+    [self.view addSubview:personView];
+
+}
 - (void)createPeopleButtonPressed {
     //name
     //photo(s)
@@ -303,6 +328,10 @@
     return cell;
 }
 
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    FTPerson *person = [self.groupPeopleFRC objectAtIndexPath:indexPath];
+    [self presentPersonViewForPerson:person];
+}
 
 #pragma mark - NSFetchedResultsControllerDelegate
 

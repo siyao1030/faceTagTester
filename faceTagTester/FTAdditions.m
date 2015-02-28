@@ -10,7 +10,6 @@
 
 @implementation FTAdditions
 
-
 static const char * __ptQueueIdentifier = "ftQueueIdentifier";
 
 dispatch_queue_t CoreDataWriteQueue(void) {
@@ -40,4 +39,13 @@ dispatch_group_t ProcessImageGroup(void) {
     return sGroup;
 }
 
+@end
+
+@implementation NSString (FTAdditions)
+- (NSString *)removeAllWhitespace
+{
+    return [self stringByReplacingOccurrencesOfString:@"\\s" withString:@""
+                                              options:NSRegularExpressionSearch
+                                                range:NSMakeRange(0, [self length])];
+}
 @end

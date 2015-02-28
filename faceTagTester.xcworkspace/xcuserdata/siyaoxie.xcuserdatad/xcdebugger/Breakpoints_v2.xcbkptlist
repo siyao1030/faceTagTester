@@ -48,22 +48,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "FTPerson.m"
-            timestampString = "446070230.932366"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "41"
-            endingLineNumber = "41"
-            landmarkName = "-addTrainingImages:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -100,13 +84,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "faceTagTester/FTGroupPhotosViewController.m"
-            timestampString = "446436223.003068"
+            timestampString = "446606257.64727"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "398"
-            endingLineNumber = "398"
-            landmarkName = "-collectionView:viewForSupplementaryElementOfKind:atIndexPath:"
-            landmarkType = "5">
+            startingLineNumber = "442"
+            endingLineNumber = "442"
+            landmarkName = "@implementation FTGroupPhotosViewController"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -208,12 +192,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FTPerson.m"
-            timestampString = "446072288.168182"
+            timestampString = "446772774.4011"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "27"
-            endingLineNumber = "27"
-            landmarkName = "-initWithName:"
+            startingLineNumber = "31"
+            endingLineNumber = "31"
+            landmarkName = "-initWithName:andInitialTrainingImages:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -240,13 +224,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "faceTagTester/FTGroupPhotosViewController.m"
-            timestampString = "446436223.003068"
+            timestampString = "446606257.64727"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "489"
-            endingLineNumber = "489"
-            landmarkName = "-controllerDidChangeContent:"
-            landmarkType = "5">
+            startingLineNumber = "533"
+            endingLineNumber = "533">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -256,12 +238,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "faceTagTester/FTGroupPhotosViewController.m"
-            timestampString = "446436223.003068"
+            timestampString = "446606257.64727"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "413"
-            endingLineNumber = "413"
-            landmarkName = "-collectionView:layout:referenceSizeForHeaderInSection:"
+            startingLineNumber = "457"
+            endingLineNumber = "457"
+            landmarkName = "-controller:didChangeSection:atIndex:forChangeType:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -276,22 +258,8 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "53"
-            endingLineNumber = "53">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "faceTagTester/FTGroupPhotosViewController.m"
-            timestampString = "446436223.003068"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "136"
-            endingLineNumber = "136"
-            landmarkName = "-processImagesFromStartDate:toEndDate:"
+            endingLineNumber = "53"
+            landmarkName = "-namesString"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -302,12 +270,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "faceTagTester/FTGroupPhotosViewController.m"
-            timestampString = "446436223.003068"
+            timestampString = "446606257.64727"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "351"
-            endingLineNumber = "351"
-            landmarkName = "-collectionView:numberOfItemsInSection:"
+            startingLineNumber = "395"
+            endingLineNumber = "395"
+            landmarkName = "-collectionView:cellForItemAtIndexPath:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -334,23 +302,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "faceTagTester/FTGroupManagingViewController.m"
-            timestampString = "446177470.762274"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "84"
-            endingLineNumber = "84"
-            landmarkName = "-viewDidLoad"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "faceTagTester/FTGroupManagingViewController.m"
-            timestampString = "446177470.762274"
+            timestampString = "446671970.161008"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "90"
@@ -362,16 +314,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "faceTagTester/FTGroupPhotosViewController.m"
-            timestampString = "446436223.003068"
+            filePath = "faceTagTester/FTGroupManagingViewController.m"
+            timestampString = "446671970.161008"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "301"
-            endingLineNumber = "301"
-            landmarkName = "-processDateRangeDifference:"
+            startingLineNumber = "96"
+            endingLineNumber = "96"
+            landmarkName = "-viewDidLoad"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -382,91 +334,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "faceTagTester/FTGroupPhotosViewController.m"
-            timestampString = "446436223.003068"
+            timestampString = "446500293.107808"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "297"
-            endingLineNumber = "297"
-            landmarkName = "-processDateRangeDifference:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "faceTagTester/FTGroupPhotosViewController.m"
-            timestampString = "446436223.003068"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "293"
-            endingLineNumber = "293"
-            landmarkName = "-processDateRangeDifference:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "faceTagTester/FTGroupPhotosViewController.m"
-            timestampString = "446436223.003068"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "290"
-            endingLineNumber = "290"
-            landmarkName = "-processDateRangeDifference:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "faceTagTester/FTGroupPhotosViewController.m"
-            timestampString = "446436223.003068"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "321"
-            endingLineNumber = "321"
-            landmarkName = "-discardPhotosFromStartDate:toEndDate:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "faceTagTester/FTGroupPhotosViewController.m"
-            timestampString = "446436223.003068"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "319"
-            endingLineNumber = "319"
-            landmarkName = "-discardPhotosFromStartDate:toEndDate:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "faceTagTester/FTGroupPhotosViewController.m"
-            timestampString = "446436223.003068"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "86"
-            endingLineNumber = "86"
+            startingLineNumber = "68"
+            endingLineNumber = "68"
             landmarkName = "-photoLibraryDidChange:"
             landmarkType = "5">
          </BreakpointContent>
@@ -478,11 +350,27 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "faceTagTester/FTGroupPhotosViewController.m"
-            timestampString = "446436223.003068"
+            timestampString = "446500293.107808"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "97"
-            endingLineNumber = "97"
+            startingLineNumber = "69"
+            endingLineNumber = "69"
+            landmarkName = "-photoLibraryDidChange:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "faceTagTester/FTGroupPhotosViewController.m"
+            timestampString = "446506785.575699"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "86"
+            endingLineNumber = "86"
             landmarkName = "-photoLibraryDidChange:"
             landmarkType = "5">
             <Locations>
@@ -490,28 +378,138 @@
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "-[FTGroupPhotosViewController photoLibraryDidChange:]"
+                  symbolName = "__53-[FTGroupPhotosViewController photoLibraryDidChange:]_block_invoke_2"
                   moduleName = "faceTagTester"
                   urlString = "file:///Users/siyaoxie/Dropbox%20(Personal)/Project/faceTagTester/faceTagTester/FTGroupPhotosViewController.m"
-                  timestampString = "446436380.096512"
+                  timestampString = "446778275.992269"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "98"
-                  endingLineNumber = "98"
-                  offsetFromSymbolStart = "388">
+                  startingLineNumber = "86"
+                  endingLineNumber = "86"
+                  offsetFromSymbolStart = "304">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "__53-[FTGroupPhotosViewController photoLibraryDidChange:]_block_invoke"
+                  symbolName = "__53-[FTGroupPhotosViewController photoLibraryDidChange:]_block_invoke_2"
                   moduleName = "faceTagTester"
                   urlString = "file:///Users/siyaoxie/Dropbox%20(Personal)/Project/faceTagTester/faceTagTester/FTGroupPhotosViewController.m"
-                  timestampString = "446436380.096776"
+                  timestampString = "446778275.992479"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "98"
-                  endingLineNumber = "98"
+                  startingLineNumber = "86"
+                  endingLineNumber = "86"
+                  offsetFromSymbolStart = "352">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "faceTagTester/FTGroup.m"
+            timestampString = "446511202.815169"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "51"
+            endingLineNumber = "51"
+            landmarkName = "-initWithName:andPeople:andStartDate:andEndDate:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "faceTagTester/FTGroupPhotosViewController.m"
+            timestampString = "446606257.64727"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "314"
+            endingLineNumber = "314"
+            landmarkName = "-updateGroup:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "faceTagTester/FTGroupPhotosViewController.m"
+            timestampString = "446606257.64727"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "303"
+            endingLineNumber = "303"
+            landmarkName = "-updateGroup:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "faceTagTester/FTGroupPhotosViewController.m"
+            timestampString = "446606257.64727"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "320"
+            endingLineNumber = "320"
+            landmarkName = "-processDateRangeDifference:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "faceTagTester/FTGroupPhotosViewController.m"
+            timestampString = "446606257.64727"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "350"
+            endingLineNumber = "350"
+            landmarkName = "-discardPhotosFromStartDate:toEndDate:"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[FTGroupPhotosViewController discardPhotosFromStartDate:toEndDate:]"
+                  moduleName = "faceTagTester"
+                  urlString = "file:///Users/siyaoxie/Dropbox%20(Personal)/Project/faceTagTester/faceTagTester/FTGroupPhotosViewController.m"
+                  timestampString = "446778275.995875"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "351"
+                  endingLineNumber = "351"
+                  offsetFromSymbolStart = "80">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__68-[FTGroupPhotosViewController discardPhotosFromStartDate:toEndDate:]_block_invoke"
+                  moduleName = "faceTagTester"
+                  urlString = "file:///Users/siyaoxie/Dropbox%20(Personal)/Project/faceTagTester/faceTagTester/FTGroupPhotosViewController.m"
+                  timestampString = "446778275.9961"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "351"
+                  endingLineNumber = "351"
                   offsetFromSymbolStart = "52">
                </Location>
             </Locations>
@@ -524,12 +522,60 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "faceTagTester/FTGroupPhotosViewController.m"
-            timestampString = "446436223.003068"
+            timestampString = "446606257.64727"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "87"
-            endingLineNumber = "87"
-            landmarkName = "-photoLibraryDidChange:"
+            startingLineNumber = "352"
+            endingLineNumber = "352"
+            landmarkName = "-discardPhotosFromStartDate:toEndDate:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "faceTagTester/FTGroupPhotosViewController.m"
+            timestampString = "446606257.64727"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "355"
+            endingLineNumber = "355"
+            landmarkName = "-discardPhotosFromStartDate:toEndDate:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "faceTagTester/FTGroupPhotosViewController.m"
+            timestampString = "446606257.64727"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "326"
+            endingLineNumber = "326"
+            landmarkName = "-processDateRangeDifference:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FTPerson.m"
+            timestampString = "446772774.4011"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "41"
+            endingLineNumber = "41"
+            landmarkName = "-initWithName:andInitialTrainingImages:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

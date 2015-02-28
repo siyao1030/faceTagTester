@@ -17,3 +17,10 @@ dispatch_queue_t BackgroundQueue(void);
 dispatch_group_t ProcessImageGroup(void);
 
 @end
+
+@interface NSString (FTAdditions)
+
+- (NSString *)removeAllWhitespace;
+
+@end
+

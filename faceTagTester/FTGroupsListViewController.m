@@ -120,6 +120,11 @@
     }
     
     // Configure the cell...
+    
+    for (UIView * view in cell.contentView.subviews)
+    {
+        [view removeFromSuperview];
+    }
     [self configureCell:cell forIndexPath:indexPath];
     return cell;
 }
@@ -127,7 +132,7 @@
 
 - (void)configureCell:(UITableViewCell *)cell forIndexPath:(NSIndexPath *)indexPath {
     FTGroup *group = [self.frc objectAtIndexPath:indexPath];
-    
+
     UILabel *titleLabel = [[UILabel alloc] init];
     [titleLabel setText:group.name];
     [titleLabel setFont:[UIFont boldSystemFontOfSize:20]];
@@ -158,8 +163,9 @@
     subtitleFrame.origin.y = CGRectGetMaxY(titleFrame) + 10;
     [subtitleLabel setFrame:subtitleFrame];
     
-    [cell addSubview:titleLabel];
-    [cell addSubview:subtitleLabel];
+    [[cell contentView] addSubview:titleLabel];
+    [[cell contentView] addSubview:subtitleLabel];
+    
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

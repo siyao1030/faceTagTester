@@ -31,17 +31,27 @@
 
 -(void)addPerson:(FTPerson *)person {
     if (![self.people containsObject:person]) {
-        if (![self.people count]) {
-            self.peopleNamesString = person.name;
-        } else {
-            self.peopleNamesString = [self.peopleNamesString  stringByAppendingString:[NSString stringWithFormat:@", %@", person.name]];
-        }
         [self.people addObject:person];
+        self.peopleNamesString = [self namesString];
         [person addPhoto:self];
     }
     
 }
 
+
+-(NSString *)namesString {
+    NSString *namesString = @"";
+    NSSortDescriptor* nameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:NO];
+
+    NSArray *sortedPeopleArray = [self.people sortedArrayUsingDescriptors:@[nameDescriptor]];
+    for (FTPerson *person in sortedPeopleArray) {
+        namesString = [namesString stringByAppendingString:[NSString stringWithFormat:@"%@, ", person.name]];
+    }
+    if ([namesString length]) {
+        namesString = [namesString substringToIndex:[namesString length] -2];
+    }
+    return namesString;
+}
 
 -(void)addGroup:(FTGroup *)group {
     [self.groups addObject:group];

@@ -22,11 +22,12 @@
 @property (nonatomic, strong) NSNumber *facesTrained;
 @property (nonatomic, strong) NSData *profileImageData;
 
+@property (nonatomic, strong) NSMutableArray *trainingImages;
 @property (nonatomic, strong) NSMutableSet *photos;
 @property (nonatomic, strong) NSMutableSet *groups;
 
 - (id)initWithName:(NSString *)name andInitialTrainingImages:(NSArray *)images;
-- (void)trainWithImages:(NSArray *)images;
+- (void)train;
 - (void)addPhoto:(FTPhoto *)photo;
 
 @end
