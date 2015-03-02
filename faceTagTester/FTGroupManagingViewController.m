@@ -8,12 +8,15 @@
 
 #import "FTGroupManagingViewController.h"
 #import "FTGroupPhotosViewController.h"
-#import "FTPersonView.h"
+#import "FTPersonViewController.h"
+
 
 #define SIDE_PADDING 40
 #define PEOPLE_GRID_WIDTH 70
 
-@interface FTGroupManagingViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate>
+@interface FTGroupManagingViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate> {
+    BOOL _isCreatingNewGroup;
+}
 
 @end
 
@@ -31,11 +34,32 @@
         UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonPressed)];
         self.navigationItem.rightBarButtonItem = doneButton;
     } else {
+        _isCreatingNewGroup = YES;
+        dispatch_async(CoreDataWriteQueue(), ^{
+            FTGroup *newGroup = [[FTGroup alloc] init];
+            [self setGroup:newGroup];
+        });
         UIBarButtonItem *createButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(createButtonPressed)];
         self.navigationItem.rightBarButtonItem = createButton;
     }
     
     return self;
+}
+
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    if (self.isMovingFromParentViewController) {
+        // cancel editing, should discard new group if it was created
+        if (_isCreatingNewGroup) {
+            dispatch_async(CoreDataWriteQueue(), ^{
+                FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
+                [localGroup MR_deleteEntity];
+                [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
+            });
+        }
+    }
 }
 
 - (void)viewDidLoad {
@@ -252,18 +276,16 @@
         [self.groupNameField resignFirstResponder];
     }
     
-    UIView *dimView = [[UIView alloc] initWithFrame:self.view.bounds];
-    [dimView setBackgroundColor:[[UIColor blackColor] colorWithAlphaComponent:0.6]];
-    [self.view addSubview:dimView];
-    
-    FTPersonView *personView = [[FTPersonView alloc] initWithPerson:person];
-    CGRect personFrame = [personView frame];
-    personFrame.origin.x = rintf((self.view.bounds.size.width - personFrame.size.width) / 2.0);
-    personFrame.origin.y = rintf((self.view.bounds.size.height - personFrame.size.height) / 2.0);
-    [personView setFrame:personFrame];
-    [self.view addSubview:personView];
+    self.personPopUpView = [[FTPersonPopUpView alloc] initWithGroup:self.group Person:person];
+    [self.personPopUpView showPopup];
 
 }
+
+- (void)dismssPersonView:(UIGestureRecognizer *)sender {
+    [self.personPopUpView dismissPopup];
+    self.personPopUpView = nil;
+}
+
 - (void)createPeopleButtonPressed {
     //name
     //photo(s)
@@ -281,9 +303,16 @@
 }
 
 - (void)createButtonPressed {
-    dispatch_sync(CoreDataWriteQueue(), ^{
-        FTGroup *newGroup = [[FTGroup alloc] initWithName:self.groupNameField.text andPeople:self.people andStartDate:self.startDate andEndDate:self.endDate];
-        FTGroupPhotosViewController *groupPhotosView = [[FTGroupPhotosViewController alloc] initWithGroup:newGroup];
+    dispatch_async(CoreDataWriteQueue(), ^{
+        FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
+        [localGroup setName:self.groupNameField.text];
+        [localGroup setPeople:[NSMutableSet setWithArray:self.people]];
+        [localGroup setStartDate:self.startDate];
+        [localGroup setEndDate:self.endDate];
+        
+        [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
+        //FTGroup *newGroup = [[FTGroup alloc] initWithName:self.groupNameField.text andPeople:self.people andStartDate:self.startDate andEndDate:self.endDate];
+        FTGroupPhotosViewController *groupPhotosView = [[FTGroupPhotosViewController alloc] initWithGroup:self.group];
         [self.navigationController showViewController:groupPhotosView sender:self];
     });
 }

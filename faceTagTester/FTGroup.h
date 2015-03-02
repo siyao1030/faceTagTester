@@ -28,8 +28,11 @@
 @property (nonatomic) BOOL didFinishProcessing;
 @property (nonatomic) BOOL didFinishTraining;
 
+- (id)init;
 - (id)initWithName:(NSString *)name andPeople:(NSArray *)people andStartDate:(NSDate *)start andEndDate:(NSDate *)end;
 - (void)addPhoto:(FTPhoto *)photo;
+- (void)addPerson:(FTPerson *)person;
+
 - (NSArray *)photoArray;
 - (NSArray *)peopleArray;
 

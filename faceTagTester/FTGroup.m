@@ -25,12 +25,27 @@
 @dynamic didFinishProcessing;
 @dynamic didFinishTraining;
 
+- (id)init {
+    NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+    self = [FTGroup MR_createInContext:context];
+    
+    self.id = [[NSUUID UUID] UUIDString]; //for fetching photos and for api uses, cannot change
+    
+    self.didFinishTraining = NO;
+    self.didFinishProcessing = NO;
+    self.photosTrained = @(0);
+    self.lastProcessedDate = [NSDate date];
+
+    [context MR_saveToPersistentStoreAndWait];
+    return self;
+}
+
 - (id)initWithName:(NSString *)name andPeople:(NSArray *)people andStartDate:(NSDate *)start andEndDate:(NSDate *)end {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
     self = [FTGroup MR_createInContext:context];
     
     self.name = name; //display, can change
-    self.id = name; //for fetching photos and for api uses, cannot change
+    self.id = [[NSUUID UUID] UUIDString]; //for fetching photos and for api uses, cannot change
     self.people = [NSMutableSet setWithArray:people];
     self.startDate = start;
     self.endDate = end;
@@ -40,12 +55,12 @@
     self.photosTrained = @(0);
     self.lastProcessedDate = [NSDate date];
     
-    NSMutableArray *personNames = [[NSMutableArray alloc] init];
+    NSMutableArray *personIDs = [[NSMutableArray alloc] init];
     for (FTPerson *person in self.people) {
-        [personNames addObject:person.name];
+        [personIDs addObject:person.id];
     }
     
-    FaceppResult *result = [[FaceppAPI group] createWithGroupName:self.id andTag:nil andPersonId:nil orPersonName:personNames];
+    FaceppResult *result = [[FaceppAPI group] createWithGroupName:self.id andTag:nil andPersonId:nil orPersonName:personIDs];
     
     if ([result success]) {
         self.fppID = [[result content] objectForKey:@"group_id"];
@@ -57,6 +72,10 @@
 
 - (void)addPhoto:(FTPhoto *)photo {
     [self.photos addObject:photo];
+}
+
+- (void)addPerson:(FTPerson *)person {
+    [self.people addObject:person];
 }
 
 - (NSArray *)photoArray {

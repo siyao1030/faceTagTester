@@ -1,40 +1,48 @@
 //
-//  FTPersonViewController.m
+//  FTPersonPopUpView.m
 //  faceTagTester
 //
 //  Created by Siyao Clara Xie on 2/24/15.
 //  Copyright (c) 2015 Siyao Xie. All rights reserved.
 //
 
-#import "FTPersonView.h"
+#import "FTPersonPopUpView.h"
 #define IMAGE_GRID_WIDTH 50
 #define CAPTURE_BUTTON_RADIUS 40
 
 
-@interface FTPersonView () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UITextFieldDelegate> {
+@interface FTPersonPopUpView () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UITextFieldDelegate> {
     BOOL _frontCameraIsOn;
     BOOL _isTakingPicture;
 }
 
 @end
 
-@implementation FTPersonView
+@implementation FTPersonPopUpView
 
-- (id)initWithPerson:(FTPerson *)person {
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    self = [super initWithFrame:CGRectMake(0, 0, rintf(screenRect.size.width * 0.8), rintf(screenRect.size.height * 0.6))];
-    [self setBackgroundColor:[UIColor grayColor]];
+- (id)initWithGroup:(FTGroup *)group Person:(FTPerson *)person {
+    self = [super init];
+    [self setDismissType:PTPopupViewDismissFlyDown];
 
+    [self setGroup:group];
     if (person) {
         [self setPerson:person];
         [self setImagePaths:person.trainingImages];
     }
-    
     self.addedImages = [[NSMutableArray alloc] init];
-    CGRect bounds = [self bounds];
+    
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    CGRect contentFrame = CGRectMake(0, 0, rintf(screenRect.size.width * 0.8), rintf(screenRect.size.height * 0.6 + 50));
+    contentFrame.origin.x = rintf((screenRect.size.width - contentFrame.size.width) / 2.0);
+    contentFrame.origin.y = 100;
+    self.contentView = [[UIView alloc] initWithFrame:contentFrame];
+    [self.contentView setBackgroundColor:[UIColor redColor]];
+    [self addSubview:self.contentView];
+    
+    CGRect bounds = self.contentView.bounds;
 
     //cameraView
-    self.cameraView = [[UIView alloc] initWithFrame:bounds];
+    self.cameraView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, rintf(screenRect.size.width * 0.8), rintf(screenRect.size.height * 0.6))];
     self.captureSession = [[AVCaptureSession alloc] init];
     self.captureSession.sessionPreset = AVCaptureSessionPresetMedium;
     AVCaptureVideoPreviewLayer *captureVideoPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:self.captureSession];
@@ -57,9 +65,10 @@
     _frontCameraIsOn = YES;
 
     [self.captureSession addOutput:self.imageOutput];
-    captureVideoPreviewLayer.frame = self.cameraView.bounds;
+    captureVideoPreviewLayer.frame = self.cameraView.frame;
+    [captureVideoPreviewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
     [self.cameraView.layer addSublayer:captureVideoPreviewLayer];
-    [self addSubview:self.cameraView];
+    [self.contentView addSubview:self.cameraView];
     
     self.flipCameraButton = [[UIButton alloc] initWithFrame:CGRectZero];
     [self.flipCameraButton setBackgroundImage:[UIImage imageNamed:@"capture-flip"] forState:UIControlStateNormal];
@@ -72,7 +81,7 @@
     flipCameraFrame.origin.x = CGRectGetMaxX(bounds) - flipCameraFrame.size.width - 10;
     flipCameraFrame.origin.y = 10;
     [self.flipCameraButton setFrame:flipCameraFrame];
-    [self addSubview:self.flipCameraButton];
+    [self.contentView addSubview:self.flipCameraButton];
 
     CGFloat cameraViewHeight = bounds.size.width;
 
@@ -80,7 +89,7 @@
     CGFloat previewHeight = cameraViewHeight + CAPTURE_BUTTON_RADIUS;
     self.previewView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, bounds.size.width, previewHeight)];
     [self.previewView setHidden:YES];
-    [self addSubview:self.previewView];
+    [self.contentView addSubview:self.previewView];
     
     self.previewImageView = [[UIImageView alloc] initWithFrame:self.cameraView.frame];
     [self.previewView addSubview:self.previewImageView];
@@ -106,12 +115,12 @@
     
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     flowLayout.sectionInset = UIEdgeInsetsMake(CAPTURE_BUTTON_RADIUS + 5, 5, 0, 5);
-    self.imagesCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, cameraViewHeight, bounds.size.width, bounds.size.height - cameraViewHeight) collectionViewLayout:flowLayout];
+    self.imagesCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, cameraViewHeight, bounds.size.width, contentFrame.size.height - cameraViewHeight - 50) collectionViewLayout:flowLayout];
     [self.imagesCollectionView setDelegate:self];
     [self.imagesCollectionView setDataSource:self];
     [self.imagesCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
     [self.imagesCollectionView setBackgroundColor:[UIColor whiteColor]];
-    [self addSubview:self.imagesCollectionView];
+    [self.contentView addSubview:self.imagesCollectionView];
     
     //capture button & save button
     self.captureButton = [[UIButton alloc] initWithFrame:CGRectMake(rintf(bounds.size.width / 2.0) - CAPTURE_BUTTON_RADIUS, cameraViewHeight - CAPTURE_BUTTON_RADIUS, CAPTURE_BUTTON_RADIUS * 2, CAPTURE_BUTTON_RADIUS * 2)];
@@ -121,8 +130,7 @@
     self.captureButton.layer.borderColor = [UIColor whiteColor].CGColor;
     [self.captureButton setBackgroundColor:[UIColor colorForText:@"capture"]];
     [self.captureButton addTarget:self action:@selector(captureImage) forControlEvents:UIControlEventTouchUpInside];
-    [self addSubview:self.captureButton];
-    
+    [self.contentView addSubview:self.captureButton];
     
     self.saveButton = [[UIButton alloc] initWithFrame:CGRectMake(rintf(bounds.size.width / 2.0) - CAPTURE_BUTTON_RADIUS, cameraViewHeight - CAPTURE_BUTTON_RADIUS, CAPTURE_BUTTON_RADIUS * 2, CAPTURE_BUTTON_RADIUS * 2)];
     self.saveButton.layer.cornerRadius = CAPTURE_BUTTON_RADIUS;
@@ -135,7 +143,7 @@
     [self.saveButton setTitle:@"Keep it" forState:UIControlStateNormal];
     [self.saveButton.titleLabel setFont:[UIFont boldSystemFontOfSize:18]];
     [self.saveButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
-    [self addSubview:self.saveButton];
+    [self.contentView addSubview:self.saveButton];
     
     //Top Layer
     self.nameField = [[UITextField alloc] init];
@@ -154,11 +162,28 @@
     nameFrame.origin.x = 10;
     nameFrame.origin.y = 10;
     [self.nameField setFrame:nameFrame];
-    [self addSubview:self.nameField];
+    [self.contentView addSubview:self.nameField];
 
+    self.savePersonButton = [[UIButton alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(self.imagesCollectionView.frame), bounds.size.width, 50)];
+    [self.savePersonButton setUserInteractionEnabled:YES];
+    [self.savePersonButton setBackgroundColor:[UIColor colorForText:@"capture"]];
+    [self.savePersonButton setTitle:@"Save" forState:UIControlStateNormal];
+    [self.savePersonButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.savePersonButton.titleLabel setFont:[UIFont boldSystemFontOfSize:20]];
+    [self.savePersonButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
+    [self.savePersonButton addTarget:self action:@selector(savePersonButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    [self.contentView addSubview:self.savePersonButton];
     
     [self setIsTakingPicture:YES];
+    
+
+
     return self;
+}
+
+- (void)dismissPopup {
+    [self.captureSession stopRunning];
+    [super dismissPopup];
 }
 
 - (void)flipCameraPressed {
@@ -186,6 +211,28 @@
         [self.captureSession addInput:input];
         [self.captureSession startRunning];
     }
+}
+
+
+- (void)savePersonButtonPressed {
+    NSLog(@"saving");
+    dispatch_async(CoreDataWriteQueue(), ^{
+        [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext){
+            if (self.person) {
+                FTPerson *localPerson = [FTPerson fetchWithID:self.person.id];
+                [localPerson setName:self.nameField.text];
+                [localPerson trainWithImages:self.addedImages];
+            } else {
+                FTPerson *newPerson = [[FTPerson alloc] initWithName:self.nameField.text andInitialTrainingImages:self.addedImages];
+                
+                FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
+                [newPerson addGroup:localGroup];
+            }
+        }];
+        //[[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
+#warning TODO: no changes detected and no saving happened, whyyyy
+    });
+    [self dismissPopup];
 }
 
 - (void)selectPhotosButtonPressed {
