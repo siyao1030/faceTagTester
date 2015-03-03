@@ -49,3 +49,12 @@ dispatch_group_t ProcessImageGroup(void) {
                                                 range:NSMakeRange(0, [self length])];
 }
 @end
+
+
+@implementation ALAsset (FTAdditions)
+
+- (NSDate *)date {
+    return [self valueForProperty:ALAssetPropertyDate];
+}
+
+@end

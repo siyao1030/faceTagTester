@@ -9,12 +9,13 @@
 #import "FTGroupManagingViewController.h"
 #import "FTGroupPhotosViewController.h"
 #import "FTPersonViewController.h"
+#import "CTAssetsPickerController.h"
 
 
 #define SIDE_PADDING 40
 #define PEOPLE_GRID_WIDTH 70
 
-@interface FTGroupManagingViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate> {
+@interface FTGroupManagingViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate,CTAssetsPickerControllerDelegate> {
     BOOL _isCreatingNewGroup;
 }
 
@@ -89,21 +90,21 @@
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
     
-    UIDatePicker *startDatePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, 210, 320, 216)];
-    [startDatePicker setDatePickerMode:UIDatePickerModeDate];
-    [startDatePicker setDate:[NSDate date]];
-    startDatePicker.backgroundColor = [UIColor whiteColor];
-    [startDatePicker addTarget:self action:@selector(startDateSelected:) forControlEvents:UIControlEventValueChanged];
+    self.startDatePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, 210, 320, 216)];
+    [self.startDatePicker setDatePickerMode:UIDatePickerModeDate];
+    [self.startDatePicker setDate:[NSDate date]];
+    self.startDatePicker.backgroundColor = [UIColor whiteColor];
+    [self.startDatePicker addTarget:self action:@selector(startDateSelected:) forControlEvents:UIControlEventValueChanged];
     
     self.startDateField = [[UITextField alloc] init];
     [self.startDateField setUserInteractionEnabled:YES];
-    [self.startDateField setInputView:startDatePicker];
+    [self.startDateField setInputView:self.startDatePicker];
     [self.startDateField setFont:[UIFont boldSystemFontOfSize:22]];
     if (self.startDate) {
         NSString *startDateString = [dateFormatter stringFromDate:self.startDate];
         [self.startDateField setText:startDateString];
         [self.startDateField setTextColor:dateColor];
-        [startDatePicker setDate:self.startDate];
+        [self.startDatePicker setDate:self.startDate];
     } else {
         [self.startDateField setText:@"Once upon a time..."];
         [self.startDateField setTextColor:[dateColor pathDarkColor]];
@@ -117,27 +118,35 @@
     [self.toLabel setTextColor:[dateColor pathDarkestColor]];
     [self.view addSubview:self.toLabel];
 
-    
-    UIDatePicker *endDatePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, 210, 320, 216)];
-    [endDatePicker setDatePickerMode:UIDatePickerModeDate];
-    [endDatePicker setDate:[NSDate date]];
-    endDatePicker.backgroundColor = [UIColor whiteColor];
-    [endDatePicker addTarget:self action:@selector(endDateSelected:) forControlEvents:UIControlEventValueChanged];
+    self.endDatePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, 210, 320, 216)];
+    [self.endDatePicker setDatePickerMode:UIDatePickerModeDate];
+    [self.endDatePicker setDate:[NSDate date]];
+    self.endDatePicker.backgroundColor = [UIColor whiteColor];
+    [self.endDatePicker addTarget:self action:@selector(endDateSelected:) forControlEvents:UIControlEventValueChanged];
     
     self.endDateField = [[UITextField alloc] init];
     [self.endDateField setUserInteractionEnabled:YES];
-    [self.endDateField setInputView:endDatePicker];
+    [self.endDateField setInputView:self.endDatePicker];
     [self.endDateField setFont:[UIFont boldSystemFontOfSize:22]];
     if (self.endDate) {
         NSString *endDateString = [dateFormatter stringFromDate:self.endDate];
         [self.endDateField setText:endDateString];
         [self.endDateField setTextColor:dateColor];
-        [endDatePicker setDate:self.endDate];
+        [self.endDatePicker setDate:self.endDate];
     } else {
         [self.endDateField setText:@"The end of the world..."];
         [self.endDateField setTextColor:[dateColor pathDarkColor]];
     }
     [self.view addSubview:self.endDateField];
+    
+    
+    self.selectDatesButton = [[UIButton alloc] init];
+    [self.selectDatesButton setTitle:@"Select Dates" forState:UIControlStateNormal];
+    [self.selectDatesButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [[self.selectDatesButton titleLabel] setFont:[UIFont systemFontOfSize:14]];
+    [[self.selectDatesButton titleLabel] setTextAlignment:NSTextAlignmentCenter];
+    [self.selectDatesButton addTarget:self action:@selector(selectDates) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.selectDatesButton];
     
     self.addPeopleButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, PEOPLE_GRID_WIDTH, PEOPLE_GRID_WIDTH)];
     self.addPeopleButton.layer.cornerRadius = rintf(PEOPLE_GRID_WIDTH / 2);
@@ -212,7 +221,7 @@
     [self.fromLabel setFrame:fromLabelFrame];
 
     [self.startDateField sizeToFit];
-    CGRect startDateFieldFrame = [self.endDateField frame];
+    CGRect startDateFieldFrame = [self.startDateField frame];
     startDateFieldFrame.origin.x = CGRectGetMaxX(fromLabelFrame) + 10;
     startDateFieldFrame.origin.y = fromLabelFrame.origin.y - rintf((startDateFieldFrame.size.height - fromLabelFrame.size.height) / 2.0);
     [self.startDateField setFrame:startDateFieldFrame];
@@ -231,6 +240,12 @@
     endDateFieldFrame.origin.y = toLabelFrame.origin.y - rintf((endDateFieldFrame.size.height - toLabelFrame.size.height) / 2.0);
     [self.endDateField setFrame:endDateFieldFrame];
     
+    [self.selectDatesButton sizeToFit];
+    CGRect selectDatesFrame = [self.selectDatesButton frame];
+    selectDatesFrame.origin.x = bounds.size.width - SIDE_PADDING - selectDatesFrame.size.width;
+    selectDatesFrame.origin.y = CGRectGetMaxY(startDateFieldFrame);
+    [self.selectDatesButton setFrame:selectDatesFrame];
+
     yOffset = CGRectGetMaxY(endDateFieldFrame) + 20;
     
     CGRect collectionFrame = [self.peopleCollectionView frame];
@@ -246,26 +261,52 @@
 
 - (void)startDateSelected:(UIDatePicker *)datePicker {
     [self.groupNameField resignFirstResponder];
+    [self updateStartDate:[datePicker date]];
+    
+    if ([[self.endDatePicker date] compare:[datePicker date]] == NSOrderedAscending) {
+        [self.endDatePicker setDate:[datePicker date] animated:YES];
+    }
+}
 
-    [self setStartDate:[datePicker date]];
+- (void)updateStartDate:(NSDate *)startDate {
+    [self setStartDate:startDate];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
-    NSString *dateString = [dateFormatter stringFromDate:[datePicker date]];
+    NSString *dateString = [dateFormatter stringFromDate:startDate];
     [self.startDateField setText:dateString];
+    [self.startDateField sizeToFit];
+}
+
+- (void)updateEndDate:(NSDate *)endDate {
+    [self setEndDate:endDate];
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
+    NSString *dateString = [dateFormatter stringFromDate:endDate];
+    [self.endDateField setText:dateString];
+    [self.endDateField sizeToFit];
 }
 
 - (void)endDateSelected:(UIDatePicker *)datePicker {
     [self.groupNameField resignFirstResponder];
+    [self updateEndDate:[datePicker date]];
 
-    [self setEndDate:[datePicker date]];
+    if ([[self.startDatePicker date] compare:[datePicker date]] == NSOrderedDescending) {
+        [self.startDatePicker setDate:[datePicker date] animated:YES];
+    }
     
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
-    NSString *dateString = [dateFormatter stringFromDate:[datePicker date]];
-    [self.endDateField setText:dateString];
 }
 
+
+- (void)selectDates {
+    CTAssetsPickerController *picker = [[CTAssetsPickerController alloc] init];
+    picker.assetsFilter = [ALAssetsFilter allPhotos];
+    //picker.showsCancelButton    = (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad);
+    picker.delegate = self;
+    
+    [self presentViewController:picker animated:YES completion:nil];
+}
 
 - (void)addPeopleButtonPressed {
     [self presentPersonViewForPerson:nil];
@@ -444,6 +485,66 @@
         self.itemChanges = nil;
     }];
 }
+
+#pragma mark - CTAssetsPickerDelegate
+
+
+- (BOOL)assetsPickerController:(CTAssetsPickerController *)picker isDefaultAssetsGroup:(ALAssetsGroup *)group
+{
+    return ([[group valueForProperty:ALAssetsGroupPropertyType] integerValue] == ALAssetsGroupSavedPhotos);
+}
+
+- (void)assetsPickerController:(CTAssetsPickerController *)picker didFinishPickingAssets:(NSArray *)assets
+{
+    if ([assets count] > 1) {
+        NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES];
+        NSArray *sortedAssets = [assets sortedArrayUsingDescriptors:@[sort]];
+        NSDate *startDate = [(ALAsset *)[sortedAssets objectAtIndex:0] date];
+        NSDate *endDate = [(ALAsset *)[sortedAssets objectAtIndex:1] date];
+        [self updateStartDate:startDate];
+        [self updateEndDate:endDate];
+    } else {
+        NSDate *startDate = [(ALAsset *)[assets objectAtIndex:0] date];
+        [self updateStartDate:startDate];
+        if (!self.endDate) {
+            [self updateEndDate:[NSDate date]];
+        }
+    }
+    
+    [picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (BOOL)assetsPickerController:(CTAssetsPickerController *)picker shouldSelectAsset:(ALAsset *)asset
+{
+#warning TODO: automatically change selected range? but which to switch
+    if (picker.selectedAssets.count > 1)
+    {
+        UIAlertView *alertView =
+        [[UIAlertView alloc] initWithTitle:@"Attention"
+                                   message:@"Please select only a start and an end"
+                                  delegate:nil
+                         cancelButtonTitle:nil
+                         otherButtonTitles:@"OK", nil];
+        
+        [alertView show];
+    }
+    
+    if (!asset.defaultRepresentation)
+    {
+        UIAlertView *alertView =
+        [[UIAlertView alloc] initWithTitle:@"Attention"
+                                   message:@"Your asset has not yet been downloaded to your device"
+                                  delegate:nil
+                         cancelButtonTitle:nil
+                         otherButtonTitles:@"OK", nil];
+        
+        [alertView show];
+    }
+    
+    return (picker.selectedAssets.count <= 1 && asset.defaultRepresentation != nil);
+}
+
+
 
 
 @end

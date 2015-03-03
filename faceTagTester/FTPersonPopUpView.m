@@ -215,7 +215,21 @@
 
 
 - (void)savePersonButtonPressed {
-    NSLog(@"saving");
+#warning SAVING NOT WORKING
+    dispatch_sync(CoreDataWriteQueue(), ^{
+        if (self.person) {
+            FTPerson *localPerson = [FTPerson fetchWithID:self.person.id];
+            [localPerson setName:self.nameField.text];
+            [localPerson trainWithImages:self.addedImages];
+        } else {
+            FTPerson *newPerson = [[FTPerson alloc] initWithName:self.nameField.text andInitialTrainingImages:self.addedImages];
+            FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
+            [newPerson addGroup:localGroup];
+        }
+        [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
+    });
+
+    /*
     dispatch_async(CoreDataWriteQueue(), ^{
         [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext){
             if (self.person) {
@@ -224,14 +238,11 @@
                 [localPerson trainWithImages:self.addedImages];
             } else {
                 FTPerson *newPerson = [[FTPerson alloc] initWithName:self.nameField.text andInitialTrainingImages:self.addedImages];
-                
                 FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
                 [newPerson addGroup:localGroup];
             }
         }];
-        //[[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
-#warning TODO: no changes detected and no saving happened, whyyyy
-    });
+    });*/
     [self dismissPopup];
 }
 

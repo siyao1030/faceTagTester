@@ -23,11 +23,14 @@
 @property (nonatomic, strong) UILabel *toLabel;
 @property (nonatomic, strong) UITextField *startDateField;
 @property (nonatomic, strong) UITextField *endDateField;
-@property (nonatomic, strong) UICollectionView *peopleView;
+@property (nonatomic, strong) UIDatePicker *startDatePicker;
+@property (nonatomic, strong) UIDatePicker *endDatePicker;
+@property (nonatomic, strong) UIButton *selectDatesButton;
+@property (nonatomic, strong) UIButton *addPeopleButton;
+
+
 @property (nonatomic, strong) FTPersonPopUpView *personPopUpView;
 
-
-@property (nonatomic, strong) UIButton *addPeopleButton;
 @property (nonatomic, strong) UICollectionView *peopleCollectionView;
 
 @property (nonatomic, strong) NSFetchedResultsController *allPeopleFRC;

@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "UIImage+FTAdditions.h"
 #import "UIColor+FTAdditions.h"
+#import <AssetsLibrary/AssetsLibrary.h>
 
 @interface FTAdditions : NSObject
 
@@ -24,3 +25,8 @@ dispatch_group_t ProcessImageGroup(void);
 
 @end
 
+@interface ALAsset (FTAdditions)
+
+- (NSDate *)date;
+
+@end

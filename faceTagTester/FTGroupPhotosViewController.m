@@ -79,9 +79,7 @@
                     PHAsset *asset = [self.cameraRollFetchResult objectAtIndex:index];
                     dispatch_group_enter(ProcessImageGroup());
                     [self detectAndIdentifyInPhotoAsset:asset Completion:^{
-                        [self detectAndIdentifyInPhotoAsset:asset Completion:^{
-                            dispatch_group_leave(ProcessImageGroup());
-                        }];
+                        dispatch_group_leave(ProcessImageGroup());
                     }];
                 }];
                 
@@ -90,6 +88,7 @@
                     FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
                     [localGroup setDidFinishProcessing:YES];
                     [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
+#warning SAVING NOT WORKING
                     NSLog(@"finished Processing");
                     //retrain if new faces are added
                     [self trainGroupIfNeededWithCompletion:nil];
