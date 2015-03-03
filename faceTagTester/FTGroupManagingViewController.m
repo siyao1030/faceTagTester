@@ -81,8 +81,8 @@
     
     UIColor *dateColor = [UIColor colorForText:@"date"];
     self.fromLabel = [[UILabel alloc] init];
-    [self.fromLabel setText:@"FROM"];
-    [self.fromLabel setFont:[UIFont boldSystemFontOfSize:22]];
+    [self.fromLabel setText:@"from"];
+    [self.fromLabel setFont:[UIFont boldSystemFontOfSize:14]];
     [self.fromLabel setTextAlignment:NSTextAlignmentLeft];
     [self.fromLabel setTextColor:[dateColor pathDarkestColor]];
     [self.view addSubview:self.fromLabel];
@@ -112,8 +112,8 @@
     [self.view addSubview:self.startDateField];
     
     self.toLabel = [[UILabel alloc] init];
-    [self.toLabel setText:@"TO"];
-    [self.toLabel setFont:[UIFont boldSystemFontOfSize:22]];
+    [self.toLabel setText:@"to"];
+    [self.toLabel setFont:[UIFont boldSystemFontOfSize:14]];
     [self.toLabel setTextAlignment:NSTextAlignmentLeft];
     [self.toLabel setTextColor:[dateColor pathDarkestColor]];
     [self.view addSubview:self.toLabel];
@@ -347,12 +347,11 @@
     dispatch_async(CoreDataWriteQueue(), ^{
         FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
         [localGroup setName:self.groupNameField.text];
-        [localGroup setPeople:[NSMutableSet setWithArray:self.people]];
+        [localGroup addPeople:self.people];
         [localGroup setStartDate:self.startDate];
         [localGroup setEndDate:self.endDate];
         
         [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
-        //FTGroup *newGroup = [[FTGroup alloc] initWithName:self.groupNameField.text andPeople:self.people andStartDate:self.startDate andEndDate:self.endDate];
         FTGroupPhotosViewController *groupPhotosView = [[FTGroupPhotosViewController alloc] initWithGroup:self.group];
         [self.navigationController showViewController:groupPhotosView sender:self];
     });

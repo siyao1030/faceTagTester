@@ -32,6 +32,7 @@
 - (id)initWithName:(NSString *)name andPeople:(NSArray *)people andStartDate:(NSDate *)start andEndDate:(NSDate *)end;
 - (void)addPhoto:(FTPhoto *)photo;
 - (void)addPerson:(FTPerson *)person;
+- (void)addPeople:(NSArray *)people;
 
 - (NSArray *)photoArray;
 - (NSArray *)peopleArray;

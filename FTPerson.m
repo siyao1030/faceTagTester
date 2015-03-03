@@ -34,7 +34,7 @@
     
     if ([result success]) {
         self.fppID = [[result content] objectForKey:@"person_id"];
-        [self train];
+        [self trainWithImages:images];
     }
     
     self.profileImageData = UIImageJPEGRepresentation(images[0], 0);
@@ -68,7 +68,14 @@
 }
 
 - (void)addPhoto:(FTPhoto *)photo {
-    [self.photos addObject:photo];
+    FTPhoto *localPhoto = [FTPhoto fetchWithID:photo.id];
+    [self.photos addObject:localPhoto];
+}
+
+- (void)addGroup:(FTGroup *)group {
+    FTGroup *localGroup = [FTGroup fetchWithID:group.id];
+    [self.groups addObject:localGroup];
+    [localGroup addPerson:self];
 }
 
 @end

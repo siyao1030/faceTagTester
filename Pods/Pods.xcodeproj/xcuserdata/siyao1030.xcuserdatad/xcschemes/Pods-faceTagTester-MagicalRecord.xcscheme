@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "29FE5935F0255087016DFA20"
+               BlueprintIdentifier = "7F6EFD319708E5F5F0E6A155"
                BuildableName = "libPods-faceTagTester-MagicalRecord.a"
                BlueprintName = "Pods-faceTagTester-MagicalRecord"
                ReferencedContainer = "container:Pods.xcodeproj">

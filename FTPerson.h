@@ -12,6 +12,7 @@
 #import "FTDetector.h"
 
 @class FTPhoto;
+@class FTGroup;
 
 @interface FTPerson : FTModel
 
@@ -27,7 +28,8 @@
 @property (nonatomic, strong) NSMutableSet *groups;
 
 - (id)initWithName:(NSString *)name andInitialTrainingImages:(NSArray *)images;
-- (void)train;
+- (void)trainWithImages:(NSArray *)images;
 - (void)addPhoto:(FTPhoto *)photo;
+- (void)addGroup:(FTGroup *)group;
 
 @end

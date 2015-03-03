@@ -11,6 +11,7 @@
 @implementation FTPhoto
 
 @dynamic assetURLString;
+@dynamic id;
 @dynamic people;
 @dynamic photoAssetIdentifier;
 @dynamic groups;
@@ -22,7 +23,7 @@
 -(id)initWithPhotoAsset:(PHAsset *)asset {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
     self = [FTPhoto MR_createInContext:context];
-    
+    self.id = [[NSUUID UUID] UUIDString];
     self.photoAssetIdentifier = asset.localIdentifier;
     self.peopleNamesString = @"";
     self.creationDate = [asset creationDate];
@@ -30,14 +31,14 @@
 }
 
 -(void)addPerson:(FTPerson *)person {
-    if (![self.people containsObject:person]) {
-        [self.people addObject:person];
+    FTPerson *localPerson = [FTPerson fetchWithID:person.id];
+    if (![self.people containsObject:localPerson]) {
+        [self.people addObject:localPerson];
         self.peopleNamesString = [self namesString];
-        [person addPhoto:self];
+        [localPerson addPhoto:self];
     }
     
 }
-
 
 -(NSString *)namesString {
     NSString *namesString = @"";
@@ -54,8 +55,9 @@
 }
 
 -(void)addGroup:(FTGroup *)group {
-    [self.groups addObject:group];
-    [group addPhoto:self];
+    FTGroup *localGroup = [FTGroup fetchWithID:group.id];
+    [self.groups addObject:localGroup];
+    [localGroup addPhoto:self];
 }
 
 

@@ -14,6 +14,7 @@
 @interface FTPhoto : FTModel
 
 @property (nonatomic, strong) NSString *assetURLString;
+@property (nonatomic, strong) NSString *id;
 @property (nonatomic, retain) NSMutableSet *people;
 @property (nonatomic, strong) NSString *photoAssetIdentifier;
 @property (nonatomic, strong) NSMutableSet *groups;

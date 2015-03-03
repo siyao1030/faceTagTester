@@ -9,6 +9,7 @@
 #import "FTGroupPhotosViewController.h"
 
 @interface FTGroupPhotosViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate, PHPhotoLibraryChangeObserver> {
+    BOOL _isOngoingGroup;
 }
 @property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) NSMutableArray *photoColletions;
@@ -61,6 +62,46 @@
     [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
 }
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view, typically from a nib.
+    [[self navigationItem] setTitle:self.group.name];
+    
+    if ([self.group.endDate compare:[NSDate date]] == NSOrderedDescending) {
+        [self setIsOngoingGroup:YES];
+    }
+    
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    flowLayout.sectionInset = UIEdgeInsetsMake(0, 0, 10, 0);
+    self.collectionView = [[UICollectionView alloc] initWithFrame:[[self view] bounds] collectionViewLayout:flowLayout];
+    [self.collectionView setDelegate:self];
+    [self.collectionView setDataSource:self];
+    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
+    [self.collectionView setBackgroundColor:[UIColor whiteColor]];
+    
+    [[self view] addSubview:self.collectionView];
+    
+    
+    [self.collectionView registerClass:[UICollectionReusableView class]
+            forSupplementaryViewOfKind: UICollectionElementKindSectionHeader
+                   withReuseIdentifier:@"HeaderView"];
+    
+    UIBarButtonItem *editGroupButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editGroupButtonPressed)];
+    self.navigationItem.rightBarButtonItem = editGroupButton;
+    
+    [self trainGroupIfNeededWithCompletion:^{
+        [self processImagesFromStartDate:self.group.startDate toEndDate:self.group.endDate];
+    }];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+
+
+#pragma mark Image Processing
 - (void)photoLibraryDidChange:(PHChange *)changeInstance {
     PHFetchResultChangeDetails *collectionChanges = [changeInstance changeDetailsForFetchResult:self.cameraRollFetchResult];
     if (collectionChanges) {
@@ -77,14 +118,17 @@
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
                 [insertedIndexes enumerateIndexesUsingBlock:^(NSUInteger index, BOOL *stop) {
                     PHAsset *asset = [self.cameraRollFetchResult objectAtIndex:index];
-                    dispatch_group_enter(ProcessImageGroup());
-                    [self detectAndIdentifyInPhotoAsset:asset Completion:^{
-                        dispatch_group_leave(ProcessImageGroup());
-                    }];
+                    if (self.group.endDate && [[asset creationDate] compare:self.group.endDate] == NSOrderedDescending) {
+                        [self setIsOngoingGroup:NO];
+                    } else {
+                        dispatch_group_enter(ProcessImageGroup());
+                        [self detectAndIdentifyInPhotoAsset:asset Completion:^{
+                            dispatch_group_leave(ProcessImageGroup());
+                        }];
+                    }
                 }];
                 
                 dispatch_group_notify(ProcessImageGroup(), CoreDataWriteQueue(), ^{
-                    //group is finishedProcessing
                     FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
                     [localGroup setDidFinishProcessing:YES];
                     [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
@@ -157,34 +201,6 @@
 
 }
 
-- (void)trainGroupIfNeededWithCompletion:(void(^)(void))completionBlock {
-    NSInteger photosTrained = [self.group.photosTrained integerValue];
-    if (self.group.photos.count > photosTrained || photosTrained == 0) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSLog(@"training");
-            FaceppResult *result = [[FaceppAPI train] trainAsynchronouslyWithId:self.group.fppID orName:self.group.id andType:FaceppTrainIdentify];
-            NSString *sessionID = [[result content] objectForKey:@"session_id"];
-            if (sessionID) {
-                [FTNetwork getResultForSession:sessionID completion:^(FaceppResult *result) {
-                    if ([result success]) {
-                        dispatch_async(CoreDataWriteQueue(), ^{
-                            FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
-                            [localGroup setPhotosTrained:@([self.group.photos count])];
-                            [localGroup setDidFinishTraining:YES];
-                            [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
-                        });
-                        if (completionBlock) {
-                            completionBlock();
-                        }
-                    }
-                } afterDelay:0.5];
-            }
-            
-        });
-    }
-
-}
-
 - (void)detectAndIdentifyInPhotoAsset:(PHAsset *)asset Completion:(void(^)(void))completionBlock {
     PHImageRequestOptions *requestOptions = [[PHImageRequestOptions alloc] init];
     [requestOptions setSynchronous:YES];
@@ -195,7 +211,7 @@
                                     options:requestOptions
                               resultHandler:^(UIImage *image, NSDictionary *info) {
                                   @autoreleasepool {
-                                      //only detect images that are not downloaded or screenshot
+                                      //only detect images that are not screenshot -> should eliminate download too
                                       if ([[info objectForKey:@"PHImageFileUTIKey"] isEqualToString:@"public.png"]) {
                                           if (completionBlock) {
                                               completionBlock();
@@ -234,8 +250,10 @@
                                                                   }
                                                               }
                                                           }
-                                                          FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
-                                                          [photo addGroup:localGroup]; //**might not be saved
+                                                          if (shouldAddToGroup) {
+                                                              FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
+                                                              [photo addGroup:localGroup]; //**might not be saved
+                                                          }
                                                           if (completionBlock) {
                                                               completionBlock();
                                                           }
@@ -254,40 +272,36 @@
     }];
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
-    [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
-    [[self navigationItem] setTitle:self.group.name];
-
-    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    flowLayout.sectionInset = UIEdgeInsetsMake(0, 0, 10, 0);
-    self.collectionView = [[UICollectionView alloc] initWithFrame:[[self view] bounds] collectionViewLayout:flowLayout];
-    [self.collectionView setDelegate:self];
-    [self.collectionView setDataSource:self];
-    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
-    [self.collectionView setBackgroundColor:[UIColor whiteColor]];
+- (void)trainGroupIfNeededWithCompletion:(void(^)(void))completionBlock {
+    NSInteger photosTrained = [self.group.photosTrained integerValue];
+    if (self.group.photos.count > photosTrained || photosTrained == 0) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSLog(@"training");
+            FaceppResult *result = [[FaceppAPI train] trainAsynchronouslyWithId:self.group.fppID orName:self.group.id andType:FaceppTrainIdentify];
+            NSString *sessionID = [[result content] objectForKey:@"session_id"];
+            if (sessionID) {
+                [FTNetwork getResultForSession:sessionID completion:^(FaceppResult *result) {
+                    if ([result success]) {
+                        dispatch_async(CoreDataWriteQueue(), ^{
+                            FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
+                            [localGroup setPhotosTrained:@([self.group.photos count])];
+                            [localGroup setDidFinishTraining:YES];
+                            [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
+                        });
+                        if (completionBlock) {
+                            completionBlock();
+                        }
+                    }
+                } afterDelay:0.5];
+            }
+            
+        });
+    }
     
-    [[self view] addSubview:self.collectionView];
-
-    
-    [self.collectionView registerClass:[UICollectionReusableView class]
-            forSupplementaryViewOfKind: UICollectionElementKindSectionHeader
-                   withReuseIdentifier:@"HeaderView"];
-
-    UIBarButtonItem *editGroupButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editGroupButtonPressed)];
-    self.navigationItem.rightBarButtonItem = editGroupButton;
-    
-    [self trainGroupIfNeededWithCompletion:^{
-        [self processImagesFromStartDate:self.group.startDate toEndDate:self.group.endDate];
-    }];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
 
+#pragma mark Editing Group
 - (void)editGroupButtonPressed {
     FTGroupManagingViewController *groupManagingViewController = [[FTGroupManagingViewController alloc] initWithGroup:self.group];
     
@@ -311,6 +325,12 @@
         [localGroup setStartDate:updatedGroupInfo[@"startDate"]];
         [localGroup setEndDate:updatedGroupInfo[@"endDate"]];
         [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
+        
+        if ([self.group.endDate compare:[NSDate date]] == NSOrderedDescending) {
+            [self setIsOngoingGroup:YES];
+        } else {
+            [self setIsOngoingGroup:NO];
+        }
     });
 }
 
@@ -361,6 +381,20 @@
         [context MR_saveToPersistentStoreAndWait];
     });
 
+}
+
+
+- (void)setIsOngoingGroup:(BOOL)ongoing {
+    if (_isOngoingGroup != ongoing) {
+        _isOngoingGroup = ongoing;
+        if (ongoing) {
+            NSLog(@"start ongoing");
+            [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
+        } else {
+            NSLog(@"stop ongoing");
+            [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
+        }
+    }
 }
 
 #pragma mark - UICollectionViewDelegateFlowLayout

@@ -30,12 +30,17 @@
     self = [FTGroup MR_createInContext:context];
     
     self.id = [[NSUUID UUID] UUIDString]; //for fetching photos and for api uses, cannot change
-    
+    self.people = [[NSMutableSet alloc] init];
     self.didFinishTraining = NO;
     self.didFinishProcessing = NO;
     self.photosTrained = @(0);
     self.lastProcessedDate = [NSDate date];
 
+    FaceppResult *result = [[FaceppAPI group] createWithGroupName:self.id andTag:nil andPersonId:nil orPersonName:nil];
+    if ([result success]) {
+        self.fppID = [[result content] objectForKey:@"group_id"];
+    }
+    
     [context MR_saveToPersistentStoreAndWait];
     return self;
 }
@@ -46,7 +51,7 @@
     
     self.name = name; //display, can change
     self.id = [[NSUUID UUID] UUIDString]; //for fetching photos and for api uses, cannot change
-    self.people = [NSMutableSet setWithArray:people];
+    
     self.startDate = start;
     self.endDate = end;
     
@@ -54,12 +59,13 @@
     self.didFinishProcessing = NO;
     self.photosTrained = @(0);
     self.lastProcessedDate = [NSDate date];
-    
+
+    self.people = [[NSMutableSet alloc] init];
     NSMutableArray *personIDs = [[NSMutableArray alloc] init];
-    for (FTPerson *person in self.people) {
+    for (FTPerson *person in people) {
         [personIDs addObject:person.id];
+        [self addPerson:person];
     }
-    
     FaceppResult *result = [[FaceppAPI group] createWithGroupName:self.id andTag:nil andPersonId:nil orPersonName:personIDs];
     
     if ([result success]) {
@@ -71,11 +77,22 @@
 }
 
 - (void)addPhoto:(FTPhoto *)photo {
-    [self.photos addObject:photo];
+    FTPhoto *localPhoto = [FTPhoto fetchWithID:photo.id];
+    [self.photos addObject:localPhoto];
 }
 
 - (void)addPerson:(FTPerson *)person {
-    [self.people addObject:person];
+    FTPerson *localPerson = [FTPerson fetchWithID:person.id];
+    [self.people addObject:localPerson];
+}
+
+- (void)addPeople:(NSArray *)people {
+    NSMutableArray *personIDs = [[NSMutableArray alloc] init];
+    for (FTPerson *person in people) {
+        [personIDs addObject:person.id];
+        [self addPerson:person];
+    }
+    [[FaceppAPI group] addPersonWithGroupId:nil orGroupName:self.id andPersonId:nil orPersonName:personIDs];
 }
 
 - (NSArray *)photoArray {

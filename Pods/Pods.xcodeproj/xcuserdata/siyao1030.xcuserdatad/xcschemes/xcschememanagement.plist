@@ -4,6 +4,16 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>CTAssetsPickerController.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Pods-faceTagTester-CTAssetsPickerController.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-faceTagTester-MagicalRecord.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -17,12 +27,22 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>29FE5935F0255087016DFA20</key>
+		<key>5A33FEDD8502FD27D1E7EB0F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>AF33835B9DB48AF1B1135192</key>
+		<key>7F6EFD319708E5F5F0E6A155</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>91EE97D7CC583D2CCB938755</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>DDCCF0862E5A1B81FB7CD33E</key>
 		<dict>
 			<key>primary</key>
 			<true/>

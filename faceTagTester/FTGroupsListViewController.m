@@ -9,6 +9,7 @@
 #import "FTGroupsListViewController.h"
 #import "FTGroupPhotosViewController.h"
 #import "FTGroupManagingViewController.h"
+#import "FTGroupListTableViewCell.h"
 #import "FTGroup.h"
 
 #define SIDE_PADDING 30
@@ -27,7 +28,7 @@
     self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, [self.view bounds].size.width, [self.view bounds].size.height) style:UITableViewStylePlain];
     [self.tableView setDelegate:self];
     [self.tableView setDataSource:self];
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
+    [self.tableView registerClass:[FTGroupListTableViewCell class] forCellReuseIdentifier:@"Cell"];
     [self.tableView setRowHeight:100];
     
     [self.view addSubview:self.tableView];
@@ -113,10 +114,10 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    FTGroupListTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell = [[FTGroupListTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
     // Configure the cell...
@@ -130,42 +131,18 @@
 }
 
 
-- (void)configureCell:(UITableViewCell *)cell forIndexPath:(NSIndexPath *)indexPath {
+- (void)configureCell:(FTGroupListTableViewCell *)cell forIndexPath:(NSIndexPath *)indexPath {
     FTGroup *group = [self.frc objectAtIndexPath:indexPath];
 
-    UILabel *titleLabel = [[UILabel alloc] init];
-    [titleLabel setText:group.name];
-    [titleLabel setFont:[UIFont boldSystemFontOfSize:20]];
-    [titleLabel setTextAlignment:NSTextAlignmentLeft];
-    [titleLabel setTextColor:[UIColor blackColor]];
-    [titleLabel sizeToFit];
+    [cell setTitle:group.name];
     
-    CGRect titleFrame = [titleLabel frame];
-    titleFrame.origin.x = SIDE_PADDING;
-    titleFrame.origin.y = SIDE_PADDING;
-    [titleLabel setFrame:titleFrame];
-    
-    UILabel *subtitleLabel = [[UILabel alloc] init];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateStyle:NSDateFormatterShortStyle];
     NSString *startDateString = [dateFormatter stringFromDate:group.startDate];
     NSString *endDateString = [dateFormatter stringFromDate:group.endDate];
     NSString *subtitleString = [NSString stringWithFormat:@"%@ - %@", startDateString, endDateString];
     
-    [subtitleLabel setText:subtitleString];
-    [subtitleLabel setFont:[UIFont systemFontOfSize:16]];
-    [subtitleLabel setTextAlignment:NSTextAlignmentLeft];
-    [subtitleLabel setTextColor:[UIColor blackColor]];
-    [subtitleLabel sizeToFit];
-    
-    CGRect subtitleFrame = [subtitleLabel frame];
-    subtitleFrame.origin.x = SIDE_PADDING;
-    subtitleFrame.origin.y = CGRectGetMaxY(titleFrame) + 10;
-    [subtitleLabel setFrame:subtitleFrame];
-    
-    [[cell contentView] addSubview:titleLabel];
-    [[cell contentView] addSubview:subtitleLabel];
-    
+    [cell setSubtitle:subtitleString];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -174,7 +151,6 @@
     [self.navigationController showViewController:groupPhotosView sender:self];
 
 }
-
 
 
 #pragma mark - NSFetchedResultsControllerDelegate
