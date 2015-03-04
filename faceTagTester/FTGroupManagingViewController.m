@@ -13,6 +13,7 @@
 
 
 #define SIDE_PADDING 40
+#define VERTICAL_PADDING 10
 #define PEOPLE_GRID_WIDTH 70
 
 @interface FTGroupManagingViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate,CTAssetsPickerControllerDelegate> {
@@ -66,15 +67,18 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    UIColor *mainColor = [UIColor colorForText:@"melon"];
+    UIColor *mainColorTransparent = [mainColor colorWithAlphaComponent:0.5];
     [self.view setBackgroundColor:[UIColor whiteColor]];
     
     self.groupNameField = [[UITextField alloc] init];
     [self.groupNameField setFont:[UIFont boldSystemFontOfSize:24]];
     [self.groupNameField setPlaceholder:@"Name of the Group"];
     [self.groupNameField setTextAlignment:NSTextAlignmentLeft];
+    //[self.groupNameField setBackgroundColor:mainColorTransparent];
+    [self.groupNameField setTextColor:mainColor];
     if (self.groupName) {
         [self.groupNameField setText:self.groupName];
-        [self.groupNameField setTextColor:[UIColor colorForText:self.groupName]];
     }
     [self.view addSubview:self.groupNameField];
     [self.groupNameField becomeFirstResponder];
@@ -100,14 +104,14 @@
     [self.startDateField setUserInteractionEnabled:YES];
     [self.startDateField setInputView:self.startDatePicker];
     [self.startDateField setFont:[UIFont boldSystemFontOfSize:22]];
+    [self.startDateField setBackgroundColor:[UIColor whiteColor]];
+    [self.startDateField setTextColor:mainColor];
     if (self.startDate) {
         NSString *startDateString = [dateFormatter stringFromDate:self.startDate];
         [self.startDateField setText:startDateString];
-        [self.startDateField setTextColor:dateColor];
         [self.startDatePicker setDate:self.startDate];
     } else {
         [self.startDateField setText:@"Once upon a time..."];
-        [self.startDateField setTextColor:[dateColor pathDarkColor]];
     }
     [self.view addSubview:self.startDateField];
     
@@ -128,23 +132,26 @@
     [self.endDateField setUserInteractionEnabled:YES];
     [self.endDateField setInputView:self.endDatePicker];
     [self.endDateField setFont:[UIFont boldSystemFontOfSize:22]];
+    [self.endDateField setBackgroundColor:[UIColor whiteColor]];
+    [self.endDateField setTextColor:mainColor];
+
     if (self.endDate) {
         NSString *endDateString = [dateFormatter stringFromDate:self.endDate];
         [self.endDateField setText:endDateString];
-        [self.endDateField setTextColor:dateColor];
         [self.endDatePicker setDate:self.endDate];
     } else {
         [self.endDateField setText:@"The end of the world..."];
-        [self.endDateField setTextColor:[dateColor pathDarkColor]];
     }
     [self.view addSubview:self.endDateField];
     
-    
     self.selectDatesButton = [[UIButton alloc] init];
-    [self.selectDatesButton setTitle:@"Select Dates" forState:UIControlStateNormal];
-    [self.selectDatesButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [[self.selectDatesButton titleLabel] setFont:[UIFont systemFontOfSize:14]];
-    [[self.selectDatesButton titleLabel] setTextAlignment:NSTextAlignmentCenter];
+    [self.selectDatesButton setImage:[[UIImage imageNamed:@"date-select"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
+    [self.selectDatesButton setTintColor:mainColor];
+    //[self.selectDatesButton setBackgroundColor:[UIColor whiteColor]];
+    //[self.selectDatesButton setTitle:@"Select Dates" forState:UIControlStateNormal];
+    //[self.selectDatesButton setTitleColor:mainColor forState:UIControlStateNormal];
+    //[[self.selectDatesButton titleLabel] setFont:[UIFont systemFontOfSize:22]];
+    //[[self.selectDatesButton titleLabel] setTextAlignment:NSTextAlignmentCenter];
     [self.selectDatesButton addTarget:self action:@selector(selectDates) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.selectDatesButton];
     
@@ -212,7 +219,7 @@
     groupNameFrame.origin.x = SIDE_PADDING;
     groupNameFrame.origin.y = yOffset;
     [self.groupNameField setFrame:groupNameFrame];
-    yOffset = CGRectGetMaxY(groupNameFrame) + 20;
+    yOffset = CGRectGetMaxY(groupNameFrame) + VERTICAL_PADDING;
     
     [self.fromLabel sizeToFit];
     CGRect fromLabelFrame = [self.fromLabel frame];
@@ -222,11 +229,12 @@
 
     [self.startDateField sizeToFit];
     CGRect startDateFieldFrame = [self.startDateField frame];
-    startDateFieldFrame.origin.x = CGRectGetMaxX(fromLabelFrame) + 10;
-    startDateFieldFrame.origin.y = fromLabelFrame.origin.y - rintf((startDateFieldFrame.size.height - fromLabelFrame.size.height) / 2.0);
+    startDateFieldFrame.size.width = bounds.size.width - 2 * SIDE_PADDING;
+    startDateFieldFrame.origin.x = SIDE_PADDING;
+    startDateFieldFrame.origin.y = CGRectGetMaxY(fromLabelFrame);
     [self.startDateField setFrame:startDateFieldFrame];
     
-    yOffset = CGRectGetMaxY(fromLabelFrame) + 20;
+    yOffset = CGRectGetMaxY(startDateFieldFrame) + VERTICAL_PADDING;
     
     [self.toLabel sizeToFit];
     CGRect toLabelFrame = [self.toLabel frame];
@@ -236,18 +244,20 @@
 
     [self.endDateField sizeToFit];
     CGRect endDateFieldFrame = [self.endDateField frame];
-    endDateFieldFrame.origin.x = startDateFieldFrame.origin.x;
-    endDateFieldFrame.origin.y = toLabelFrame.origin.y - rintf((endDateFieldFrame.size.height - toLabelFrame.size.height) / 2.0);
+    endDateFieldFrame.size.width = bounds.size.width - 2 * SIDE_PADDING;
+    endDateFieldFrame.origin.x = SIDE_PADDING;
+    endDateFieldFrame.origin.y = CGRectGetMaxY(toLabelFrame);
     [self.endDateField setFrame:endDateFieldFrame];
     
     [self.selectDatesButton sizeToFit];
     CGRect selectDatesFrame = [self.selectDatesButton frame];
+    //selectDatesFrame.size.width = bounds.size.width - 2 * SIDE_PADDING;
     selectDatesFrame.origin.x = bounds.size.width - SIDE_PADDING - selectDatesFrame.size.width;
     selectDatesFrame.origin.y = CGRectGetMaxY(startDateFieldFrame);
     [self.selectDatesButton setFrame:selectDatesFrame];
-
-    yOffset = CGRectGetMaxY(endDateFieldFrame) + 20;
     
+    yOffset = CGRectGetMaxY(endDateFieldFrame) + VERTICAL_PADDING * 2;
+
     CGRect collectionFrame = [self.peopleCollectionView frame];
     collectionFrame.size.width = bounds.size.width - SIDE_PADDING * 2;
     float peoplePerRow = floorf(bounds.size.width / PEOPLE_GRID_WIDTH);
