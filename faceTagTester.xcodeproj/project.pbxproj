@@ -20,6 +20,8 @@
 		9F4D03511AA155B000806AF5 /* FTPersonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F4D03501AA155B000806AF5 /* FTPersonViewController.m */; };
 		9F4D03541AA184A700806AF5 /* FTPopupView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F4D03531AA184A700806AF5 /* FTPopupView.m */; };
 		9F4D03571AA65CD600806AF5 /* FTGroupListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F4D03561AA65CD600806AF5 /* FTGroupListTableViewCell.m */; };
+		9F4D035A1AA6932800806AF5 /* date-select.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F4D03581AA6932800806AF5 /* date-select.png */; };
+		9F4D035B1AA6932800806AF5 /* date-select@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F4D03591AA6932800806AF5 /* date-select@2x.png */; };
 		9F5147911A8A87050089EAD1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147901A8A87050089EAD1 /* main.m */; };
 		9F5147941A8A87050089EAD1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147931A8A87050089EAD1 /* AppDelegate.m */; };
 		9F5147971A8A87050089EAD1 /* faceTagTester.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147951A8A87050089EAD1 /* faceTagTester.xcdatamodeld */; };
@@ -91,6 +93,8 @@
 		9F4D03531AA184A700806AF5 /* FTPopupView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTPopupView.m; sourceTree = "<group>"; };
 		9F4D03551AA65CD600806AF5 /* FTGroupListTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTGroupListTableViewCell.h; sourceTree = "<group>"; };
 		9F4D03561AA65CD600806AF5 /* FTGroupListTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTGroupListTableViewCell.m; sourceTree = "<group>"; };
+		9F4D03581AA6932800806AF5 /* date-select.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "date-select.png"; sourceTree = "<group>"; };
+		9F4D03591AA6932800806AF5 /* date-select@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "date-select@2x.png"; sourceTree = "<group>"; };
 		9F51478B1A8A87050089EAD1 /* faceTagTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = faceTagTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F51478F1A8A87050089EAD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F5147901A8A87050089EAD1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -215,6 +219,8 @@
 		9F4D03461AA0FEF200806AF5 /* assets */ = {
 			isa = PBXGroup;
 			children = (
+				9F4D03581AA6932800806AF5 /* date-select.png */,
+				9F4D03591AA6932800806AF5 /* date-select@2x.png */,
 				9F4D03471AA0FF0300806AF5 /* capture-flip-pressed.png */,
 				9F4D03481AA0FF0300806AF5 /* capture-flip-pressed@2x.png */,
 				9F4D03491AA0FF0300806AF5 /* capture-flip.png */,
@@ -484,10 +490,12 @@
 				9F4D034B1AA0FF0300806AF5 /* capture-flip-pressed.png in Resources */,
 				9F4D034E1AA0FF0300806AF5 /* capture-flip@2x.png in Resources */,
 				9F4D034D1AA0FF0300806AF5 /* capture-flip.png in Resources */,
+				9F4D035A1AA6932800806AF5 /* date-select.png in Resources */,
 				9F51480D1A8ADED90089EAD1 /* chengyue.jpeg in Resources */,
 				9F5147A21A8A87050089EAD1 /* LaunchScreen.xib in Resources */,
 				9F4D034C1AA0FF0300806AF5 /* capture-flip-pressed@2x.png in Resources */,
 				D1B9F9081A8DD8A8002538E0 /* siyao-s.jpg in Resources */,
+				9F4D035B1AA6932800806AF5 /* date-select@2x.png in Resources */,
 				9F51480E1A8ADEDA0089EAD1 /* siyao.jpeg in Resources */,
 				9F51479F1A8A87050089EAD1 /* Images.xcassets in Resources */,
 			);

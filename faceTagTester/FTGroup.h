@@ -28,6 +28,9 @@
 @property (nonatomic) BOOL didFinishProcessing;
 @property (nonatomic) BOOL didFinishTraining;
 
+- (id)initWithContext:(NSManagedObjectContext *)context;
+- (id)initWithName:(NSString *)name andPeople:(NSArray *)people andStartDate:(NSDate *)start andEndDate:(NSDate *)end withContext:(NSManagedObjectContext *)context;
+
 - (id)init;
 - (id)initWithName:(NSString *)name andPeople:(NSArray *)people andStartDate:(NSDate *)start andEndDate:(NSDate *)end;
 - (void)addPhoto:(FTPhoto *)photo;

@@ -23,6 +23,8 @@
 @property (nonatomic, strong) NSDate *creationDate;
 
 -(id)initWithPhotoAsset:(PHAsset *)asset;
+-(id)initWithPhotoAsset:(PHAsset *)asset withContext:(NSManagedObjectContext *)context;
+
 -(void)addPerson:(FTPerson *)person;
 -(void)addGroup:(FTGroup *)group;
 

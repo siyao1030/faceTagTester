@@ -37,10 +37,10 @@
         self.navigationItem.rightBarButtonItem = doneButton;
     } else {
         _isCreatingNewGroup = YES;
-        dispatch_async(CoreDataWriteQueue(), ^{
-            FTGroup *newGroup = [[FTGroup alloc] init];
+        [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+            FTGroup *newGroup = [[FTGroup alloc] initWithContext:localContext];
             [self setGroup:newGroup];
-        });
+        }];
         UIBarButtonItem *createButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(createButtonPressed)];
         self.navigationItem.rightBarButtonItem = createButton;
     }
@@ -55,11 +55,10 @@
     if (self.isMovingFromParentViewController) {
         // cancel editing, should discard new group if it was created
         if (_isCreatingNewGroup) {
-            dispatch_async(CoreDataWriteQueue(), ^{
-                FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
+            [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                FTGroup *localGroup = [self.group MR_inContext:localContext];
                 [localGroup MR_deleteEntity];
-                [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
-            });
+            }];
         }
     }
 }
@@ -251,7 +250,6 @@
     
     [self.selectDatesButton sizeToFit];
     CGRect selectDatesFrame = [self.selectDatesButton frame];
-    //selectDatesFrame.size.width = bounds.size.width - 2 * SIDE_PADDING;
     selectDatesFrame.origin.x = bounds.size.width - SIDE_PADDING - selectDatesFrame.size.width;
     selectDatesFrame.origin.y = CGRectGetMaxY(startDateFieldFrame);
     [self.selectDatesButton setFrame:selectDatesFrame];
@@ -354,17 +352,16 @@
 }
 
 - (void)createButtonPressed {
-    dispatch_async(CoreDataWriteQueue(), ^{
-        FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+        FTGroup *localGroup = [self.group MR_inContext:localContext];
         [localGroup setName:self.groupNameField.text];
         [localGroup addPeople:self.people];
         [localGroup setStartDate:self.startDate];
         [localGroup setEndDate:self.endDate];
-        
-        [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
+    } completion:^(BOOL success, NSError *error) {
         FTGroupPhotosViewController *groupPhotosView = [[FTGroupPhotosViewController alloc] initWithGroup:self.group];
         [self.navigationController showViewController:groupPhotosView sender:self];
-    });
+    }];
 }
 
 

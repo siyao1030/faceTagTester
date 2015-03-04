@@ -28,6 +28,7 @@
 @property (nonatomic, strong) NSMutableSet *groups;
 
 - (id)initWithName:(NSString *)name andInitialTrainingImages:(NSArray *)images;
+- (id)initWithName:(NSString *)name andInitialTrainingImages:(NSArray *)images withContext:(NSManagedObjectContext *)context;
 - (void)trainWithImages:(NSArray *)images;
 - (void)addPhoto:(FTPhoto *)photo;
 - (void)addGroup:(FTGroup *)group;

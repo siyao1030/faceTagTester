@@ -20,6 +20,12 @@
 + (NSString*)entityName;
 + (NSEntityDescription*)entity;
 
++ (NSArray *)fetchWithPredicate:(NSPredicate *)predicate withContext:(NSManagedObjectContext *)context;
++ (NSArray *)fetchAllWithContext:(NSManagedObjectContext *)context;
++ (id)fetchWithID:(NSString *)modelID withContext:(NSManagedObjectContext *)context;
++ (id)fetchOrCreateWithID:(NSString *)modelID withContext:(NSManagedObjectContext *)context;
++ (NSEntityDescription*)entityWithContext:(NSManagedObjectContext *)context;
+
 - (void)update:(NSDictionary *)data;
 
 @end

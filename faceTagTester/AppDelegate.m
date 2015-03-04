@@ -57,30 +57,13 @@ static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
     [FaceppAPI initWithApiKey:FACEPP_API_KEY andApiSecret:FACEPP_API_SECRET andRegion:APIServerRegionUS];
     [FaceppAPI setDebugMode:YES];
     
-    
-    //temp setup for testing
-    /*
-    __block FTPerson *siyao = [FTPerson fetchWithID:@"siyao"];
-    if (!siyao) {
-        dispatch_async(CoreDataWriteQueue(), ^{
-            siyao = [[FTPerson alloc] initWithName:@"siyao" andInitialTrainingImages:@[[UIImage imageNamed:@"siyao-s.jpg"]]];
-        });
-    }
-    
-    __block FTPerson *chengyue = [FTPerson fetchWithID:@"chengyue"];
-    if (!chengyue) {
-        dispatch_async(CoreDataWriteQueue(), ^{
-            chengyue = [[FTPerson alloc] initWithName:@"chengyue" andInitialTrainingImages:@[[UIImage imageNamed:@"chengyue-s.jpg"]]];
-        });
-    }*/
-    
     __block FTGroup *testGroup = [[FTGroup fetchAll] firstObject];
     if (!testGroup) {
-        dispatch_async(CoreDataWriteQueue(), ^{
-            FTPerson *siyao = [[FTPerson alloc] initWithName:@"siyao" andInitialTrainingImages:@[[UIImage imageNamed:@"siyao-s.jpg"]]];
-            FTPerson *chengyue = [[FTPerson alloc] initWithName:@"chengyue" andInitialTrainingImages:@[[UIImage imageNamed:@"chengyue-s.jpg"]]];
-            testGroup = [[FTGroup alloc] initWithName:@"testGroup" andPeople:@[siyao, chengyue] andStartDate:START_DATE andEndDate:END_DATE];
-        });
+        [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+            FTPerson *siyao = [[FTPerson alloc] initWithName:@"siyao" andInitialTrainingImages:@[[UIImage imageNamed:@"siyao-s.jpg"]] withContext:localContext];
+            FTPerson *chengyue = [[FTPerson alloc] initWithName:@"chengyue" andInitialTrainingImages:@[[UIImage imageNamed:@"chengyue-s.jpg"]] withContext:localContext];
+            testGroup = [[FTGroup alloc] initWithName:@"testGroup" andPeople:@[siyao, chengyue] andStartDate:START_DATE andEndDate:END_DATE withContext:localContext];
+        }];
     }
     
     

@@ -216,33 +216,19 @@
 
 - (void)savePersonButtonPressed {
 #warning SAVING NOT WORKING
-    dispatch_sync(CoreDataWriteQueue(), ^{
+    
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext){
         if (self.person) {
-            FTPerson *localPerson = [FTPerson fetchWithID:self.person.id];
+            FTPerson *localPerson = [self.person MR_inContext:localContext];
             [localPerson setName:self.nameField.text];
             [localPerson trainWithImages:self.addedImages];
         } else {
-            FTPerson *newPerson = [[FTPerson alloc] initWithName:self.nameField.text andInitialTrainingImages:self.addedImages];
-            FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
-            [newPerson addGroup:localGroup];
+            FTPerson *newPerson = [[FTPerson alloc] initWithName:self.nameField.text andInitialTrainingImages:self.addedImages withContext:localContext];
+            FTGroup *localGroup = [self.group MR_inContext:localContext];
+//            [newPerson addGroup:localGroup];
+            [self.group addPerson:newPerson];
         }
-        [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
-    });
-
-    /*
-    dispatch_async(CoreDataWriteQueue(), ^{
-        [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext){
-            if (self.person) {
-                FTPerson *localPerson = [FTPerson fetchWithID:self.person.id];
-                [localPerson setName:self.nameField.text];
-                [localPerson trainWithImages:self.addedImages];
-            } else {
-                FTPerson *newPerson = [[FTPerson alloc] initWithName:self.nameField.text andInitialTrainingImages:self.addedImages];
-                FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
-                [newPerson addGroup:localGroup];
-            }
-        }];
-    });*/
+    }];
     [self dismissPopup];
 }
 

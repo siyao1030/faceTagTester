@@ -7,7 +7,7 @@
 //
 
 #import "FTGroupPhotosViewController.h"
-
+#define CONFIDENCE 10
 @interface FTGroupPhotosViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate, PHPhotoLibraryChangeObserver> {
     BOOL _isOngoingGroup;
 }
@@ -128,14 +128,18 @@
                     }
                 }];
                 
-                dispatch_group_notify(ProcessImageGroup(), CoreDataWriteQueue(), ^{
-                    FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
-                    [localGroup setDidFinishProcessing:YES];
-                    [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
+                dispatch_group_notify(ProcessImageGroup(), dispatch_get_main_queue(), ^{
+                    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                        FTGroup *localGroup = [self.group MR_inContext:localContext];
+                        [localGroup setDidFinishProcessing:YES];
+                    } completion:^(BOOL success, NSError *error) {
+                        NSLog(@"finished Processing");
+                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
+                            //retrain if new faces are added
+                            [self trainGroupIfNeededWithCompletion:nil];
+                        });
+                    }];
 #warning SAVING NOT WORKING
-                    NSLog(@"finished Processing");
-                    //retrain if new faces are added
-                    [self trainGroupIfNeededWithCompletion:nil];
                 });
 
             });
@@ -177,25 +181,25 @@
             dispatch_group_enter(ProcessImageGroup());
             [self detectAndIdentifyInPhotoAsset:asset Completion:^{
                 dispatch_group_leave(ProcessImageGroup());
-                dispatch_async(CoreDataWriteQueue(), ^{
-                    FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
+                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                    FTGroup *localGroup = [self.group MR_inContext:localContext];
                     [localGroup setLastProcessedDate:[asset creationDate]]; //**maybe saving too much?
-                    [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
-                });
+                }];
 #warning TODO: could add progress bar info here
             }];
         }
         
-        dispatch_group_notify(ProcessImageGroup(), CoreDataWriteQueue(), ^{
-            //group is finishedProcessing
-            FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
-            [localGroup setDidFinishProcessing:YES];
-            [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
-            NSLog(@"finished Processing");
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
-                //retrain if new faces are added
-                [self trainGroupIfNeededWithCompletion:nil];
-            });
+        dispatch_group_notify(ProcessImageGroup(), dispatch_get_main_queue(), ^{
+            [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                FTGroup *localGroup = [self.group MR_inContext:localContext];
+                [localGroup setDidFinishProcessing:YES];
+            } completion:^(BOOL success, NSError *error) {
+                NSLog(@"finished Processing");
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
+                    //retrain if new faces are added
+                    [self trainGroupIfNeededWithCompletion:nil];
+                });
+            }];
         });
     });
 
@@ -230,17 +234,16 @@
                                                   if ([result success]) {
                                                       NSArray *identifiedFaces = [[[result content] objectForKey:@"result"] objectForKey:@"face"];
                                                       
-                                                      CGFloat confidenceThreshold = 5; // need to adjust confidence threshold based on performance
-                                                      dispatch_async(CoreDataWriteQueue(), ^{
-                                                          FTPhoto *photo = [[FTPhoto alloc] initWithPhotoAsset:asset];
+                                                      [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                                                          FTPhoto *photo = [[FTPhoto alloc] initWithPhotoAsset:asset withContext:localContext];
                                                           BOOL shouldAddToGroup = NO;
                                                           for (NSDictionary *face in identifiedFaces) {
                                                               NSArray *candidates = [face objectForKey:@"candidate"];
                                                               if ([candidates count]) {
                                                                   NSDictionary *candidate = candidates[0];
-                                                                  if ([[candidate objectForKey:@"confidence"] floatValue] > confidenceThreshold) {
+                                                                  if ([[candidate objectForKey:@"confidence"] floatValue] > CONFIDENCE) {
                                                                       shouldAddToGroup = YES;
-                                                                      FTPerson *person = [FTPerson fetchWithID:[candidate objectForKey:@"person_name"]];
+                                                                      FTPerson *person = [FTPerson fetchWithID:[candidate objectForKey:@"person_name"] withContext:localContext];
                                                                       if (person) {
                                                                           if (![photo.people containsObject:person]) {
                                                                               [photo addPerson:person];
@@ -251,14 +254,15 @@
                                                               }
                                                           }
                                                           if (shouldAddToGroup) {
-                                                              FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
+                                                              FTGroup *localGroup = [self.group MR_inContext:localContext];
                                                               [photo addGroup:localGroup]; //**might not be saved
                                                           }
+
+                                                      } completion:^(BOOL success, NSError *error) {
                                                           if (completionBlock) {
                                                               completionBlock();
                                                           }
-                                                          [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
-                                                      });
+                                                      }];
                                                   }
                                                   
                                               } afterDelay:0.5];
@@ -282,15 +286,15 @@
             if (sessionID) {
                 [FTNetwork getResultForSession:sessionID completion:^(FaceppResult *result) {
                     if ([result success]) {
-                        dispatch_async(CoreDataWriteQueue(), ^{
-                            FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
+                        [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                            FTGroup *localGroup = [self.group MR_inContext:localContext];
                             [localGroup setPhotosTrained:@([self.group.photos count])];
                             [localGroup setDidFinishTraining:YES];
-                            [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
-                        });
-                        if (completionBlock) {
-                            completionBlock();
-                        }
+                        } completion:^(BOOL success, NSError *error) {
+                            if (completionBlock) {
+                                completionBlock();
+                            }
+                        }];
                     }
                 } afterDelay:0.5];
             }
@@ -319,19 +323,18 @@
     }
     [self processDateRangeDifference:updatedGroupInfo];
     
-    dispatch_async(CoreDataWriteQueue(), ^{
-        FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+        FTGroup *localGroup = [self.group MR_inContext:localContext];
         [localGroup setName:updatedName];
         [localGroup setStartDate:updatedGroupInfo[@"startDate"]];
         [localGroup setEndDate:updatedGroupInfo[@"endDate"]];
-        [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
-        
+    } completion:^(BOOL success, NSError *error) {
         if ([self.group.endDate compare:[NSDate date]] == NSOrderedDescending) {
             [self setIsOngoingGroup:YES];
         } else {
             [self setIsOngoingGroup:NO];
         }
-    });
+    }];
 }
 
 - (void)processDateRangeDifference:(NSDictionary *)updatedGroupInfo {
@@ -367,20 +370,18 @@
     //fetch by objectID
     //on coreDataWriteQueue
     
-    dispatch_async(CoreDataWriteQueue(), ^{
-        NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
         for (FTPhoto * photo in [self.group.photos copy]) {
             // startDate < creationDate < endDate
+#warning todo: not deleting some photos
             if ([[photo creationDate] compare:endDate] == NSOrderedAscending && [[photo creationDate] compare:startDate] == NSOrderedDescending) {
-                FTGroup *localGroup = [FTGroup fetchWithID:self.group.id];
+                FTGroup *localGroup = [self.group MR_inContext:localContext];
+                FTPhoto *localPhoto = [photo MR_inContext:localContext];
                 [localGroup.photos removeObject:photo];
-                NSManagedObject *coreDataPhoto = [context objectWithID:[photo objectID]];
-                [coreDataPhoto MR_deleteEntity];
+                [localPhoto MR_deleteEntity];
             }
         }
-        [context MR_saveToPersistentStoreAndWait];
-    });
-
+    }];
 }
 
 

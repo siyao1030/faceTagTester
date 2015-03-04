@@ -19,6 +19,14 @@
 @dynamic creationDate;
 @dynamic peopleNamesString;
 
+-(id)initWithPhotoAsset:(PHAsset *)asset withContext:(NSManagedObjectContext *)context {
+    self = [FTPhoto MR_createInContext:context];
+    self.id = [[NSUUID UUID] UUIDString];
+    self.photoAssetIdentifier = asset.localIdentifier;
+    self.peopleNamesString = @"";
+    self.creationDate = [asset creationDate];
+    return self;
+}
 
 -(id)initWithPhotoAsset:(PHAsset *)asset {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
@@ -31,11 +39,13 @@
 }
 
 -(void)addPerson:(FTPerson *)person {
-    FTPerson *localPerson = [FTPerson fetchWithID:person.id];
-    if (![self.people containsObject:localPerson]) {
-        [self.people addObject:localPerson];
+    if (!self.people) {
+        self.people = [[NSMutableSet alloc] init];
+    }
+    if (![self.people containsObject:person]) {
+        [self.people addObject:person];
         self.peopleNamesString = [self namesString];
-        [localPerson addPhoto:self];
+        [person addPhoto:self];
     }
     
 }
@@ -55,9 +65,11 @@
 }
 
 -(void)addGroup:(FTGroup *)group {
-    FTGroup *localGroup = [FTGroup fetchWithID:group.id];
-    [self.groups addObject:localGroup];
-    [localGroup addPhoto:self];
+    if (!self.groups) {
+        self.groups = [[NSMutableSet alloc] init];
+    }
+    [self.groups addObject:group];
+    [group addPhoto:self];
 }
 
 

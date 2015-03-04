@@ -10,15 +10,33 @@
 
 @implementation FTModel
 
++ (NSArray *)fetchWithPredicate:(NSPredicate *)predicate withContext:(NSManagedObjectContext *)context {
+    return [[self class] MR_findAllWithPredicate:predicate inContext:context];
+}
+
 + (NSArray *)fetchWithPredicate:(NSPredicate *)predicate {
     NSManagedObjectContext *localContext = [NSManagedObjectContext MR_contextForCurrentThread];
     return [[self class] MR_findAllWithPredicate:predicate inContext:localContext];
 }
 
++ (NSArray *)fetchAllWithContext:(NSManagedObjectContext *)context {
+    return [[self class] MR_findAllInContext:context];
+}
 
 + (NSArray *)fetchAll {
     NSManagedObjectContext *localContext = [NSManagedObjectContext MR_contextForCurrentThread];
     return [[self class] MR_findAllInContext:localContext];
+}
+
++ (id)fetchWithID:(NSString *)modelID withContext:(NSManagedObjectContext *)context {
+    FTModel *model = nil;
+    
+    NSArray *models =[[self class] MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"id == %@", modelID] inContext:context];
+    if ([models count] == 1) {
+        model = [models objectAtIndex:0];
+    }
+    
+    return model;
 }
 
 + (id)fetchWithID:(NSString *)modelID {
@@ -30,6 +48,18 @@
         model = [models objectAtIndex:0];
     }
     
+    return model;
+}
+
++ (id)fetchOrCreateWithID:(NSString *)modelID withContext:(NSManagedObjectContext *)context {
+    FTModel *model = [self fetchWithID:modelID];
+    
+    if (!model) {
+        model = [[self class] MR_createInContext:context];
+        [model setValue:modelID forKey:@"id"];
+    }
+    
+    [context MR_saveToPersistentStoreAndWait];
     return model;
 }
 
@@ -103,6 +133,10 @@
 
 + (NSString*)entityName {
     return NSStringFromClass(self);
+}
+
++ (NSEntityDescription*)entityWithContext:(NSManagedObjectContext *)context {
+    return [NSEntityDescription entityForName:[self entityName] inManagedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread]];
 }
 
 + (NSEntityDescription*)entity {

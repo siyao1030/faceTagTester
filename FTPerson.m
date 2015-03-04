@@ -21,6 +21,25 @@
 @dynamic facesTrained;
 @dynamic trainingImages;
 
+- (id)initWithName:(NSString *)name andInitialTrainingImages:(NSArray *)images withContext:(NSManagedObjectContext *)context {
+    self = [FTPerson MR_createInContext:context];
+    self.name = name;
+    self.id = [[NSUUID UUID] UUIDString];
+    self.objectIDString = [[self.objectID URIRepresentation] absoluteString];
+    self.trainingImages = [[NSMutableArray alloc] init];
+    
+    FaceppResult *result = [[FaceppAPI person] createWithPersonName:self.id andFaceId:nil andTag:nil andGroupId:nil orGroupName:nil];
+    
+    if ([result success]) {
+        self.fppID = [[result content] objectForKey:@"person_id"];
+        [self trainWithImages:images];
+    }
+    
+    self.profileImageData = UIImageJPEGRepresentation(images[0], 0);
+    [context MR_saveToPersistentStoreAndWait];
+    return self;
+
+}
 
 - (id)initWithName:(NSString *)name andInitialTrainingImages:(NSArray *)images {
     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextForCurrentThread];
@@ -68,14 +87,18 @@
 }
 
 - (void)addPhoto:(FTPhoto *)photo {
-    FTPhoto *localPhoto = [FTPhoto fetchWithID:photo.id];
-    [self.photos addObject:localPhoto];
+    if (!self.photos) {
+        self.photos = [[NSMutableSet alloc] init];
+    }
+    [self.photos addObject:photo];
 }
 
 - (void)addGroup:(FTGroup *)group {
-    FTGroup *localGroup = [FTGroup fetchWithID:group.id];
-    [self.groups addObject:localGroup];
-    [localGroup addPerson:self];
+    if (!self.groups) {
+        self.groups = [[NSMutableSet alloc] init];
+    }
+    [self.groups addObject:group];
+    [group addPerson:self];
 }
 
 @end
