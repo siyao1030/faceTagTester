@@ -16,7 +16,7 @@
 #define VERTICAL_PADDING 10
 #define PEOPLE_GRID_WIDTH 70
 
-@interface FTGroupManagingViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate,CTAssetsPickerControllerDelegate> {
+@interface FTGroupManagingViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate, CTAssetsPickerControllerDelegate, FTPopupViewDelegate> {
     BOOL _isCreatingNewGroup;
 }
 
@@ -53,8 +53,8 @@
     [super viewWillDisappear:animated];
     
     if (self.isMovingFromParentViewController) {
-        // cancel editing, should discard new group if it was created
-        if (_isCreatingNewGroup) {
+        // cancel editing, should discard new group if it was created but not used
+        if (_isCreatingNewGroup && !self.group.name) {
             [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
                 FTGroup *localGroup = [self.group MR_inContext:localContext];
                 [localGroup MR_deleteEntity];
@@ -258,13 +258,21 @@
 
     CGRect collectionFrame = [self.peopleCollectionView frame];
     collectionFrame.size.width = bounds.size.width - SIDE_PADDING * 2;
-    float peoplePerRow = floorf(bounds.size.width / PEOPLE_GRID_WIDTH);
+    float peoplePerRow = floorf(collectionFrame.size.width / PEOPLE_GRID_WIDTH);
     int numOfRows = ceilf(([[self.groupPeopleFRC fetchedObjects] count] + 1) / peoplePerRow);
     collectionFrame.size.height = numOfRows * (PEOPLE_GRID_WIDTH + 10);
     collectionFrame.origin.x = SIDE_PADDING;
     collectionFrame.origin.y = yOffset;
     [self.peopleCollectionView setFrame:collectionFrame];
 
+}
+
+- (void)updateColletionViewFrame {
+    CGRect collectionFrame = [self.peopleCollectionView frame];
+    float peoplePerRow = floorf(collectionFrame.size.width / PEOPLE_GRID_WIDTH);
+    int numOfRows = ceilf(([[self.groupPeopleFRC fetchedObjects] count] + 1) / peoplePerRow);
+    collectionFrame.size.height = numOfRows * (PEOPLE_GRID_WIDTH + 10);
+    [self.peopleCollectionView setFrame:collectionFrame];
 }
 
 - (void)startDateSelected:(UIDatePicker *)datePicker {
@@ -310,7 +318,6 @@
 - (void)selectDates {
     CTAssetsPickerController *picker = [[CTAssetsPickerController alloc] init];
     picker.assetsFilter = [ALAssetsFilter allPhotos];
-    //picker.showsCancelButton    = (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad);
     picker.delegate = self;
     
     [self presentViewController:picker animated:YES completion:nil];
@@ -326,6 +333,7 @@
     }
     
     self.personPopUpView = [[FTPersonPopUpView alloc] initWithGroup:self.group Person:person];
+    [self.personPopUpView setDelegate:self];
     [self.personPopUpView showPopup];
 
 }
@@ -364,6 +372,11 @@
     }];
 }
 
+#pragma mark - FTPopupViewDelegate
+
+- (void)popupViewDidDismiss:(FTPopupView*)popupView {
+    [self.groupPeopleFRC performFetch:nil];
+}
 
 #pragma mark - UICollectionViewDelegateFlowLayout
 
@@ -486,6 +499,7 @@
             }];
         }
         [self.peopleCollectionView reloadData];
+        [self updateColletionViewFrame];
     } completion:^(BOOL finished) {
         self.sectionChanges = nil;
         self.itemChanges = nil;

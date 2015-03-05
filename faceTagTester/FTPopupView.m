@@ -103,12 +103,12 @@
         // Instant dismiss avoids animation entirely.
         // Dismiss.
         [strongSelf removeFromSuperview];
-        /*
+        
         // Tell delegate we've dismissed.
         if([strongSelf.delegate respondsToSelector:@selector(popupViewDidDismiss:)]) {
             [strongSelf.delegate popupViewDidDismiss:strongSelf];
         }
-        
+        /*
         // Optional dismiss block, handy when tracking multiple popups on delegate
         if (self.dismissBlock) {
             self.dismissBlock();
@@ -123,12 +123,12 @@
             [strongSelf removeFromSuperview];
             strongSelf.alpha = 1.0;
             
-            /*
+            
             // Tell delegate we've dismissed.
             if([strongSelf.delegate respondsToSelector:@selector(popupViewDidDismiss:)]) {
                 [strongSelf.delegate popupViewDidDismiss:strongSelf];
             }
-            
+            /*
             // Optional dismiss block, handy when tracking multiple popups on delegate
             if (self.dismissBlock) {
                 self.dismissBlock();
@@ -145,12 +145,12 @@
             [strongSelf removeFromSuperview];
             strongSelf.alpha = 1.0;
             strongSelf.contentView.transform = CGAffineTransformIdentity;
-            /*
+            
             // Tell delegate we've dismissed.
             if([strongSelf.delegate respondsToSelector:@selector(popupViewDidDismiss:)]) {
                 [strongSelf.delegate popupViewDidDismiss:strongSelf];
             }
-            
+            /*
             // Optional dismiss block, handy when tracking multiple popups on delegate
             if (self.dismissBlock) {
                 self.dismissBlock();
@@ -171,12 +171,12 @@
             [strongSelf removeFromSuperview];
             strongSelf.overlayView.alpha = POPUP_BACKGROUND_ALPHA;
             
-            /*
+            
             // Tell delegate we've dismissed.
             if([strongSelf.delegate respondsToSelector:@selector(popupViewDidDismiss:)]) {
                 [strongSelf.delegate popupViewDidDismiss:strongSelf];
             }
-            
+            /*
             // Optional dismiss block, handy when tracking multiple popups on delegate
             if (self.dismissBlock) {
                 self.dismissBlock();
@@ -197,12 +197,12 @@
             [strongSelf removeFromSuperview];
             strongSelf.overlayView.alpha = POPUP_BACKGROUND_ALPHA;
             
-            /*
+            
             // Tell delegate we've dismissed.
             if([strongSelf.delegate respondsToSelector:@selector(popupViewDidDismiss:)]) {
                 [strongSelf.delegate popupViewDidDismiss:strongSelf];
             }
-            
+            /*
             // Optional dismiss block, handy when tracking multiple popups on delegate
             if (self.dismissBlock) {
                 self.dismissBlock();

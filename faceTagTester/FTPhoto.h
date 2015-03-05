@@ -15,10 +15,10 @@
 
 @property (nonatomic, strong) NSString *assetURLString;
 @property (nonatomic, strong) NSString *id;
-@property (nonatomic, retain) NSMutableSet *people;
+@property (nonatomic, retain) NSSet *people;
 @property (nonatomic, strong) NSString *photoAssetIdentifier;
-@property (nonatomic, strong) NSMutableSet *groups;
-@property (nonatomic, strong) NSMutableSet *faceIDs;
+@property (nonatomic, strong) NSSet *groups;
+@property (nonatomic, strong) NSSet *faceIDs;
 @property (nonatomic, strong) NSString *peopleNamesString;
 @property (nonatomic, strong) NSDate *creationDate;
 

@@ -301,7 +301,8 @@
     return newImage;
 }
 
-#pragma - mark UITextFieldDelegate
+
+#pragma mark - UITextFieldDelegate
 -(void)textFieldDidChange :(UITextField *)textField{
     [textField setTextColor:[UIColor colorForText:textField.text]];
 }

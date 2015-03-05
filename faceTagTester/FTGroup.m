@@ -40,7 +40,7 @@
         self.fppID = [[result content] objectForKey:@"group_id"];
     }
     
-    [context MR_saveToPersistentStoreAndWait];
+    //[context MR_saveToPersistentStoreAndWait];
     return self;
 }
 
@@ -75,7 +75,7 @@
         self.fppID = [[result content] objectForKey:@"group_id"];
     }
     
-    [context MR_saveToPersistentStoreAndWait];
+    //[context MR_saveToPersistentStoreAndWait];
     return self;
 }
 
@@ -85,17 +85,19 @@
 }
 
 - (void)addPhoto:(FTPhoto *)photo {
-    if (!self.photos) {
-        self.photos = [[NSMutableSet alloc] init];
-    }
-    [self.photos addObject:photo];
+    NSMutableSet *mutablePhotos = [self mutableSetValueForKey:@"photos"];
+    [mutablePhotos addObject:photo];
 }
 
+- (void)removePhoto:(FTPhoto *)photo {
+    NSMutableSet *mutablePhotos = [self mutableSetValueForKey:@"photos"];
+    [mutablePhotos removeObject:photo];
+}
+
+
 - (void)addPerson:(FTPerson *)person {
-    if (!self.people) {
-        self.people = [[NSMutableSet alloc] init];
-    }
-    [self.people addObject:person];
+    NSMutableSet *mutablePeople = [self mutableSetValueForKey:@"people"];
+    [mutablePeople addObject:person];
 }
 
 - (void)addPeople:(NSArray *)people {

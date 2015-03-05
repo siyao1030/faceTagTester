@@ -39,15 +39,11 @@
 }
 
 -(void)addPerson:(FTPerson *)person {
-    if (!self.people) {
-        self.people = [[NSMutableSet alloc] init];
-    }
     if (![self.people containsObject:person]) {
-        [self.people addObject:person];
+        NSMutableSet *mutablePeople = [self mutableSetValueForKey:@"people"];
+        [mutablePeople addObject:person];
         self.peopleNamesString = [self namesString];
-        [person addPhoto:self];
     }
-    
 }
 
 -(NSString *)namesString {
@@ -65,11 +61,9 @@
 }
 
 -(void)addGroup:(FTGroup *)group {
-    if (!self.groups) {
-        self.groups = [[NSMutableSet alloc] init];
-    }
-    [self.groups addObject:group];
-    [group addPhoto:self];
+    NSMutableSet *mutableGroups = [self mutableSetValueForKey:@"groups"];
+    [mutableGroups addObject:group];
+    //[group addPhoto:self];
 }
 
 

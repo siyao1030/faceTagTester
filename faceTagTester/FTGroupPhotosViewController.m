@@ -377,7 +377,7 @@
             if ([[photo creationDate] compare:endDate] == NSOrderedAscending && [[photo creationDate] compare:startDate] == NSOrderedDescending) {
                 FTGroup *localGroup = [self.group MR_inContext:localContext];
                 FTPhoto *localPhoto = [photo MR_inContext:localContext];
-                [localGroup.photos removeObject:photo];
+                [localGroup removePhoto:photo];
                 [localPhoto MR_deleteEntity];
             }
         }

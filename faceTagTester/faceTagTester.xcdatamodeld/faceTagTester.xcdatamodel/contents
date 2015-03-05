@@ -35,7 +35,7 @@
     </entity>
     <elements>
         <element name="FTGroup" positionX="-137" positionY="-67" width="128" height="208"/>
-        <element name="FTPerson" positionX="-450" positionY="24" width="128" height="180"/>
+        <element name="FTPerson" positionX="-450" positionY="24" width="128" height="178"/>
         <element name="FTPhoto" positionX="124" positionY="39" width="128" height="150"/>
     </elements>
 </model>

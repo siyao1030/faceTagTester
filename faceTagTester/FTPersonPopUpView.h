@@ -16,7 +16,7 @@
 
 @property (nonatomic, strong) FTGroup *group;
 @property (nonatomic, strong) FTPerson *person;
-@property (nonatomic, strong) NSMutableArray *imagePaths;
+@property (nonatomic, strong) NSArray *imagePaths;
 @property (nonatomic, strong) NSMutableArray *addedImages;
 
 @property (nonatomic, strong) UIView *cameraView;

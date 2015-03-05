@@ -21,22 +21,21 @@
 @dynamic facesTrained;
 @dynamic trainingImages;
 
+
 - (id)initWithName:(NSString *)name andInitialTrainingImages:(NSArray *)images withContext:(NSManagedObjectContext *)context {
     self = [FTPerson MR_createInContext:context];
     self.name = name;
     self.id = [[NSUUID UUID] UUIDString];
     self.objectIDString = [[self.objectID URIRepresentation] absoluteString];
-    self.trainingImages = [[NSMutableArray alloc] init];
-    
+    self.profileImageData = UIImageJPEGRepresentation(images[0], 0);
+    [self addTrainingImages:images];
+
     FaceppResult *result = [[FaceppAPI person] createWithPersonName:self.id andFaceId:nil andTag:nil andGroupId:nil orGroupName:nil];
-    
     if ([result success]) {
         self.fppID = [[result content] objectForKey:@"person_id"];
         [self trainWithImages:images];
     }
     
-    self.profileImageData = UIImageJPEGRepresentation(images[0], 0);
-    [context MR_saveToPersistentStoreAndWait];
     return self;
 
 }
@@ -47,22 +46,21 @@
     self.name = name;
     self.id = [[NSUUID UUID] UUIDString];
     self.objectIDString = [[self.objectID URIRepresentation] absoluteString];
-    self.trainingImages = [[NSMutableArray alloc] init];
-    
+    [self addTrainingImages:images];
+    self.profileImageData = UIImageJPEGRepresentation(images[0], 0);
+
     FaceppResult *result = [[FaceppAPI person] createWithPersonName:self.id andFaceId:nil andTag:nil andGroupId:nil orGroupName:nil];
     
     if ([result success]) {
         self.fppID = [[result content] objectForKey:@"person_id"];
         [self trainWithImages:images];
+
     }
-    
-    self.profileImageData = UIImageJPEGRepresentation(images[0], 0);
-    [context MR_saveToPersistentStoreAndWait];
     return self;
 }
 
-- (void)trainWithImages:(NSArray *)images {
-    NSMutableArray *faceIDs = [[NSMutableArray alloc] init];
+- (void)addTrainingImages:(NSArray *)images {
+    NSMutableArray *mutableTrainingImages = [NSMutableArray arrayWithArray:self.trainingImages];
     int index = (int)self.trainingImages.count;
     for (UIImage *image in images) {
         //save to local
@@ -71,8 +69,14 @@
         NSString *filePath = [NSString stringWithFormat:@"%@/%@",directory,fileName];
         NSData *data = [NSData dataWithData:UIImageJPEGRepresentation(image, 1.0f)];//1.0f = 100% quality
         [data writeToFile:filePath atomically:YES];
-        [self.trainingImages addObject:fileName];
-        
+        [mutableTrainingImages addObject:fileName];
+    }
+    self.trainingImages = mutableTrainingImages;
+}
+
+- (void)trainWithImages:(NSArray *)images {
+    NSMutableArray *faceIDs = [[NSMutableArray alloc] init];
+    for (UIImage *image in images) {
         //train
         FaceppResult *result = [[FaceppAPI detection] detectWithURL:nil orImageData:UIImageJPEGRepresentation(image, 0.5) mode:FaceppDetectionModeOneFace];
         if ([result success]) {
@@ -80,25 +84,25 @@
             if ([faces count]) {
                 NSString *faceID = [[faces objectAtIndex:0] objectForKey:@"face_id"];
                 [faceIDs addObject:faceID];
+            } else {
+                //mark this image as invalid
             }
         }
     }
-    [[FaceppAPI person] addFaceWithPersonName:self.id orPersonId:self.fppID andFaceId:faceIDs];
+    if (faceIDs) {
+        [[FaceppAPI person] addFaceWithPersonName:self.id orPersonId:nil andFaceId:faceIDs];
+    }
 }
 
 - (void)addPhoto:(FTPhoto *)photo {
-    if (!self.photos) {
-        self.photos = [[NSMutableSet alloc] init];
-    }
-    [self.photos addObject:photo];
+    NSMutableSet *mutablePhotos = [self mutableSetValueForKey:@"photos"];
+    [mutablePhotos addObject:photo];
 }
 
 - (void)addGroup:(FTGroup *)group {
-    if (!self.groups) {
-        self.groups = [[NSMutableSet alloc] init];
-    }
-    [self.groups addObject:group];
-    [group addPerson:self];
+    NSMutableSet *mutableGroups = [self mutableSetValueForKey:@"groups"];
+    [mutableGroups addObject:group];
+    //[group addPerson:self];
 }
 
 @end

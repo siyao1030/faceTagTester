@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol FTPopupViewDelegate;
+
 typedef enum : NSUInteger {
     PTPopupViewDismissDont,
     PTPopupViewDismissDeny,
@@ -25,7 +27,7 @@ typedef enum : NSUInteger {
 } PTPopupViewShowType;
 
 @interface FTPopupView : UIView
-//@property (readwrite, nonatomic, weak) id<PTPopupViewDelegate> delegate;
+@property (readwrite, nonatomic, weak) id<FTPopupViewDelegate> delegate;
 
 @property (nonatomic, strong) UIView *overlayView;
 @property (nonatomic, strong) UIView *contentView;
@@ -36,5 +38,11 @@ typedef enum : NSUInteger {
 -(void)showPopup;
 -(void)dismissPopup;
 
+@end
 
+@protocol FTPopupViewDelegate <NSObject>
+@optional
+- (void)popupViewDidShow:(FTPopupView*)popupView;
+- (BOOL)popupViewShouldDismiss:(FTPopupView*)popupView;
+- (void)popupViewDidDismiss:(FTPopupView*)popupView;
 @end

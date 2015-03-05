@@ -18,8 +18,8 @@
 @property (nonatomic, strong) NSString *id;
 @property (nonatomic, strong) NSString *fppID;
 @property (nonatomic, strong) NSString *name;
-@property (nonatomic, strong) NSMutableSet *photos;
-@property (nonatomic, strong) NSMutableSet *people;
+@property (nonatomic, strong) NSSet *photos;
+@property (nonatomic, strong) NSSet *people;
 @property (nonatomic, strong) NSDate *startDate;
 @property (nonatomic, strong) NSDate *endDate;
 
@@ -34,6 +34,8 @@
 - (id)init;
 - (id)initWithName:(NSString *)name andPeople:(NSArray *)people andStartDate:(NSDate *)start andEndDate:(NSDate *)end;
 - (void)addPhoto:(FTPhoto *)photo;
+- (void)removePhoto:(FTPhoto *)photo;
+
 - (void)addPerson:(FTPerson *)person;
 - (void)addPeople:(NSArray *)people;
 
