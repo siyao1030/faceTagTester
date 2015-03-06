@@ -20,6 +20,7 @@
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="objectIDString" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="profileImageData" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="shouldTrainAgain" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="trainingImages" optional="YES" attributeType="Transformable" syncable="YES"/>
         <relationship name="groups" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTGroup" inverseName="people" inverseEntity="FTGroup" syncable="YES"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTPhoto" inverseName="people" inverseEntity="FTPhoto" syncable="YES"/>
@@ -35,7 +36,7 @@
     </entity>
     <elements>
         <element name="FTGroup" positionX="-137" positionY="-67" width="128" height="208"/>
-        <element name="FTPerson" positionX="-450" positionY="24" width="128" height="178"/>
-        <element name="FTPhoto" positionX="124" positionY="39" width="128" height="150"/>
+        <element name="FTPerson" positionX="-450" positionY="24" width="128" height="193"/>
+        <element name="FTPhoto" positionX="124" positionY="39" width="128" height="148"/>
     </elements>
 </model>

@@ -255,7 +255,9 @@
                                                           }
                                                           if (shouldAddToGroup) {
                                                               FTGroup *localGroup = [self.group MR_inContext:localContext];
-                                                              [photo addGroup:localGroup]; //**might not be saved
+                                                              [localGroup addPhoto:photo];
+                                                              localGroup.didFinishTraining = NO;
+                                                              //[photo addGroup:localGroup];
                                                           }
 
                                                       } completion:^(BOOL success, NSError *error) {
@@ -278,17 +280,18 @@
 
 - (void)trainGroupIfNeededWithCompletion:(void(^)(void))completionBlock {
     NSInteger photosTrained = [self.group.photosTrained integerValue];
-    if (self.group.photos.count > photosTrained || photosTrained == 0) {
+    if (!self.group.didFinishTraining) {
+        __block FTGroupPhotosViewController *blockSelf = self;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             NSLog(@"training");
-            FaceppResult *result = [[FaceppAPI train] trainAsynchronouslyWithId:self.group.fppID orName:self.group.id andType:FaceppTrainIdentify];
+            FaceppResult *result = [[FaceppAPI train] trainAsynchronouslyWithId:nil orName:blockSelf.group.id andType:FaceppTrainIdentify];
             NSString *sessionID = [[result content] objectForKey:@"session_id"];
             if (sessionID) {
                 [FTNetwork getResultForSession:sessionID completion:^(FaceppResult *result) {
                     if ([result success]) {
                         [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                            FTGroup *localGroup = [self.group MR_inContext:localContext];
-                            [localGroup setPhotosTrained:@([self.group.photos count])];
+                            FTGroup *localGroup = [blockSelf.group MR_inContext:localContext];
+                            [localGroup setPhotosTrained:@([blockSelf.group.photos count])];
                             [localGroup setDidFinishTraining:YES];
                         } completion:^(BOOL success, NSError *error) {
                             if (completionBlock) {
@@ -298,10 +301,8 @@
                     }
                 } afterDelay:0.5];
             }
-            
         });
     }
-    
 }
 
 
@@ -317,10 +318,15 @@
 
 - (void)updateGroup:(NSDictionary *)updatedGroupInfo {
     NSString *updatedName = updatedGroupInfo[@"groupName"];
-
     if (![updatedName isEqualToString:self.group.name]) {
         [[self navigationItem] setTitle:updatedName];
     }
+    
+#warning TODO: figure out retrain prereqs
+    if ([updatedGroupInfo[@"shouldTrainAgain"] boolValue]) {
+        self.group.didFinishTraining = NO;
+    }
+    [self performSelectorOnMainThread:@selector(trainGroupIfNeededWithCompletion:) withObject:nil waitUntilDone:YES];
     [self processDateRangeDifference:updatedGroupInfo];
     
     [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
@@ -328,6 +334,7 @@
         [localGroup setName:updatedName];
         [localGroup setStartDate:updatedGroupInfo[@"startDate"]];
         [localGroup setEndDate:updatedGroupInfo[@"endDate"]];
+        
     } completion:^(BOOL success, NSError *error) {
         if ([self.group.endDate compare:[NSDate date]] == NSOrderedDescending) {
             [self setIsOngoingGroup:YES];
@@ -373,8 +380,8 @@
     [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
         for (FTPhoto * photo in [self.group.photos copy]) {
             // startDate < creationDate < endDate
-#warning todo: not deleting some photos
-            if ([[photo creationDate] compare:endDate] == NSOrderedAscending && [[photo creationDate] compare:startDate] == NSOrderedDescending) {
+
+            if ([[photo creationDate] compare:endDate] != NSOrderedDescending && [[photo creationDate] compare:startDate] != NSOrderedAscending) {
                 FTGroup *localGroup = [self.group MR_inContext:localContext];
                 FTPhoto *localPhoto = [photo MR_inContext:localContext];
                 [localGroup removePhoto:photo];

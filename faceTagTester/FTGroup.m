@@ -18,8 +18,6 @@
 @dynamic people;
 @dynamic startDate;
 @dynamic endDate;
-
-
 @dynamic lastProcessedDate;
 @dynamic photosTrained;
 @dynamic didFinishProcessing;
@@ -39,8 +37,6 @@
     if ([result success]) {
         self.fppID = [[result content] objectForKey:@"group_id"];
     }
-    
-    //[context MR_saveToPersistentStoreAndWait];
     return self;
 }
 
@@ -74,8 +70,6 @@
     if ([result success]) {
         self.fppID = [[result content] objectForKey:@"group_id"];
     }
-    
-    //[context MR_saveToPersistentStoreAndWait];
     return self;
 }
 
@@ -98,6 +92,7 @@
 - (void)addPerson:(FTPerson *)person {
     NSMutableSet *mutablePeople = [self mutableSetValueForKey:@"people"];
     [mutablePeople addObject:person];
+    self.didFinishTraining = NO;
 }
 
 - (void)addPeople:(NSArray *)people {
@@ -106,6 +101,7 @@
         [personIDs addObject:person.id];
         [self addPerson:person];
     }
+#warning todo: personIDs is nil here
     [[FaceppAPI group] addPersonWithGroupId:nil orGroupName:self.id andPersonId:nil orPersonName:personIDs];
 }
 

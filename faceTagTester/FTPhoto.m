@@ -63,7 +63,6 @@
 -(void)addGroup:(FTGroup *)group {
     NSMutableSet *mutableGroups = [self mutableSetValueForKey:@"groups"];
     [mutableGroups addObject:group];
-    //[group addPhoto:self];
 }
 
 

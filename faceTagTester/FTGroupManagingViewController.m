@@ -8,7 +8,6 @@
 
 #import "FTGroupManagingViewController.h"
 #import "FTGroupPhotosViewController.h"
-#import "FTPersonViewController.h"
 #import "CTAssetsPickerController.h"
 
 
@@ -18,6 +17,8 @@
 
 @interface FTGroupManagingViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate, CTAssetsPickerControllerDelegate, FTPopupViewDelegate> {
     BOOL _isCreatingNewGroup;
+    BOOL _shouldTrainAgain;
+    NSMutableArray *_addedPeople;
 }
 
 @end
@@ -26,7 +27,10 @@
 
 - (id)initWithGroup:(FTGroup *)group {
     self = [super init];
-
+    _isCreatingNewGroup = NO;
+    _shouldTrainAgain = NO;
+    _addedPeople = [[NSMutableArray alloc] init];
+    
     if (group) {
         [self setGroup:group];
         [self setGroupName:group.name];
@@ -37,10 +41,12 @@
         self.navigationItem.rightBarButtonItem = doneButton;
     } else {
         _isCreatingNewGroup = YES;
-        [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+        __block NSString *newGroupID = nil;
+        [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
             FTGroup *newGroup = [[FTGroup alloc] initWithContext:localContext];
-            [self setGroup:newGroup];
+            newGroupID = newGroup.id;
         }];
+        self.group = [FTGroup fetchWithID:newGroupID];
         UIBarButtonItem *createButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(createButtonPressed)];
         self.navigationItem.rightBarButtonItem = createButton;
     }
@@ -67,14 +73,12 @@
     [super viewDidLoad];
     
     UIColor *mainColor = [UIColor colorForText:@"melon"];
-    UIColor *mainColorTransparent = [mainColor colorWithAlphaComponent:0.5];
     [self.view setBackgroundColor:[UIColor whiteColor]];
     
     self.groupNameField = [[UITextField alloc] init];
     [self.groupNameField setFont:[UIFont boldSystemFontOfSize:24]];
     [self.groupNameField setPlaceholder:@"Name of the Group"];
     [self.groupNameField setTextAlignment:NSTextAlignmentLeft];
-    //[self.groupNameField setBackgroundColor:mainColorTransparent];
     [self.groupNameField setTextColor:mainColor];
     if (self.groupName) {
         [self.groupNameField setText:self.groupName];
@@ -146,11 +150,6 @@
     self.selectDatesButton = [[UIButton alloc] init];
     [self.selectDatesButton setImage:[[UIImage imageNamed:@"date-select"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
     [self.selectDatesButton setTintColor:mainColor];
-    //[self.selectDatesButton setBackgroundColor:[UIColor whiteColor]];
-    //[self.selectDatesButton setTitle:@"Select Dates" forState:UIControlStateNormal];
-    //[self.selectDatesButton setTitleColor:mainColor forState:UIControlStateNormal];
-    //[[self.selectDatesButton titleLabel] setFont:[UIFont systemFontOfSize:22]];
-    //[[self.selectDatesButton titleLabel] setTextAlignment:NSTextAlignmentCenter];
     [self.selectDatesButton addTarget:self action:@selector(selectDates) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.selectDatesButton];
     
@@ -202,7 +201,7 @@
         [self.groupPeopleFRC setDelegate:self];
         [self.groupPeopleFRC performFetch:NULL];
     }
-
+    
 }
 
 
@@ -354,28 +353,30 @@
     [editedGroupInfo setValue:self.groupNameField.text forKey:@"groupName"];
     [editedGroupInfo setValue:self.startDate forKey:@"startDate"];
     [editedGroupInfo setValue:self.endDate forKey:@"endDate"];
-
+    [editedGroupInfo setValue:[NSNumber numberWithBool:_shouldTrainAgain] forKey:@"shouldTrainAgain"];
     [self.target performSelector:self.action withObject:editedGroupInfo afterDelay:0];
     [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)createButtonPressed {
+    NSString *groupID = self.group.id;
+    __block __typeof(self) blockSelf = self;
     [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-        FTGroup *localGroup = [self.group MR_inContext:localContext];
-        [localGroup setName:self.groupNameField.text];
-        [localGroup addPeople:self.people];
-        [localGroup setStartDate:self.startDate];
-        [localGroup setEndDate:self.endDate];
+        FTGroup *localGroup = [blockSelf.group MR_inContext:localContext];
+        [localGroup setName:blockSelf.groupNameField.text];
+        [localGroup addPeople:_addedPeople];
+        [localGroup setStartDate:blockSelf.startDate];
+        [localGroup setEndDate:blockSelf.endDate];
     } completion:^(BOOL success, NSError *error) {
-        FTGroupPhotosViewController *groupPhotosView = [[FTGroupPhotosViewController alloc] initWithGroup:self.group];
-        [self.navigationController showViewController:groupPhotosView sender:self];
+        FTGroup *updatedGroup = [FTGroup fetchWithID:groupID];
+        FTGroupPhotosViewController *groupPhotosView = [[FTGroupPhotosViewController alloc] initWithGroup:updatedGroup];
+        [blockSelf.navigationController showViewController:groupPhotosView sender:blockSelf];
     }];
 }
 
 #pragma mark - FTPopupViewDelegate
 
 - (void)popupViewDidDismiss:(FTPopupView*)popupView {
-    [self.groupPeopleFRC performFetch:nil];
 }
 
 #pragma mark - UICollectionViewDelegateFlowLayout
@@ -485,13 +486,22 @@
                 switch(type) {
                     case NSFetchedResultsChangeInsert:
                         [self.peopleCollectionView insertItemsAtIndexPaths:@[obj]];
+                        [_addedPeople addObject:[self.groupPeopleFRC objectAtIndexPath:obj]];
+                        if (!_shouldTrainAgain) {
+                            _shouldTrainAgain = YES;
+                        }
                         break;
                     case NSFetchedResultsChangeDelete:
                         [self.peopleCollectionView deleteItemsAtIndexPaths:@[obj]];
                         break;
                     case NSFetchedResultsChangeUpdate:
+                    {
                         [self.peopleCollectionView reloadItemsAtIndexPaths:@[obj]];
+                        FTPerson *changedPerson = [self.groupPeopleFRC objectAtIndexPath:obj];
+                        if (changedPerson.shouldTrainAgain)
+                            _shouldTrainAgain = YES;
                         break;
+                    }
                     case NSFetchedResultsChangeMove:
                         [self.peopleCollectionView moveItemAtIndexPath:obj[0] toIndexPath:obj[1]];
                         break;

@@ -17,7 +17,6 @@
 		9F4D034C1AA0FF0300806AF5 /* capture-flip-pressed@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F4D03481AA0FF0300806AF5 /* capture-flip-pressed@2x.png */; };
 		9F4D034D1AA0FF0300806AF5 /* capture-flip.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F4D03491AA0FF0300806AF5 /* capture-flip.png */; };
 		9F4D034E1AA0FF0300806AF5 /* capture-flip@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F4D034A1AA0FF0300806AF5 /* capture-flip@2x.png */; };
-		9F4D03511AA155B000806AF5 /* FTPersonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F4D03501AA155B000806AF5 /* FTPersonViewController.m */; };
 		9F4D03541AA184A700806AF5 /* FTPopupView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F4D03531AA184A700806AF5 /* FTPopupView.m */; };
 		9F4D03571AA65CD600806AF5 /* FTGroupListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F4D03561AA65CD600806AF5 /* FTGroupListTableViewCell.m */; };
 		9F4D035A1AA6932800806AF5 /* date-select.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F4D03581AA6932800806AF5 /* date-select.png */; };
@@ -87,8 +86,6 @@
 		9F4D03481AA0FF0300806AF5 /* capture-flip-pressed@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "capture-flip-pressed@2x.png"; sourceTree = "<group>"; };
 		9F4D03491AA0FF0300806AF5 /* capture-flip.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "capture-flip.png"; sourceTree = "<group>"; };
 		9F4D034A1AA0FF0300806AF5 /* capture-flip@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "capture-flip@2x.png"; sourceTree = "<group>"; };
-		9F4D034F1AA155B000806AF5 /* FTPersonViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTPersonViewController.h; sourceTree = "<group>"; };
-		9F4D03501AA155B000806AF5 /* FTPersonViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTPersonViewController.m; sourceTree = "<group>"; };
 		9F4D03521AA184A700806AF5 /* FTPopupView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTPopupView.h; sourceTree = "<group>"; };
 		9F4D03531AA184A700806AF5 /* FTPopupView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTPopupView.m; sourceTree = "<group>"; };
 		9F4D03551AA65CD600806AF5 /* FTGroupListTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTGroupListTableViewCell.h; sourceTree = "<group>"; };
@@ -268,8 +265,6 @@
 				9F5147991A8A87050089EAD1 /* FTGroupPhotosViewController.m */,
 				9F4D03391A97ECFE00806AF5 /* FTGroupManagingViewController.h */,
 				9F4D033A1A97ECFE00806AF5 /* FTGroupManagingViewController.m */,
-				9F4D034F1AA155B000806AF5 /* FTPersonViewController.h */,
-				9F4D03501AA155B000806AF5 /* FTPersonViewController.m */,
 				D1651EFC1A9D9F8C004757B4 /* FTPersonPopUpView.h */,
 				D1651EFD1A9D9F8C004757B4 /* FTPersonPopUpView.m */,
 				9F4D03521AA184A700806AF5 /* FTPopupView.h */,
@@ -551,7 +546,6 @@
 				9F51482B1A8BE6200089EAD1 /* FaceppAPI.m in Sources */,
 				9F4D03331A94121F00806AF5 /* FTAdditions.m in Sources */,
 				9F5147941A8A87050089EAD1 /* AppDelegate.m in Sources */,
-				9F4D03511AA155B000806AF5 /* FTPersonViewController.m in Sources */,
 				D1651EFE1A9D9F8C004757B4 /* FTPersonPopUpView.m in Sources */,
 				9F5148311A8BE6200089EAD1 /* FaceppInfo.m in Sources */,
 				9F5147B91A8A8CAA0089EAD1 /* FTPerson.m in Sources */,

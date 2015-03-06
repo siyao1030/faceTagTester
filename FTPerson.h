@@ -26,6 +26,7 @@
 @property (nonatomic, copy) NSArray *trainingImages;
 @property (nonatomic, strong) NSSet *photos;
 @property (nonatomic, strong) NSSet *groups;
+@property (nonatomic) BOOL shouldTrainAgain;
 
 - (void)addTrainingImages:(NSArray *)images;
 - (id)initWithName:(NSString *)name andInitialTrainingImages:(NSArray *)images;

@@ -20,7 +20,7 @@
 @dynamic groups;
 @dynamic facesTrained;
 @dynamic trainingImages;
-
+@dynamic shouldTrainAgain;
 
 - (id)initWithName:(NSString *)name andInitialTrainingImages:(NSArray *)images withContext:(NSManagedObjectContext *)context {
     self = [FTPerson MR_createInContext:context];
@@ -28,6 +28,7 @@
     self.id = [[NSUUID UUID] UUIDString];
     self.objectIDString = [[self.objectID URIRepresentation] absoluteString];
     self.profileImageData = UIImageJPEGRepresentation(images[0], 0);
+    self.shouldTrainAgain = NO;
     [self addTrainingImages:images];
 
     FaceppResult *result = [[FaceppAPI person] createWithPersonName:self.id andFaceId:nil andTag:nil andGroupId:nil orGroupName:nil];
@@ -46,6 +47,7 @@
     self.name = name;
     self.id = [[NSUUID UUID] UUIDString];
     self.objectIDString = [[self.objectID URIRepresentation] absoluteString];
+    self.shouldTrainAgain = NO;
     [self addTrainingImages:images];
     self.profileImageData = UIImageJPEGRepresentation(images[0], 0);
 
@@ -70,6 +72,7 @@
         NSData *data = [NSData dataWithData:UIImageJPEGRepresentation(image, 1.0f)];//1.0f = 100% quality
         [data writeToFile:filePath atomically:YES];
         [mutableTrainingImages addObject:fileName];
+        index++;
     }
     self.trainingImages = mutableTrainingImages;
 }
@@ -78,7 +81,8 @@
     NSMutableArray *faceIDs = [[NSMutableArray alloc] init];
     for (UIImage *image in images) {
         //train
-        FaceppResult *result = [[FaceppAPI detection] detectWithURL:nil orImageData:UIImageJPEGRepresentation(image, 0.5) mode:FaceppDetectionModeOneFace];
+        UIImage *fixedImage = [image fixOrientation];
+        FaceppResult *result = [[FaceppAPI detection] detectWithURL:nil orImageData:UIImageJPEGRepresentation(fixedImage, 0.5) mode:FaceppDetectionModeOneFace];
         if ([result success]) {
             NSArray *faces = [[result content] objectForKey:@"face"];
             if ([faces count]) {
@@ -86,11 +90,15 @@
                 [faceIDs addObject:faceID];
             } else {
                 //mark this image as invalid
+                NSLog(@"no face!");
             }
         }
     }
     if (faceIDs) {
         [[FaceppAPI person] addFaceWithPersonName:self.id orPersonId:nil andFaceId:faceIDs];
+        if (!self.shouldTrainAgain) {
+            self.shouldTrainAgain = YES;
+        }
     }
 }
 
@@ -102,7 +110,6 @@
 - (void)addGroup:(FTGroup *)group {
     NSMutableSet *mutableGroups = [self mutableSetValueForKey:@"groups"];
     [mutableGroups addObject:group];
-    //[group addPerson:self];
 }
 
 @end

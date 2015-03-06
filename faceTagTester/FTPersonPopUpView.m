@@ -7,11 +7,13 @@
 //
 
 #import "FTPersonPopUpView.h"
+#import "CTAssetsPickerController.h"
+
 #define IMAGE_GRID_WIDTH 50
 #define CAPTURE_BUTTON_RADIUS 40
 
 
-@interface FTPersonPopUpView () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UITextFieldDelegate> {
+@interface FTPersonPopUpView () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UITextFieldDelegate, CTAssetsPickerControllerDelegate> {
     BOOL _frontCameraIsOn;
     BOOL _isTakingPicture;
 }
@@ -224,14 +226,19 @@
         } else {
             FTGroup *localGroup = [self.group MR_inContext:localContext];
             FTPerson *newPerson = [[FTPerson alloc] initWithName:self.nameField.text andInitialTrainingImages:self.addedImages withContext:localContext];
-            [newPerson addGroup:localGroup];
+            [localGroup addPerson:newPerson];
         }
     }];
     [self dismissPopup];
 }
 
 - (void)selectPhotosButtonPressed {
+    CTAssetsPickerController *picker = [[CTAssetsPickerController alloc] init];
+    picker.assetsFilter = [ALAssetsFilter allPhotos];
+    picker.delegate = self;
     
+    [(UIViewController *)self.delegate presentViewController:picker animated:YES completion:nil];
+
 }
 
 - (void)setIsTakingPicture:(BOOL)takingPicture {
@@ -368,5 +375,50 @@
     }
     return image;
 }
+
+
+#pragma mark - CTAssetsPickerDelegate
+
+
+- (BOOL)assetsPickerController:(CTAssetsPickerController *)picker isDefaultAssetsGroup:(ALAssetsGroup *)group
+{
+    return ([[group valueForProperty:ALAssetsGroupPropertyType] integerValue] == ALAssetsGroupSavedPhotos);
+}
+
+- (void)assetsPickerController:(CTAssetsPickerController *)picker didFinishPickingAssets:(NSArray *)assets
+{
+    for (ALAsset *asset in assets) {
+        ALAssetRepresentation *representation = [asset defaultRepresentation];
+        UIImageOrientation orientation = UIImageOrientationUp;
+        NSNumber* orientationValue = [[representation metadata] objectForKey:@"Orientation"];
+        if (orientationValue != nil) {
+            orientation = [orientationValue intValue];
+        }
+        UIImage *img = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:1.0 orientation:orientation];
+        [self.addedImages addObject:img];
+    }
+    [self.imagesCollectionView reloadData];
+    
+    [picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (BOOL)assetsPickerController:(CTAssetsPickerController *)picker shouldSelectAsset:(ALAsset *)asset
+{
+    if (!asset.defaultRepresentation)
+    {
+        UIAlertView *alertView =
+        [[UIAlertView alloc] initWithTitle:@"Attention"
+                                   message:@"Your asset has not yet been downloaded to your device"
+                                  delegate:nil
+                         cancelButtonTitle:nil
+                         otherButtonTitles:@"OK", nil];
+        
+        [alertView show];
+    }
+    
+    return asset.defaultRepresentation != nil;
+}
+
+
 
 @end
