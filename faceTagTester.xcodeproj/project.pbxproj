@@ -21,6 +21,7 @@
 		9F4D03571AA65CD600806AF5 /* FTGroupListTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F4D03561AA65CD600806AF5 /* FTGroupListTableViewCell.m */; };
 		9F4D035A1AA6932800806AF5 /* date-select.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F4D03581AA6932800806AF5 /* date-select.png */; };
 		9F4D035B1AA6932800806AF5 /* date-select@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F4D03591AA6932800806AF5 /* date-select@2x.png */; };
+		9F4D035E1AA92E0800806AF5 /* FTFaceRecognitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F4D035D1AA92E0800806AF5 /* FTFaceRecognitionManager.m */; };
 		9F5147911A8A87050089EAD1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147901A8A87050089EAD1 /* main.m */; };
 		9F5147941A8A87050089EAD1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147931A8A87050089EAD1 /* AppDelegate.m */; };
 		9F5147971A8A87050089EAD1 /* faceTagTester.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147951A8A87050089EAD1 /* faceTagTester.xcdatamodeld */; };
@@ -50,7 +51,6 @@
 		9F51483E1A8D32250089EAD1 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F51483D1A8D32250089EAD1 /* CoreImage.framework */; };
 		9F5148401A8D32880089EAD1 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F51483F1A8D32880089EAD1 /* ImageIO.framework */; };
 		D1651EF51A985DE1004757B4 /* FTNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = D1651EF41A985DE1004757B4 /* FTNetwork.m */; };
-		D1651EF81A986540004757B4 /* FTDateRange.m in Sources */ = {isa = PBXBuildFile; fileRef = D1651EF71A986540004757B4 /* FTDateRange.m */; };
 		D1651EFB1A9C5B17004757B4 /* FTGroupsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1651EFA1A9C5B17004757B4 /* FTGroupsListViewController.m */; };
 		D1651EFE1A9D9F8C004757B4 /* FTPersonPopUpView.m in Sources */ = {isa = PBXBuildFile; fileRef = D1651EFD1A9D9F8C004757B4 /* FTPersonPopUpView.m */; };
 		D1B9F9011A8B3D31002538E0 /* FTModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D1B9F9001A8B3D31002538E0 /* FTModel.m */; };
@@ -92,6 +92,8 @@
 		9F4D03561AA65CD600806AF5 /* FTGroupListTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTGroupListTableViewCell.m; sourceTree = "<group>"; };
 		9F4D03581AA6932800806AF5 /* date-select.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "date-select.png"; sourceTree = "<group>"; };
 		9F4D03591AA6932800806AF5 /* date-select@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "date-select@2x.png"; sourceTree = "<group>"; };
+		9F4D035C1AA92E0800806AF5 /* FTFaceRecognitionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTFaceRecognitionManager.h; sourceTree = "<group>"; };
+		9F4D035D1AA92E0800806AF5 /* FTFaceRecognitionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTFaceRecognitionManager.m; sourceTree = "<group>"; };
 		9F51478B1A8A87050089EAD1 /* faceTagTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = faceTagTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F51478F1A8A87050089EAD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F5147901A8A87050089EAD1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -146,8 +148,6 @@
 		B3B0E90590367B8483203163 /* Pods-faceTagTester.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-faceTagTester.release.xcconfig"; path = "Pods/Target Support Files/Pods-faceTagTester/Pods-faceTagTester.release.xcconfig"; sourceTree = "<group>"; };
 		D1651EF31A985DE1004757B4 /* FTNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTNetwork.h; sourceTree = "<group>"; };
 		D1651EF41A985DE1004757B4 /* FTNetwork.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTNetwork.m; sourceTree = "<group>"; };
-		D1651EF61A986540004757B4 /* FTDateRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTDateRange.h; sourceTree = "<group>"; };
-		D1651EF71A986540004757B4 /* FTDateRange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTDateRange.m; sourceTree = "<group>"; };
 		D1651EF91A9C5B17004757B4 /* FTGroupsListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTGroupsListViewController.h; sourceTree = "<group>"; };
 		D1651EFA1A9C5B17004757B4 /* FTGroupsListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTGroupsListViewController.m; sourceTree = "<group>"; };
 		D1651EFC1A9D9F8C004757B4 /* FTPersonPopUpView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTPersonPopUpView.h; sourceTree = "<group>"; };
@@ -252,6 +252,8 @@
 		9F51478D1A8A87050089EAD1 /* faceTagTester */ = {
 			isa = PBXGroup;
 			children = (
+				9F4D035C1AA92E0800806AF5 /* FTFaceRecognitionManager.h */,
+				9F4D035D1AA92E0800806AF5 /* FTFaceRecognitionManager.m */,
 				D1B9F8FE1A8B3723002538E0 /* Models */,
 				9F5147921A8A87050089EAD1 /* AppDelegate.h */,
 				9F5147931A8A87050089EAD1 /* AppDelegate.m */,
@@ -391,8 +393,6 @@
 				D1B9F9031A8B4425002538E0 /* FTPhoto.m */,
 				D1B9F8FF1A8B3D31002538E0 /* FTModel.h */,
 				D1B9F9001A8B3D31002538E0 /* FTModel.m */,
-				D1651EF61A986540004757B4 /* FTDateRange.h */,
-				D1651EF71A986540004757B4 /* FTDateRange.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -560,13 +560,13 @@
 				9F51479A1A8A87050089EAD1 /* FTGroupPhotosViewController.m in Sources */,
 				9F4D03301A93C85A00806AF5 /* UIImage+FTAdditions.m in Sources */,
 				9F4D033E1A97F50C00806AF5 /* FTPeopleCollectionView.m in Sources */,
-				D1651EF81A986540004757B4 /* FTDateRange.m in Sources */,
 				9F5147971A8A87050089EAD1 /* faceTagTester.xcdatamodeld in Sources */,
 				9F51482C1A8BE6200089EAD1 /* FaceppClient.m in Sources */,
 				D1651EF51A985DE1004757B4 /* FTNetwork.m in Sources */,
 				9F5148351A8BE6200089EAD1 /* FaceppError.m in Sources */,
 				9F4D03571AA65CD600806AF5 /* FTGroupListTableViewCell.m in Sources */,
 				9F4D03541AA184A700806AF5 /* FTPopupView.m in Sources */,
+				9F4D035E1AA92E0800806AF5 /* FTFaceRecognitionManager.m in Sources */,
 				9F51482F1A8BE6200089EAD1 /* FaceppGroup.m in Sources */,
 				D1651EFB1A9C5B17004757B4 /* FTGroupsListViewController.m in Sources */,
 				D1B9F9041A8B4425002538E0 /* FTPhoto.m in Sources */,

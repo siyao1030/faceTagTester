@@ -8,12 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
-#import "FTDetector.h"
-#import "FTPerson.h"
-#import "FTPhoto.h"
 #import "FTGroup.h"
-#import "FTAdditions.h"
-#import "FTGroupManagingViewController.h"
 
 @interface FTGroupPhotosViewController : UIViewController
 

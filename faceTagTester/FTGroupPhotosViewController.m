@@ -7,6 +7,11 @@
 //
 
 #import "FTGroupPhotosViewController.h"
+#import "FTPerson.h"
+#import "FTPhoto.h"
+#import "FTGroupManagingViewController.h"
+#import "FTFaceRecognitionManager.h"
+
 #define CONFIDENCE 10
 @interface FTGroupPhotosViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate, PHPhotoLibraryChangeObserver> {
     BOOL _isOngoingGroup;
@@ -89,9 +94,11 @@
     UIBarButtonItem *editGroupButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editGroupButtonPressed)];
     self.navigationItem.rightBarButtonItem = editGroupButton;
     
-    [self trainGroupIfNeededWithCompletion:^{
-        [self processImagesFromStartDate:self.group.startDate toEndDate:self.group.endDate];
-    }];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
+        [[FTFaceRecognitionManager sharedManager] trainIfNeededForGroup:self.group WithCompletion:^{
+            [self processImagesFromStartDate:self.group.startDate toEndDate:self.group.endDate];
+        }];
+    });
 }
 
 - (void)didReceiveMemoryWarning {
@@ -122,7 +129,7 @@
                         [self setIsOngoingGroup:NO];
                     } else {
                         dispatch_group_enter(ProcessImageGroup());
-                        [self detectAndIdentifyInPhotoAsset:asset Completion:^{
+                        [[FTFaceRecognitionManager sharedManager] detectAndIdentifyPhotoAsset:asset inGroup:self.group Completion:^{
                             dispatch_group_leave(ProcessImageGroup());
                         }];
                     }
@@ -136,10 +143,9 @@
                         NSLog(@"finished Processing");
                         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
                             //retrain if new faces are added
-                            [self trainGroupIfNeededWithCompletion:nil];
+                            [[FTFaceRecognitionManager sharedManager] trainIfNeededForGroup:self.group WithCompletion:nil];
                         });
                     }];
-#warning SAVING NOT WORKING
                 });
 
             });
@@ -171,10 +177,10 @@
         [imageAssets addObject:asset];
     }];
     
-    [self detectAndIdentifyPhotoAssets:imageAssets];
+    [[FTFaceRecognitionManager sharedManager] detectAndIdentifyPhotoAssets:imageAssets inGroup:self.group];
 }
 
-
+/*
 - (void)detectAndIdentifyPhotoAssets:(NSArray *)imageAssets {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
         for (PHAsset *asset in imageAssets) {
@@ -279,7 +285,6 @@
 }
 
 - (void)trainGroupIfNeededWithCompletion:(void(^)(void))completionBlock {
-    NSInteger photosTrained = [self.group.photosTrained integerValue];
     if (!self.group.didFinishTraining) {
         __block FTGroupPhotosViewController *blockSelf = self;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -291,7 +296,6 @@
                     if ([result success]) {
                         [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
                             FTGroup *localGroup = [blockSelf.group MR_inContext:localContext];
-                            [localGroup setPhotosTrained:@([blockSelf.group.photos count])];
                             [localGroup setDidFinishTraining:YES];
                         } completion:^(BOOL success, NSError *error) {
                             if (completionBlock) {
@@ -304,7 +308,7 @@
         });
     }
 }
-
+*/
 
 #pragma mark Editing Group
 - (void)editGroupButtonPressed {
@@ -322,11 +326,14 @@
         [[self navigationItem] setTitle:updatedName];
     }
     
-#warning TODO: figure out retrain prereqs
     if ([updatedGroupInfo[@"shouldTrainAgain"] boolValue]) {
-        self.group.didFinishTraining = NO;
+        [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+            FTGroup *localGroup = [self.group MR_inContext:localContext];
+            [localGroup setDidFinishTraining:NO];
+        }];
     }
-    [self performSelectorOnMainThread:@selector(trainGroupIfNeededWithCompletion:) withObject:nil waitUntilDone:YES];
+    
+    [[FTFaceRecognitionManager sharedManager] performSelectorOnMainThread:@selector(trainIfNeededForGroup:WithCompletion:) withObject:self.group waitUntilDone:YES];
     [self processDateRangeDifference:updatedGroupInfo];
     
     [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
@@ -462,7 +469,6 @@
         UILabel *label = [[UILabel alloc] init];
         [label setText:[NSString stringWithFormat:@"#%@", [sectionInfo name]]];
         [label setFont:[UIFont boldSystemFontOfSize:18]];
-        //[label setTextColor:[UIColor whiteColor]];
         [label setTextColor:[UIColor colorForText:[sectionInfo name]]];
         [label sizeToFit];
         CGRect labelFrame = [label frame];
@@ -470,7 +476,6 @@
         [label setFrame:labelFrame];
         
         [reusableview addSubview:label];
-        //[reusableview setBackgroundColor:[UIColor colorForText:[sectionInfo name]]];
         return reusableview;
     }
     return nil;
