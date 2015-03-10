@@ -22,14 +22,18 @@
 @dynamic photosTrained;
 @dynamic didFinishProcessing;
 @dynamic didFinishTraining;
+@dynamic isOngoing;
+
 
 - (id)initWithContext:(NSManagedObjectContext *)context {
     self = [FTGroup MR_createInContext:context];
     
     self.id = [[NSUUID UUID] UUIDString]; //for fetching photos and for api uses, cannot change
     self.people = [[NSMutableSet alloc] init];
-    self.didFinishTraining = NO;
-    self.didFinishProcessing = NO;
+    self.didFinishTraining = YES;
+    self.didFinishProcessing = YES;
+    self.didFinishProcessing = YES;
+    self.isOngoing = NO;
     self.photosTrained = @(0);
     self.lastProcessedDate = [NSDate date];
     
@@ -53,9 +57,12 @@
     
     self.startDate = start;
     self.endDate = end;
+    if ([self.endDate compare:[NSDate date]] == NSOrderedDescending) {
+        self.isOngoing  = YES;
+    }
     
-    self.didFinishTraining = NO;
-    self.didFinishProcessing = NO;
+    self.didFinishTraining = YES;
+    self.didFinishProcessing = YES;
     self.photosTrained = @(0);
     self.lastProcessedDate = [NSDate date];
     
@@ -81,6 +88,7 @@
 - (void)addPhoto:(FTPhoto *)photo {
     NSMutableSet *mutablePhotos = [self mutableSetValueForKey:@"photos"];
     [mutablePhotos addObject:photo];
+    self.didFinishTraining = NO;
 }
 
 - (void)removePhoto:(FTPhoto *)photo {

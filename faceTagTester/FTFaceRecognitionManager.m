@@ -23,32 +23,38 @@
 }
 
 - (void)detectAndIdentifyPhotoAssets:(NSArray *)imageAssets inGroup:(FTGroup *)group {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
-        for (PHAsset *asset in imageAssets) {
-            dispatch_group_enter(ProcessImageGroup());
-            [self detectAndIdentifyPhotoAsset:asset inGroup:group Completion:^{
-                dispatch_group_leave(ProcessImageGroup());
-                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                    FTGroup *localGroup = [group MR_inContext:localContext];
-                    [localGroup setLastProcessedDate:[asset creationDate]]; //**maybe saving too much?
-                }];
-#warning TODO: could add progress bar info here
-            }];
-        }
-        
-        dispatch_group_notify(ProcessImageGroup(), dispatch_get_main_queue(), ^{
+    if ([imageAssets count]) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
             [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
                 FTGroup *localGroup = [group MR_inContext:localContext];
-                [localGroup setDidFinishProcessing:YES];
-            } completion:^(BOOL success, NSError *error) {
-                NSLog(@"finished Processing");
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
-                    //retrain if new faces are added
-                    [self trainIfNeededForGroup:group WithCompletion:nil];
-                });
+                [localGroup setDidFinishProcessing:NO];
             }];
+            for (PHAsset *asset in imageAssets) {
+                dispatch_group_enter(ProcessImageGroup());
+                [self detectAndIdentifyPhotoAsset:asset inGroup:group Completion:^{
+                    dispatch_group_leave(ProcessImageGroup());
+                    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                        FTGroup *localGroup = [group MR_inContext:localContext];
+                        [localGroup setLastProcessedDate:[asset creationDate]]; //**maybe saving too much?
+                    }];
+#warning TODO: could add progress bar info here
+                }];
+            }
+            
+            dispatch_group_notify(ProcessImageGroup(), dispatch_get_main_queue(), ^{
+                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                    FTGroup *localGroup = [group MR_inContext:localContext];
+                    [localGroup setDidFinishProcessing:YES];
+                } completion:^(BOOL success, NSError *error) {
+                    NSLog(@"finished Processing");
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
+                        //retrain if new faces are added
+                        [self trainIfNeededForGroup:group WithCompletion:nil];
+                    });
+                }];
+            });
         });
-    });
+    }
     
 }
 
@@ -104,7 +110,6 @@
                                                           if (shouldAddToGroup) {
                                                               FTGroup *localGroup = [group MR_inContext:localContext];
                                                               [localGroup addPhoto:photo];
-                                                              localGroup.didFinishTraining = NO;
                                                           }
                                                           
                                                       } completion:^(BOOL success, NSError *error) {
@@ -124,6 +129,54 @@
                                   }
                               }];
 }
+
+
+
+- (void)processNewImagesForGroup:(FTGroup *)group InFetchResult:(PHFetchResult *)fetchResult forIndexes:(NSIndexSet *)indexes {
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+        FTGroup *localGroup = [group MR_inContext:localContext];
+        [localGroup setDidFinishProcessing:NO];
+    }];
+    //process them for face detection and identification
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
+        [indexes enumerateIndexesUsingBlock:^(NSUInteger index, BOOL *stop) {
+            PHAsset *asset = [fetchResult objectAtIndex:index];
+            //***should process forwards to work -> older to newer
+            if (group.endDate && [[asset creationDate] compare:group.endDate] == NSOrderedDescending) {
+                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                    FTGroup *localGroup = [group MR_inContext:localContext];
+                    [localGroup setIsOngoing:NO];
+                } completion:^(BOOL success, NSError *error) {
+                    if (success) {
+                        [[AppDelegate sharedApplication] fetchOngoingGroups];
+                    }
+                }];
+                *stop = YES;
+            } else {
+                dispatch_group_enter(ProcessImageGroup());
+                [[FTFaceRecognitionManager sharedManager] detectAndIdentifyPhotoAsset:asset inGroup:group Completion:^{
+                    dispatch_group_leave(ProcessImageGroup());
+                }];
+            }
+        }];
+        
+        dispatch_group_notify(ProcessImageGroup(), dispatch_get_main_queue(), ^{
+            [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                FTGroup *localGroup = [group MR_inContext:localContext];
+                [localGroup setDidFinishProcessing:YES];
+            } completion:^(BOOL success, NSError *error) {
+                NSLog(@"finished Processing");
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
+                    //retrain if new faces are added
+                    [[FTFaceRecognitionManager sharedManager] trainIfNeededForGroup:group WithCompletion:nil];
+                });
+            }];
+        });
+        
+    });
+    
+}
+
 
 - (void)trainIfNeededForGroup:(FTGroup *)group WithCompletion:(void(^)(void))completionBlock {
     if (!group.didFinishTraining) {
@@ -148,6 +201,8 @@
         });
     }
 }
+
+
 
 
 

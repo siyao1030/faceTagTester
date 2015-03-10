@@ -15,6 +15,7 @@
 #define CONFIDENCE 10
 @interface FTGroupPhotosViewController () <UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate, PHPhotoLibraryChangeObserver> {
     BOOL _isOngoingGroup;
+    int _imagesToProcess;
 }
 @property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) NSMutableArray *photoColletions;
@@ -35,6 +36,12 @@
     self.imageManager = [[PHImageManager alloc] init];
     
     self.group = group;
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
+        [[FTFaceRecognitionManager sharedManager] trainIfNeededForGroup:self.group WithCompletion:^{
+            [self processImagesIfNeeded];
+        }];
+    });
     
     NSFetchRequest *frcRequest = [[NSFetchRequest alloc] init];
     NSPredicate *fetchPredicate = [NSPredicate predicateWithFormat:@"%@ IN groups", self.group];
@@ -72,9 +79,7 @@
     // Do any additional setup after loading the view, typically from a nib.
     [[self navigationItem] setTitle:self.group.name];
     
-    if ([self.group.endDate compare:[NSDate date]] == NSOrderedDescending) {
-        [self setIsOngoingGroup:YES];
-    }
+
     
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     flowLayout.sectionInset = UIEdgeInsetsMake(0, 0, 10, 0);
@@ -93,12 +98,6 @@
     
     UIBarButtonItem *editGroupButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editGroupButtonPressed)];
     self.navigationItem.rightBarButtonItem = editGroupButton;
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
-        [[FTFaceRecognitionManager sharedManager] trainIfNeededForGroup:self.group WithCompletion:^{
-            [self processImagesFromStartDate:self.group.startDate toEndDate:self.group.endDate];
-        }];
-    });
 }
 
 - (void)didReceiveMemoryWarning {
@@ -121,6 +120,12 @@
         }
         NSIndexSet *insertedIndexes = [collectionChanges insertedIndexes];
         if ([insertedIndexes count]) {
+            [[FTFaceRecognitionManager sharedManager] processNewImagesForGroup:self.group InFetchResult:self.cameraRollFetchResult forIndexes:insertedIndexes];
+            /*
+            [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                FTGroup *localGroup = [self.group MR_inContext:localContext];
+                [localGroup setDidFinishProcessing:NO];
+            }];
             //process them for face detection and identification
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
                 [insertedIndexes enumerateIndexesUsingBlock:^(NSUInteger index, BOOL *stop) {
@@ -148,7 +153,7 @@
                     }];
                 });
 
-            });
+            });*/
         }
         NSIndexSet *changedIndexes = [collectionChanges changedIndexes];
         if ([changedIndexes count]) {
@@ -159,6 +164,17 @@
 }
 
 
+
+- (void)processImagesIfNeeded {
+    if (!self.group.didFinishProcessing) {
+        //earlier(self.group.endDate, self.group.lastProcessedDate]
+        NSDate *endDate = self.group.endDate;
+        if ([self.group.lastProcessedDate compare:endDate] == NSOrderedAscending) {
+            endDate = self.group.lastProcessedDate;
+        }
+        [self processImagesFromStartDate:self.group.startDate toEndDate:endDate];
+    }
+}
 
 - (void)processImagesFromStartDate:(NSDate *)startDate toEndDate:(NSDate *)endDate {
     //get image for image assets
@@ -180,136 +196,6 @@
     [[FTFaceRecognitionManager sharedManager] detectAndIdentifyPhotoAssets:imageAssets inGroup:self.group];
 }
 
-/*
-- (void)detectAndIdentifyPhotoAssets:(NSArray *)imageAssets {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
-        for (PHAsset *asset in imageAssets) {
-            dispatch_group_enter(ProcessImageGroup());
-            [self detectAndIdentifyInPhotoAsset:asset Completion:^{
-                dispatch_group_leave(ProcessImageGroup());
-                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                    FTGroup *localGroup = [self.group MR_inContext:localContext];
-                    [localGroup setLastProcessedDate:[asset creationDate]]; //**maybe saving too much?
-                }];
-#warning TODO: could add progress bar info here
-            }];
-        }
-        
-        dispatch_group_notify(ProcessImageGroup(), dispatch_get_main_queue(), ^{
-            [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                FTGroup *localGroup = [self.group MR_inContext:localContext];
-                [localGroup setDidFinishProcessing:YES];
-            } completion:^(BOOL success, NSError *error) {
-                NSLog(@"finished Processing");
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) , ^(void){
-                    //retrain if new faces are added
-                    [self trainGroupIfNeededWithCompletion:nil];
-                });
-            }];
-        });
-    });
-
-}
-
-- (void)detectAndIdentifyInPhotoAsset:(PHAsset *)asset Completion:(void(^)(void))completionBlock {
-    PHImageRequestOptions *requestOptions = [[PHImageRequestOptions alloc] init];
-    [requestOptions setSynchronous:YES];
-    [requestOptions setDeliveryMode:PHImageRequestOptionsDeliveryModeFastFormat];
-    
-    [self.imageManager requestImageForAsset:asset targetSize:CGSizeMake(asset.pixelWidth,asset.pixelHeight)
-                                contentMode:PHImageContentModeAspectFit
-                                    options:requestOptions
-                              resultHandler:^(UIImage *image, NSDictionary *info) {
-                                  @autoreleasepool {
-                                      //only detect images that are not screenshot -> should eliminate download too
-                                      if ([[info objectForKey:@"PHImageFileUTIKey"] isEqualToString:@"public.png"]) {
-                                          if (completionBlock) {
-                                              completionBlock();
-                                          }
-                                          return;
-                                      }
-                                      //detect faces
-                                      NSArray *detectedFaceIDs = [FTDetector detectFaceIDsWithImage:image];
-                                      if ([detectedFaceIDs count]) {
-                                          //identify faces
-                                          FaceppResult *identifyResult = [[FaceppAPI recognition] identifyWithGroupId:self.group.fppID orGroupName:self.group.id andURL:nil orImageData:nil orKeyFaceId:detectedFaceIDs async:YES];
-                                          
-                                          NSString *sessionID = [[identifyResult content] objectForKey:@"session_id"];
-                                          if (sessionID) {
-                                              [FTNetwork getResultForSession:sessionID completion:^(FaceppResult *result) {
-                                                  if ([result success]) {
-                                                      NSArray *identifiedFaces = [[[result content] objectForKey:@"result"] objectForKey:@"face"];
-                                                      
-                                                      [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                                                          FTPhoto *photo = [[FTPhoto alloc] initWithPhotoAsset:asset withContext:localContext];
-                                                          BOOL shouldAddToGroup = NO;
-                                                          for (NSDictionary *face in identifiedFaces) {
-                                                              NSArray *candidates = [face objectForKey:@"candidate"];
-                                                              if ([candidates count]) {
-                                                                  NSDictionary *candidate = candidates[0];
-                                                                  if ([[candidate objectForKey:@"confidence"] floatValue] > CONFIDENCE) {
-                                                                      shouldAddToGroup = YES;
-                                                                      FTPerson *person = [FTPerson fetchWithID:[candidate objectForKey:@"person_name"] withContext:localContext];
-                                                                      if (person) {
-                                                                          if (![photo.people containsObject:person]) {
-                                                                              [photo addPerson:person];
-                                                                              [[FaceppAPI person] addFaceWithPersonName:person.id orPersonId:person.fppID andFaceId:@[[face objectForKey:@"face_id"]]];
-                                                                          }
-                                                                      }
-                                                                  }
-                                                              }
-                                                          }
-                                                          if (shouldAddToGroup) {
-                                                              FTGroup *localGroup = [self.group MR_inContext:localContext];
-                                                              [localGroup addPhoto:photo];
-                                                              localGroup.didFinishTraining = NO;
-                                                              //[photo addGroup:localGroup];
-                                                          }
-
-                                                      } completion:^(BOOL success, NSError *error) {
-                                                          if (completionBlock) {
-                                                              completionBlock();
-                                                          }
-                                                      }];
-                                                  }
-                                                  
-                                              } afterDelay:0.5];
-                                          }
-                                      } else {
-                                          if (completionBlock) {
-                                              completionBlock();
-                                          }
-                                      }
-                                  }
-    }];
-}
-
-- (void)trainGroupIfNeededWithCompletion:(void(^)(void))completionBlock {
-    if (!self.group.didFinishTraining) {
-        __block FTGroupPhotosViewController *blockSelf = self;
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSLog(@"training");
-            FaceppResult *result = [[FaceppAPI train] trainAsynchronouslyWithId:nil orName:blockSelf.group.id andType:FaceppTrainIdentify];
-            NSString *sessionID = [[result content] objectForKey:@"session_id"];
-            if (sessionID) {
-                [FTNetwork getResultForSession:sessionID completion:^(FaceppResult *result) {
-                    if ([result success]) {
-                        [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                            FTGroup *localGroup = [blockSelf.group MR_inContext:localContext];
-                            [localGroup setDidFinishTraining:YES];
-                        } completion:^(BOOL success, NSError *error) {
-                            if (completionBlock) {
-                                completionBlock();
-                            }
-                        }];
-                    }
-                } afterDelay:0.5];
-            }
-        });
-    }
-}
-*/
-
 #pragma mark Editing Group
 - (void)editGroupButtonPressed {
     FTGroupManagingViewController *groupManagingViewController = [[FTGroupManagingViewController alloc] initWithGroup:self.group];
@@ -317,7 +203,6 @@
     [groupManagingViewController setTarget:self];
     [groupManagingViewController setAction:@selector(updateGroup:)];
     [self.navigationController showViewController:groupManagingViewController sender:self];
-    //same as createGroup with populated info
 }
 
 - (void)updateGroup:(NSDictionary *)updatedGroupInfo {
@@ -341,13 +226,13 @@
         [localGroup setName:updatedName];
         [localGroup setStartDate:updatedGroupInfo[@"startDate"]];
         [localGroup setEndDate:updatedGroupInfo[@"endDate"]];
-        
-    } completion:^(BOOL success, NSError *error) {
-        if ([self.group.endDate compare:[NSDate date]] == NSOrderedDescending) {
-            [self setIsOngoingGroup:YES];
+        if ([localGroup.endDate compare:[NSDate date]] == NSOrderedDescending) {
+            [localGroup setIsOngoing:YES];
         } else {
-            [self setIsOngoingGroup:NO];
+            [localGroup setIsOngoing:NO];
         }
+    } completion:^(BOOL success, NSError *error) {
+        [[AppDelegate sharedApplication] fetchOngoingGroups];
     }];
 }
 

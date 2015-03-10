@@ -18,6 +18,7 @@
 #import <Photos/Photos.h>
 #import "CoreData+MagicalRecord.h"
 #import "AppDelegate.h"
+#import "FTFaceRecognitionManager.h"
 #import "FaceppAPI.h"
 #import "FTAdditions.h"
 #import "FTModel.h"

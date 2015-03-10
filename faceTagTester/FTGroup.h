@@ -26,6 +26,8 @@
 @property (nonatomic, strong) NSNumber *photosTrained;
 @property (nonatomic) BOOL didFinishProcessing;
 @property (nonatomic) BOOL didFinishTraining;
+@property (nonatomic) BOOL isOngoing;
+
 
 - (id)initWithContext:(NSManagedObjectContext *)context;
 - (id)initWithName:(NSString *)name andPeople:(NSArray *)people andStartDate:(NSDate *)start andEndDate:(NSDate *)end withContext:(NSManagedObjectContext *)context;

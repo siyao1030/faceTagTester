@@ -17,5 +17,6 @@
 - (void)detectAndIdentifyPhotoAssets:(NSArray *)imageAssets inGroup:(FTGroup *)group;
 - (void)detectAndIdentifyPhotoAsset:(PHAsset *)asset inGroup:(FTGroup *)group Completion:(void(^)(void))completionBlock;
 - (void)trainIfNeededForGroup:(FTGroup *)group WithCompletion:(void(^)(void))completionBlock;
+- (void)processNewImagesForGroup:(FTGroup *)group InFetchResult:(PHFetchResult *)fetchResult forIndexes:(NSIndexSet *)indexes;
 
 @end

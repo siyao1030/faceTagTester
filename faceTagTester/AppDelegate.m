@@ -17,13 +17,20 @@
 #define START_DATE [NSDate dateWithTimeIntervalSinceNow:-5*24*60*60]
 #define END_DATE [NSDate dateWithTimeIntervalSinceNow:-3*24*60*60]
 
-@interface AppDelegate ()
+@interface AppDelegate () <PHPhotoLibraryChangeObserver, CLLocationManagerDelegate>
+@property (strong, nonatomic) CLLocationManager *locationManager;
+@property (strong, nonatomic) NSArray *ongoingGroups;
+@property (strong, nonatomic) PHFetchResult *cameraRollFetchResult;
 
 @end
 
 @implementation AppDelegate
 
 static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
+
++ (AppDelegate*)sharedApplication {
+    return (AppDelegate*)[[UIApplication sharedApplication] delegate];
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
@@ -54,6 +61,19 @@ static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
     
     [MagicalRecord setupCoreDataStackWithStoreNamed:storeName];
     
+    
+    self.locationManager = [[CLLocationManager alloc] init];
+    self.locationManager.delegate = self;
+    self.locationManager.distanceFilter = -1;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    if ([self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
+        [self.locationManager requestAlwaysAuthorization];
+    }
+    if([CLLocationManager locationServicesEnabled]){
+        [self.locationManager stopUpdatingLocation];
+    }
+
+    
     [FaceppAPI initWithApiKey:FACEPP_API_KEY andApiSecret:FACEPP_API_SECRET andRegion:APIServerRegionUS];
     [FaceppAPI setDebugMode:YES];
     
@@ -66,6 +86,26 @@ static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
         }];
     }
     
+    //fetch camera roll
+    PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumUserLibrary options:nil];
+    if ([collectionResult count]) {
+        //fetch image assets within group's specified date range
+        PHFetchOptions *options = [[PHFetchOptions alloc] init];
+        [options setPredicate:[NSPredicate predicateWithFormat:@"mediaType = %d", PHAssetMediaTypeImage]];
+        [options setSortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]]];
+        self.cameraRollFetchResult = [PHAsset fetchAssetsInAssetCollection:collectionResult[0] options:options];
+    }
+
+    [self fetchOngoingGroups];
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if (![defaults objectForKey:@"wakeUpCount"]) {
+        [defaults setObject:@(0) forKey:@"wakeUpCount"];
+        [defaults setObject:@(0) forKey:@"photoChangeCount"];
+    }
+    [defaults synchronize];
+
+
     
     FTGroupsListViewController *mainView = [[FTGroupsListViewController alloc] init];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:mainView];
@@ -102,5 +142,58 @@ static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
     // Saves changes in the application's managed object context before the application terminates.
     [MagicalRecord cleanUp];
 }
+
+#pragma mark - Ongoing Groups
+
+- (void)photoLibraryDidChange:(PHChange *)changeInstance {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:[NSNumber numberWithInt:[(NSNumber *)[defaults objectForKey:@"photoChangeCount"] intValue] + 1] forKey:@"photoChangeCount"];
+    [defaults synchronize];
+    
+    NSLog(@"changes");
+    PHFetchResultChangeDetails *collectionChanges = [changeInstance changeDetailsForFetchResult:self.cameraRollFetchResult];
+    if (collectionChanges) {
+        // get the new fetch result
+        self.cameraRollFetchResult = [collectionChanges fetchResultAfterChanges];
+        
+        NSIndexSet *removedIndexes = [collectionChanges removedIndexes];
+        if ([removedIndexes count]) {
+            //delete them from core data and from self.group.photos
+        }
+        NSIndexSet *insertedIndexes = [collectionChanges insertedIndexes];
+        if ([insertedIndexes count]) {
+            for (FTGroup *group in self.ongoingGroups) {
+                [[FTFaceRecognitionManager sharedManager] processNewImagesForGroup:group InFetchResult:self.cameraRollFetchResult forIndexes:insertedIndexes];
+            }
+        }
+        NSIndexSet *changedIndexes = [collectionChanges changedIndexes];
+        if ([changedIndexes count]) {
+            //check whether we actually care about the changes -> self.frc -> asset localIdentifier -> reload collection view at index
+            //[self.collectionView reloadItemsAtIndexPaths:[changedIndexes aapl_indexPathsFromIndexesWithSection:0]];
+        }
+    }
+}
+
+- (void)fetchOngoingGroups {
+    NSPredicate *ongoingPredicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"isOngoing == YES"]];
+    self.ongoingGroups = [FTGroup fetchWithPredicate:ongoingPredicate];
+    if ([self.ongoingGroups count]) {
+        NSLog(@"start ongoing");
+        [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
+    } else {
+        NSLog(@"stop ongoing");
+        [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
+    }
+}
+
+#pragma mark - Location 
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
+{
+    NSLog(@"location change, start updating");
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:[NSNumber numberWithInt:[(NSNumber *)[defaults objectForKey:@"wakeUpCount"] intValue] + 1] forKey:@"wakeUpCount"];
+    [defaults synchronize];
+}
+
 
 @end

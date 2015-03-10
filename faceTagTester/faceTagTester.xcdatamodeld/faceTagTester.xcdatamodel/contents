@@ -6,6 +6,7 @@
         <attribute name="endDate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="fppID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="isOngoing" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="lastProcessedDate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="photosTrained" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
@@ -35,7 +36,7 @@
         <relationship name="people" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FTPerson" inverseName="photos" inverseEntity="FTPerson" syncable="YES"/>
     </entity>
     <elements>
-        <element name="FTGroup" positionX="-137" positionY="-67" width="128" height="208"/>
+        <element name="FTGroup" positionX="-137" positionY="-67" width="128" height="223"/>
         <element name="FTPerson" positionX="-450" positionY="24" width="128" height="193"/>
         <element name="FTPhoto" positionX="124" positionY="39" width="128" height="148"/>
     </elements>
