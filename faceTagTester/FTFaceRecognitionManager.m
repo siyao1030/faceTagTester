@@ -110,6 +110,10 @@
                                                           if (shouldAddToGroup) {
                                                               FTGroup *localGroup = [group MR_inContext:localContext];
                                                               [localGroup addPhoto:photo];
+                                                              UILocalNotification* localNotification = [[UILocalNotification alloc] init];
+                                                              localNotification.fireDate = [NSDate date];
+                                                              localNotification.alertBody = @"New photo added!";
+                                                              [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
                                                           }
                                                           
                                                       } completion:^(BOOL success, NSError *error) {

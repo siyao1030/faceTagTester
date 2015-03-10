@@ -35,6 +35,7 @@ static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
 
+    //Core Data setup
     BOOL shouldDelete = NO;
     // Check database version
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
@@ -61,30 +62,35 @@ static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
     
     [MagicalRecord setupCoreDataStackWithStoreNamed:storeName];
     
-    
+    //Location
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
-    self.locationManager.distanceFilter = -1;
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    self.locationManager.distanceFilter = kCLDistanceFilterNone;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
     if ([self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
         [self.locationManager requestAlwaysAuthorization];
     }
     if([CLLocationManager locationServicesEnabled]){
-        [self.locationManager stopUpdatingLocation];
+        [self.locationManager startUpdatingLocation];
     }
 
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if (![defaults objectForKey:@"wakeUpCount"]) {
+        [defaults setObject:@(0) forKey:@"wakeUpCount"];
+        [defaults setObject:@(0) forKey:@"photoChangeCount"];
+    }
+    [defaults synchronize];
+
+    // Initialize Parse.
+    [Parse setApplicationId:@"nALNwsWLrTcD3Gcn1TuTeR5Rf4yaJaqdfc4AP8qJ"
+                  clientKey:@"gAHKp7iDLbrmCPFdercLhihO6IT4GlKkmQ0xLF1Y"];
     
+    // [Optional] Track statistics around application opens.
+    [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
+    
+    //Facepp
     [FaceppAPI initWithApiKey:FACEPP_API_KEY andApiSecret:FACEPP_API_SECRET andRegion:APIServerRegionUS];
     [FaceppAPI setDebugMode:YES];
-    
-    __block FTGroup *testGroup = [[FTGroup fetchAll] firstObject];
-    if (!testGroup) {
-        [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-            FTPerson *siyao = [[FTPerson alloc] initWithName:@"siyao" andInitialTrainingImages:@[[UIImage imageNamed:@"siyao-s.jpg"]] withContext:localContext];
-            FTPerson *chengyue = [[FTPerson alloc] initWithName:@"chengyue" andInitialTrainingImages:@[[UIImage imageNamed:@"chengyue-s.jpg"]] withContext:localContext];
-            testGroup = [[FTGroup alloc] initWithName:@"testGroup" andPeople:@[siyao, chengyue] andStartDate:START_DATE andEndDate:END_DATE withContext:localContext];
-        }];
-    }
     
     //fetch camera roll
     PHFetchResult *collectionResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumUserLibrary options:nil];
@@ -95,16 +101,22 @@ static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
         [options setSortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]]];
         self.cameraRollFetchResult = [PHAsset fetchAssetsInAssetCollection:collectionResult[0] options:options];
     }
-
+    
     [self fetchOngoingGroups];
     
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    if (![defaults objectForKey:@"wakeUpCount"]) {
-        [defaults setObject:@(0) forKey:@"wakeUpCount"];
-        [defaults setObject:@(0) forKey:@"photoChangeCount"];
+    //testing set up
+    __block FTGroup *testGroup = [[FTGroup fetchAll] firstObject];
+    if (!testGroup) {
+        [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+            FTPerson *siyao = [[FTPerson alloc] initWithName:@"siyao" andInitialTrainingImages:@[[UIImage imageNamed:@"siyao-s.jpg"]] withContext:localContext];
+            FTPerson *chengyue = [[FTPerson alloc] initWithName:@"chengyue" andInitialTrainingImages:@[[UIImage imageNamed:@"chengyue-s.jpg"]] withContext:localContext];
+            testGroup = [[FTGroup alloc] initWithName:@"testGroup" andPeople:@[siyao, chengyue] andStartDate:START_DATE andEndDate:END_DATE withContext:localContext];
+        }];
     }
-    [defaults synchronize];
-
+    
+    
+    
+    
 
     
     FTGroupsListViewController *mainView = [[FTGroupsListViewController alloc] init];
@@ -126,7 +138,22 @@ static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.'
+    UIApplication *app = [UIApplication sharedApplication];
+
+    __block UIBackgroundTaskIdentifier bgTask = [app beginBackgroundTaskWithExpirationHandler:^{
+        [app endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+    }];
+    
+    [self.locationManager startMonitoringSignificantLocationChanges];
+    //reset for this background session
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:@(0) forKey:@"wakeUpCount"];
+    [defaults setObject:@(0) forKey:@"photoChangeCount"];
+    [defaults synchronize];
+
+
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
@@ -146,13 +173,18 @@ static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
 #pragma mark - Ongoing Groups
 
 - (void)photoLibraryDidChange:(PHChange *)changeInstance {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:[NSNumber numberWithInt:[(NSNumber *)[defaults objectForKey:@"photoChangeCount"] intValue] + 1] forKey:@"photoChangeCount"];
-    [defaults synchronize];
-    
-    NSLog(@"changes");
     PHFetchResultChangeDetails *collectionChanges = [changeInstance changeDetailsForFetchResult:self.cameraRollFetchResult];
     if (collectionChanges) {
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        [defaults setObject:[NSNumber numberWithInt:[(NSNumber *)[defaults objectForKey:@"photoChangeCount"] intValue] + 1] forKey:@"photoChangeCount"];
+        [defaults synchronize];
+        
+        NSLog(@"changes");
+        UILocalNotification* localNotification = [[UILocalNotification alloc] init];
+        localNotification.fireDate = [NSDate date];
+        localNotification.alertBody = @"New photo(s) found!";
+        [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+        
         // get the new fetch result
         self.cameraRollFetchResult = [collectionChanges fetchResultAfterChanges];
         
@@ -193,6 +225,17 @@ static NSString *kDatabaseVersionKey = @"FTDatabaseVersion";
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:[NSNumber numberWithInt:[(NSNumber *)[defaults objectForKey:@"wakeUpCount"] intValue] + 1] forKey:@"wakeUpCount"];
     [defaults synchronize];
+}
+
+
+- (void)locationManager:(CLLocationManager *)manager
+       didFailWithError:(NSError *)error
+{
+    NSLog(@"Error while getting core location : %@",[error localizedFailureReason]);
+    if ([error code] == kCLErrorDenied) {
+        //you had denied
+    }
+    [manager stopUpdatingLocation];
 }
 
 

@@ -22,6 +22,18 @@
 		9F4D035A1AA6932800806AF5 /* date-select.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F4D03581AA6932800806AF5 /* date-select.png */; };
 		9F4D035B1AA6932800806AF5 /* date-select@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F4D03591AA6932800806AF5 /* date-select@2x.png */; };
 		9F4D035E1AA92E0800806AF5 /* FTFaceRecognitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F4D035D1AA92E0800806AF5 /* FTFaceRecognitionManager.m */; };
+		9F4D03611AAF73FC00806AF5 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F4D035F1AAF73FB00806AF5 /* Bolts.framework */; };
+		9F4D03621AAF73FC00806AF5 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F4D03601AAF73FB00806AF5 /* Parse.framework */; };
+		9F4D03641AAF744200806AF5 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F4D03631AAF744200806AF5 /* AudioToolbox.framework */; };
+		9F4D03661AAF744C00806AF5 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F4D03651AAF744C00806AF5 /* CFNetwork.framework */; };
+		9F4D03681AAF745800806AF5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F4D03671AAF745800806AF5 /* CoreGraphics.framework */; };
+		9F4D036A1AAF746800806AF5 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F4D03691AAF746800806AF5 /* MobileCoreServices.framework */; };
+		9F4D036C1AAF747100806AF5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F4D036B1AAF747100806AF5 /* QuartzCore.framework */; };
+		9F4D036E1AAF747A00806AF5 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F4D036D1AAF747A00806AF5 /* Security.framework */; };
+		9F4D03701AAF748E00806AF5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F4D036F1AAF748E00806AF5 /* StoreKit.framework */; };
+		9F4D03721AAF749800806AF5 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F4D03711AAF749700806AF5 /* SystemConfiguration.framework */; };
+		9F4D03741AAF74A700806AF5 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F4D03731AAF74A700806AF5 /* libz.dylib */; };
+		9F4D03761AAF74B200806AF5 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F4D03751AAF74B200806AF5 /* libsqlite3.dylib */; };
 		9F5147911A8A87050089EAD1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147901A8A87050089EAD1 /* main.m */; };
 		9F5147941A8A87050089EAD1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147931A8A87050089EAD1 /* AppDelegate.m */; };
 		9F5147971A8A87050089EAD1 /* faceTagTester.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9F5147951A8A87050089EAD1 /* faceTagTester.xcdatamodeld */; };
@@ -94,6 +106,18 @@
 		9F4D03591AA6932800806AF5 /* date-select@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "date-select@2x.png"; sourceTree = "<group>"; };
 		9F4D035C1AA92E0800806AF5 /* FTFaceRecognitionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTFaceRecognitionManager.h; sourceTree = "<group>"; };
 		9F4D035D1AA92E0800806AF5 /* FTFaceRecognitionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTFaceRecognitionManager.m; sourceTree = "<group>"; };
+		9F4D035F1AAF73FB00806AF5 /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bolts.framework; sourceTree = "<group>"; };
+		9F4D03601AAF73FB00806AF5 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
+		9F4D03631AAF744200806AF5 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		9F4D03651AAF744C00806AF5 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		9F4D03671AAF745800806AF5 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		9F4D03691AAF746800806AF5 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		9F4D036B1AAF747100806AF5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		9F4D036D1AAF747A00806AF5 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		9F4D036F1AAF748E00806AF5 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		9F4D03711AAF749700806AF5 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		9F4D03731AAF74A700806AF5 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		9F4D03751AAF74B200806AF5 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		9F51478B1A8A87050089EAD1 /* faceTagTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = faceTagTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F51478F1A8A87050089EAD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F5147901A8A87050089EAD1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -165,9 +189,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F4D03761AAF74B200806AF5 /* libsqlite3.dylib in Frameworks */,
+				9F4D03741AAF74A700806AF5 /* libz.dylib in Frameworks */,
+				9F4D03721AAF749800806AF5 /* SystemConfiguration.framework in Frameworks */,
+				9F4D03701AAF748E00806AF5 /* StoreKit.framework in Frameworks */,
+				9F4D036E1AAF747A00806AF5 /* Security.framework in Frameworks */,
+				9F4D036C1AAF747100806AF5 /* QuartzCore.framework in Frameworks */,
+				9F4D036A1AAF746800806AF5 /* MobileCoreServices.framework in Frameworks */,
+				9F4D03681AAF745800806AF5 /* CoreGraphics.framework in Frameworks */,
+				9F4D03661AAF744C00806AF5 /* CFNetwork.framework in Frameworks */,
+				9F4D03641AAF744200806AF5 /* AudioToolbox.framework in Frameworks */,
 				9F5148401A8D32880089EAD1 /* ImageIO.framework in Frameworks */,
 				9F51483E1A8D32250089EAD1 /* CoreImage.framework in Frameworks */,
 				8828DC65D52725E072566437 /* libPods-faceTagTester.a in Frameworks */,
+				9F4D03611AAF73FC00806AF5 /* Bolts.framework in Frameworks */,
+				9F4D03621AAF73FC00806AF5 /* Parse.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -193,6 +229,18 @@
 		521457E2A639FD6E9D90A48B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9F4D03751AAF74B200806AF5 /* libsqlite3.dylib */,
+				9F4D03731AAF74A700806AF5 /* libz.dylib */,
+				9F4D03711AAF749700806AF5 /* SystemConfiguration.framework */,
+				9F4D036F1AAF748E00806AF5 /* StoreKit.framework */,
+				9F4D036D1AAF747A00806AF5 /* Security.framework */,
+				9F4D036B1AAF747100806AF5 /* QuartzCore.framework */,
+				9F4D03691AAF746800806AF5 /* MobileCoreServices.framework */,
+				9F4D03671AAF745800806AF5 /* CoreGraphics.framework */,
+				9F4D03651AAF744C00806AF5 /* CFNetwork.framework */,
+				9F4D03631AAF744200806AF5 /* AudioToolbox.framework */,
+				9F4D035F1AAF73FB00806AF5 /* Bolts.framework */,
+				9F4D03601AAF73FB00806AF5 /* Parse.framework */,
 				9F51483F1A8D32880089EAD1 /* ImageIO.framework */,
 				9F51483D1A8D32250089EAD1 /* CoreImage.framework */,
 				4CCA340E593D8FC9F165DACC /* libPods-faceTagTester.a */,
@@ -704,6 +752,10 @@
 				CLANG_CXX_LIBRARY = "compiler-default";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "faceTagTester/faceTagTester-Prefix.pch";
@@ -729,6 +781,10 @@
 				CLANG_CXX_LIBRARY = "compiler-default";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "faceTagTester/faceTagTester-Prefix.pch";
